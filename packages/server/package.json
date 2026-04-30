@@ -1,0 +1,29 @@
+{
+  "name": "@dcim/server",
+  "version": "1.0.0",
+  "scripts": {
+    "wrangler": "wrangler"
+  },
+  "type": "module",
+  "dependencies": {
+    "@hono/zod-validator": "^0.7.6",
+    "@otplib/plugin-base32-scure": "^13.4.0",
+    "@otplib/plugin-crypto-web": "^13.4.0",
+    "@otplib/totp": "^13.4.0",
+    "hono": "^4.12.15",
+    "otplib": "^13.4.0",
+    "s3mini": "^0.9.4",
+    "uuid": "^14.0.0",
+    "wrangler": "^4.86.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260424.1",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.6.0",
+    "@types/qrcode": "^1.5.6",
+    "eslint": "^10.2.1",
+    "qrcode": "^1.5.4",
+    "typescript-eslint": "^8.59.0"
+  }
+}

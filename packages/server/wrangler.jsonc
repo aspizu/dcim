@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "compatibility_date": "2026-04-24",
+  "name": "dcim",
+  "main": "src/index.ts",
+  "compatibility_flags": ["nodejs_compat"],
+  "upload_source_maps": true,
+  "d1_databases": [
+    {
+      "binding": "D1",
+      "database_name": "dcim",
+      "database_id": "e4caba1f-0332-4504-9b1e-e35a75b4293f",
+    },
+  ],
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "dcim",
+    },
+  ],
+}
