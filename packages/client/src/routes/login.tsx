@@ -10,20 +10,15 @@ import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
 import {createFileRoute, useNavigate} from "@tanstack/react-router"
 import {motion, useAnimate} from "framer-motion"
-import {useAtom} from "jotai"
 import {LockOpen} from "lucide-react"
 import {useState} from "react"
-
-export const Route = createFileRoute("/login")({
-  component: RouteComponent,
-})
 
 function RouteComponent() {
   const [scope, animate] = useAnimate()
   const [totp, setTotp] = useState("")
   const [isIncorrect, setIsIncorrect] = useState(false)
   const navigate = useNavigate()
-  const [authState, setAuthState] = useAtom($authState)
+
   const [isLoading, setIsLoading] = useState(false)
   function then() {
     navigate({
@@ -38,8 +33,26 @@ function RouteComponent() {
       {duration: 0.4, ease: "easeInOut"},
     )
   }
-  if (authState === AuthState.AUTHENTICATED) {
+  if ($authState.value === AuthState.AUTHENTICATED) {
     then()
+  }
+  async function onLoginClick() {
+    if (totp.length < 6) {
+      shake()
+      return
+    }
+    setIsIncorrect(false)
+    setIsLoading(true)
+    try {
+      await api.login({totp})
+      $authState.value = AuthState.AUTHENTICATED
+      then()
+    } catch {
+      $authState.value = AuthState.UNAUTHENTICATED
+      setIsLoading(false)
+      setIsIncorrect(true)
+      shake()
+    }
   }
   return (
     <div className="grid h-dvh place-items-center">
@@ -59,29 +72,7 @@ function RouteComponent() {
               <InputOTPSlot index={5} />
             </InputOTPGroup>
           </InputOTP>
-          <Button
-            size="icon"
-            onClick={() => {
-              if (totp.length < 6) {
-                shake()
-                return
-              }
-              setIsIncorrect(false)
-              setIsLoading(true)
-              api
-                .login({totp})
-                .then(() => {
-                  setAuthState(AuthState.AUTHENTICATED)
-                  then()
-                })
-                .catch(() => {
-                  setAuthState(AuthState.UNAUTHENTICATED)
-                  setIsIncorrect(true)
-                  setIsLoading(false)
-                  shake()
-                })
-            }}
-          >
+          <Button size="icon" onClick={onLoginClick}>
             {isLoading ?
               <Spinner />
             : <LockOpen />}
@@ -96,3 +87,5 @@ function RouteComponent() {
     </div>
   )
 }
+
+export const Route = createFileRoute("/login")({component: RouteComponent})

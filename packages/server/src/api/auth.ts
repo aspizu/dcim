@@ -3,7 +3,7 @@ import hono from "#utils/hono"
 import {zValidator} from "@hono/zod-validator"
 import {base32} from "@otplib/plugin-base32-scure"
 import {crypto} from "@otplib/plugin-crypto-web"
-import {setSignedCookie} from "hono/cookie"
+import {deleteCookie, setSignedCookie} from "hono/cookie"
 import {HTTPException} from "hono/http-exception"
 import * as otplib from "otplib"
 import z from "zod"
@@ -38,5 +38,9 @@ export default hono()
   )
   .get("/auth/whoami", async (c) => {
     await ensureLoggedIn(c)
+    return c.json({})
+  })
+  .post("/auth/logout", async (c) => {
+    deleteCookie(c, "session", {path: "/"})
     return c.json({})
   })

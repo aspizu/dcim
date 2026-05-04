@@ -2,7 +2,10 @@
   "name": "@dcim/server",
   "version": "1.0.0",
   "scripts": {
-    "wrangler": "wrangler"
+    "wrangler": "wrangler",
+    "lint": "eslint --fix",
+    "check": "tsgo --noEmit",
+    "format": "prettier -uwu ."
   },
   "type": "module",
   "dependencies": {
@@ -22,6 +25,7 @@
     "@eslint/js": "^10.0.1",
     "@types/node": "^25.6.0",
     "@types/qrcode": "^1.5.6",
+    "@typescript/native-preview": "7.0.0-dev.20260501.1",
     "eslint": "^10.2.1",
     "qrcode": "^1.5.4",
     "typescript-eslint": "^8.59.0"

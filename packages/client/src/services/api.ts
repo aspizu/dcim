@@ -5,6 +5,8 @@ export type ContentType = "image/png" | "image/jpeg" | "image/webp" | "image/avi
 
 export interface Image {
   id: string
+  image_url: string
+  thumbnail_url: string
   content_sha256: string
   timestamp: string
   content_type: ContentType
@@ -68,29 +70,36 @@ export async function listImages(): Promise<Image[]> {
   return _call("GET", "/image")
 }
 
-export async function getImage({key}: {key: string}): Promise<Image> {
-  return _call("GET", `/image/${key}`)
+export async function getImage({id}: {id: string}): Promise<Image> {
+  return _call("GET", `/image/${id}`)
 }
 
 export async function createImage(body: {
   contentSHA256: string
+  thumbnailContentSHA256: string
+  thumbnailContentLength: number
+  thumbnailContentType: ContentType
   timestamp: string
   contentType: ContentType
   contentLength: number
   fileName: string
   metadata?: Record<string, unknown>
-}): Promise<{key: string; url: string}> {
+}): Promise<{id: string; imagePresignedURL: string; thumbnailPresignedURL: string}> {
   return _call("POST", "/image", body)
 }
 
-export async function confirmImageUploaded({key}: {key: string}): Promise<{status: string}> {
-  return _call("PATCH", `/image/${key}`, {})
+export async function confirmImageUploaded({id}: {id: string}): Promise<void> {
+  return _call("PATCH", `/image/${id}`, {})
 }
 
 export async function login({totp}: {totp: string}): Promise<void> {
   return _call("POST", "/auth/login", {totp})
 }
 
-export async function whoami(): Promise<{}> {
+export async function logout(): Promise<void> {
+  return _call("POST", "/auth/logout")
+}
+
+export async function whoami(): Promise<void> {
   return _call("GET", "/auth/whoami")
 }

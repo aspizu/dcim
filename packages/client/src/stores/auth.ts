@@ -1,4 +1,4 @@
-import {atom} from "jotai"
+import {signal} from "@preact/signals-react"
 
 export enum AuthState {
   LOADING,
@@ -6,4 +6,4 @@ export enum AuthState {
   AUTHENTICATED,
 }
 
-export const $authState = atom<AuthState>(AuthState.LOADING)
+export const $authState = signal<AuthState>(AuthState.LOADING)

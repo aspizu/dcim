@@ -7,6 +7,7 @@ export interface Bindings {
   ACCOUNT_ID: string
   R2_ACCESS_KEY_ID: string
   R2_SECRET_ACCESS_KEY: string
+  R2_URL: string
   TOTP_SECRET: string
   JWT_SECRET: string
 }

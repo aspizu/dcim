@@ -20,13 +20,12 @@ if (!import.meta.env.VITE_USERNAME) {
   throw new Error("[env] VITE_USERNAME is not set")
 }
 
-const API_URL = `https://dcim.${import.meta.env.VITE_USERNAME}.workers.dev`
-
 export async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
   let res: Response
   try {
-    res = await fetch(API_URL + path, {
+    res = await fetch("/api" + path, {
       method,
+      credentials: "include",
       headers: {"Content-Type": "application/json"},
       body: method === "GET" ? undefined : JSON.stringify(body),
     })
