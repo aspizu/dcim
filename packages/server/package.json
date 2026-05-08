@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "wrangler": "wrangler",
-    "lint": "eslint --fix",
+    "lint": "oxlint --fix",
     "check": "tsgo --noEmit",
     "format": "prettier -uwu ."
   },
@@ -22,12 +22,12 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260424.1",
-    "@eslint/js": "^10.0.1",
     "@types/node": "^25.6.0",
     "@types/qrcode": "^1.5.6",
     "@typescript/native-preview": "7.0.0-dev.20260501.1",
-    "eslint": "^10.2.1",
-    "qrcode": "^1.5.4",
-    "typescript-eslint": "^8.59.0"
+    "oxlint": "^1.63.0",
+    "oxlint-plugin-aspizuism": "^1.0.1",
+    "oxlint-tsgolint": "^0.22.1",
+    "qrcode": "^1.5.4"
   }
 }
