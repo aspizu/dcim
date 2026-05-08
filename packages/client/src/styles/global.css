@@ -128,3 +128,7 @@
     @apply font-sans;
   }
 }
+
+@view-transition {
+  navigation: auto;
+}
