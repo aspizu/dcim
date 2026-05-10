@@ -5,11 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview",
-    "lint": "eslint --fix",
-    "check": "tsgo --noEmit",
-    "format": "prettier -uwu ."
+    "lint": "oxlint",
+    "check": "tsgo",
+    "fmt": "prettier --ignore-unknown --write ."
   },
   "imports": {
     "#components/*": "./src/components/*.tsx",
@@ -66,6 +64,8 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
+    "oxlint": "^1.63.0",
+    "oxlint-tsgolint": "^0.22.1",
     "portless": "^0.11.1",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",

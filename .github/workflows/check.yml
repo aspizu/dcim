@@ -1,0 +1,31 @@
+name: Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Install Package Manager
+        uses: pnpm/action-setup@v6
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Check Formatting
+        run: pnpm prettier --ignore-unknown --check .
+      - name: Check Wrangler Types
+        run: pnpm wrangler types --check
+      - name: Lint Client
+        run: cd packages/client && pnpm run lint
+      - name: Type Check Client
+        run: cd packages/client && pnpm run typecheck
+      - name: Lint Server
+        run: cd packages/server && pnpm run lint
+      - name: Type Check Server
+        run: cd packages/server && pnpm run typecheck

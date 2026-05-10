@@ -2,9 +2,9 @@
   "name": "@dcim/server",
   "version": "1.0.0",
   "scripts": {
-    "lint": "oxlint --fix",
-    "check": "tsgo --noEmit",
-    "format": "prettier -uwu ."
+    "lint": "oxlint",
+    "check": "tsgo",
+    "fmt": "prettier --ignore-unknown --write ."
   },
   "type": "module",
   "dependencies": {
