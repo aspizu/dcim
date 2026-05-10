@@ -2,7 +2,6 @@
   "name": "@dcim/server",
   "version": "1.0.0",
   "scripts": {
-    "wrangler": "wrangler",
     "lint": "oxlint --fix",
     "check": "tsgo --noEmit",
     "format": "prettier -uwu ."
@@ -17,7 +16,6 @@
     "otplib": "^13.4.0",
     "s3mini": "^0.9.4",
     "uuid": "^14.0.0",
-    "wrangler": "^4.86.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

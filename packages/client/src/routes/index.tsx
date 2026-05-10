@@ -8,7 +8,7 @@ import {createFileRoute, Link} from "@tanstack/react-router"
 
 function PhotoItem(props: {photo: api.Photo}) {
   return (
-    <Link to={`/images/$imageId`} params={{imageId: props.photo.id}}>
+    <Link to={`/photo/$id`} params={{id: props.photo.id}}>
       <div
         className="relative aspect-square overflow-hidden rounded-md"
         style={{

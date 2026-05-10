@@ -2,7 +2,7 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "compatibility_date": "2026-04-24",
   "name": "dcim",
-  "main": "src/index.ts",
+  "main": "packages/server/src/index.ts",
   "compatibility_flags": ["nodejs_compat"],
   "upload_source_maps": true,
   "d1_databases": [
@@ -17,6 +17,17 @@
     {
       "binding": "R2",
       "bucket_name": "dcim",
+    },
+  ],
+  "assets": {
+    "not_found_handling": "single-page-application",
+    "directory": "packages/client/dist",
+  },
+  "routes": [
+    {
+      "pattern": "dcim.aspiz.uk",
+      "zone_name": "aspiz.uk",
+      "custom_domain": true,
     },
   ],
 }
