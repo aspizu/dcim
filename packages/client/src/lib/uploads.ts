@@ -1,4 +1,4 @@
-import * as api from "#services/api"
+import type * as api from "#services/api"
 import exifr from "exifr"
 import {createWorkerPool, dcim} from "lib-dcim"
 import {sha256} from "./hash"
@@ -64,28 +64,22 @@ export async function prepareFileUpload(handle: FileSystemFileHandle) {
     String.fromCharCode(...new Uint8Array(await thumbhashBlob.arrayBuffer())),
   )
 
-  const payload = {
-    contentLength: file.size,
-    contentType: file.type as api.ContentType,
-    thumbnailContentLength: thumbnail.size,
-    thumbnailContentType: "image/avif" as const,
-    fileName: handle.name,
-    contentSHA256,
-    thumbnailContentSHA256,
-    thumbhash,
-    timestamp,
-    metadata,
-    width,
-    height,
-  }
-
-  const response = await api.createPhoto(payload)
-
   return {
-    ...response,
+    upload: {
+      contentLength: file.size,
+      contentType: file.type as api.ContentType,
+      thumbnailContentLength: thumbnail.size,
+      thumbnailContentType: "image/avif" as const,
+      fileName: handle.name,
+      contentSHA256,
+      thumbnailContentSHA256,
+      thumbhash,
+      timestamp,
+      metadata,
+      width,
+      height,
+    },
     file,
     thumbnail,
-    contentSHA256,
-    thumbnailContentSHA256,
   }
 }

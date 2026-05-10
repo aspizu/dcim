@@ -12,3 +12,15 @@ export async function ensureLoggedIn(c: Context) {
     throw new HTTPException(401, {message: "Unauthorized"})
   }
 }
+
+export async function tryCheckLoggedIn(c: Context) {
+  const cookie = await getSignedCookie(c, c.env.JWT_SECRET, "session")
+  if (!cookie || !cookie.trim()) {
+    return false
+  }
+  const expiry = new Date(cookie).getTime()
+  if (isNaN(expiry) || Date.now() > expiry) {
+    return false
+  }
+  return true
+}

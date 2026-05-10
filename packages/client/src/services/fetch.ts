@@ -16,10 +16,6 @@ export class NetworkError extends Error {
   }
 }
 
-if (!import.meta.env.VITE_USERNAME) {
-  throw new Error("[env] VITE_USERNAME is not set")
-}
-
 export async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
   let res: Response
   try {

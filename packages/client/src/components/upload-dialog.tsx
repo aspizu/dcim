@@ -2,6 +2,7 @@ import {prepareFileUpload} from "#lib/uploads"
 import * as api from "#services/api"
 import {$uploadState} from "#stores/upload"
 import {signal} from "@preact/signals-react"
+import {useMutation} from "@tanstack/react-query"
 import axios from "axios"
 import {useState} from "react"
 import {Button} from "./ui/button"
@@ -15,21 +16,32 @@ export function UploadDialog() {
   const items = [...$uploadState.value]
   const len = items.length
   items.sort((a, b) => a.handle.name.localeCompare(b.handle.name))
+
   const [progress, setProgress] = useState<Record<string, number> | null>(null)
-  async function _onUploadClick() {
-    const progress = Object.fromEntries(items.map((item) => [item.id, 0]))
-    setProgress(progress)
+
+  async function _preparePhotos() {
+    const preparedPhotos = []
     for (const item of items) {
       const prepared = await prepareFileUpload(item.handle)
-      const res1 = await axios.put(prepared.imagePresignedURL, prepared.file, {
+      preparedPhotos.push({id: item.id, prepared})
+    }
+    return preparedPhotos
+  }
+
+  async function _uploadPhotos(preparedPhotos: Awaited<ReturnType<typeof _preparePhotos>>) {
+    const progress = Object.fromEntries(items.map((item) => [item.id, 0]))
+    setProgress(progress)
+    for (const {id, prepared} of preparedPhotos) {
+      const uploaded = await api.createPhoto(prepared.upload)
+      const res1 = await axios.put(uploaded.imagePresignedURL, prepared.file, {
         headers: {
           "Content-Type": prepared.file.type,
-          "x-amz-checksum-sha256": prepared.contentSHA256,
+          "x-amz-checksum-sha256": prepared.upload.contentSHA256,
           "Cache-Control": "public, max-age=31536000, immutable, no-transform",
           "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.file.name)}`,
         },
         onUploadProgress(e) {
-          progress[item.id] = (e.loaded / e.total!) * 75
+          progress[id] = (e.loaded / e.total!) * 75
           setProgress({...progress})
         },
       })
@@ -37,15 +49,15 @@ export function UploadDialog() {
         console.error("Failed to upload image", res1.status, res1.data)
         return
       }
-      const res2 = await axios.put(prepared.thumbnailPresignedURL, prepared.thumbnail, {
+      const res2 = await axios.put(uploaded.thumbnailPresignedURL, prepared.thumbnail, {
         headers: {
           "Content-Type": "image/avif",
-          "x-amz-checksum-sha256": prepared.thumbnailContentSHA256,
+          "x-amz-checksum-sha256": prepared.upload.thumbnailContentSHA256,
           "Cache-Control": "public, max-age=31536000, immutable, no-transform",
           "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.file.name.replace(/\.[^.]+$/, ".avif"))}`,
         },
         onUploadProgress(e) {
-          progress[item.id] = 75 + (e.loaded / e.total!) * 25
+          progress[id] = 75 + (e.loaded / e.total!) * 25
           setProgress({...progress})
         },
       })
@@ -53,9 +65,20 @@ export function UploadDialog() {
         console.error("Failed to upload thumbnail", res2.status, res2.data)
         return
       }
-      await api.confirmPhotoUploaded({id: prepared.id})
+      await api.confirmPhotoUploaded({id: uploaded.id})
     }
-    $uploadDialogOpen.value = false
+  }
+  const mutation = useMutation({
+    mutationFn: _uploadPhotos,
+    onSettled: async (_data, _error, _variables, _onMutateResult, context) => {
+      await context.client.invalidateQueries({queryKey: ["photos"]})
+      $uploadDialogOpen.value = false
+    },
+  })
+
+  async function _onUploadClick() {
+    const preparedPhotos = await _preparePhotos()
+    mutation.mutate(preparedPhotos)
   }
 
   return (

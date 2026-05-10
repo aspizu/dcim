@@ -1,4 +1,4 @@
-import {ensureLoggedIn} from "#utils/auth"
+import {ensureLoggedIn, tryCheckLoggedIn} from "#utils/auth"
 import hono, {type Context} from "#utils/hono"
 import {CT_EXT, CT_EXTENSIONS, makeS3} from "#utils/s3"
 import sql from "#utils/sql"
@@ -19,17 +19,22 @@ function _getThumbnailKey(c: Context, photo: any): string {
 export default hono()
   .get("/photo", async (c) => {
     await ensureLoggedIn(c)
-    const rows = await sql(c)`SELECT * FROM photo`.all()
+    const rows = await sql(c)`SELECT * FROM photo ORDER BY timestamp DESC`.all()
     return c.json(rows.results)
   })
   .get("/photo/:id", async (c) => {
-    await ensureLoggedIn(c)
     const {id} = c.req.param()
-    const row = await sql(c)`SELECT * FROM photo WHERE id = ${id}`.first()
+    const isLoggedIn = await tryCheckLoggedIn(c)
+    const row = await sql(
+      c,
+    )`SELECT * FROM photo WHERE id = ${id} AND status = 'uploaded'`.first()
     if (row === null) {
       throw new HTTPException(404, {message: "Photo not found."})
     }
-    return c.json(row)
+    if (isLoggedIn) {
+      return c.json(row)
+    }
+    return c.json({...row, metadata: "{}"})
   })
   .post(
     "/photo",

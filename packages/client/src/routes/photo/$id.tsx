@@ -12,36 +12,31 @@ function RouteComponent() {
     queryFn: () => api.getPhoto({id: id}),
   })
   return (
-    <div className="flex h-dvh flex-col">
+    <div className="grid h-dvh grid-rows-[auto_1fr]">
       <Header
         title={photo.data?.file_name ?? "Photo"}
         after={photo.data && <PhotoHeaderMenu photo={photo.data} />}
       />
       {photo.data && (
-        <div
-          className="relative overflow-hidden"
-          style={{
-            aspectRatio: `${photo.data.width / photo.data.height}`,
-            viewTransitionName: `image-${id}`,
-          }}
-        >
+        <div className="grid">
           <div
-            className="absolute top-[50%] left-[50%] h-full -translate-x-[50%] -translate-y-[50%] overflow-hidden"
+            className="relative h-full place-self-center overflow-hidden"
             style={{
               aspectRatio: `${photo.data.width / photo.data.height}`,
+              viewTransitionName: `photo-${photo.data.id}`,
             }}
           >
-            <ImgFaded
+            <img
               src={`data:image/avif;base64,${photo.data.thumbhash}`}
               alt={photo.data.file_name}
-              className="h-full w-full scale-[1.05] object-fill blur-md"
+              className="absolute inset-0 h-full w-full scale-[1.05] blur-md"
+            />
+            <ImgFaded
+              src={photo.data.image_url}
+              alt={photo.data.file_name}
+              className="absolute inset-0"
             />
           </div>
-          <ImgFaded
-            src={photo.data.image_url}
-            alt={photo.data.file_name}
-            className="absolute inset-0 h-full w-full object-contain"
-          />
         </div>
       )}
     </div>

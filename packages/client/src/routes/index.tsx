@@ -3,7 +3,7 @@ import {UserHeaderMenu} from "#components/header-menus/user-header-menu"
 import {ImgFaded} from "#components/img-faded"
 import {UploadButton} from "#components/upload-button"
 import * as api from "#services/api"
-import {useQuery} from "@tanstack/react-query"
+import {useQuery, useQueryClient} from "@tanstack/react-query"
 import {createFileRoute, Link} from "@tanstack/react-router"
 
 function PhotoItem(props: {photo: api.Photo}) {
@@ -12,10 +12,10 @@ function PhotoItem(props: {photo: api.Photo}) {
       <div
         className="relative aspect-square overflow-hidden rounded-md"
         style={{
-          viewTransitionName: `image-${props.photo.id}`,
+          viewTransitionName: `photo-${props.photo.id}`,
         }}
       >
-        <ImgFaded
+        <img
           src={`data:image/avif;base64,${props.photo.thumbhash}`}
           alt={props.photo.file_name}
           className="absolute inset-0 h-full w-full scale-[1.05] object-cover blur-md"
@@ -34,9 +34,16 @@ function PhotoItem(props: {photo: api.Photo}) {
 }
 
 function RouteComponent() {
+  const queryClient = useQueryClient()
   const photos = useQuery({
     queryKey: ["photos"],
-    queryFn: api.listPhotos,
+    queryFn: async () => {
+      const photos = await api.listPhotos()
+      for (const photo of photos) {
+        queryClient.setQueryData(["photos", photo.id], photo)
+      }
+      return photos
+    },
   })
   return (
     <>

@@ -6,7 +6,7 @@ import react from "@vitejs/plugin-react"
 import {defineConfig, loadEnv} from "vite"
 
 export default defineConfig(({mode}) => {
-  const env = loadEnv(mode, process.cwd())
+  const _env = loadEnv(mode, process.cwd())
   return {
     plugins: [
       tanstackRouter({
@@ -23,7 +23,7 @@ export default defineConfig(({mode}) => {
     server: {
       proxy: {
         "/api": {
-          target: `http://dcim.${env.VITE_USERNAME}.workers.dev`,
+          target: `https://dcim.aspiz.uk`,
           changeOrigin: true,
         },
       },
