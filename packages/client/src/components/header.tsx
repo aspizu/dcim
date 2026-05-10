@@ -1,6 +1,8 @@
-import {Link} from "@tanstack/react-router"
+import * as api from "#services/api"
+import {$authState, AuthState} from "#stores/auth"
+import {Link, useNavigate} from "@tanstack/react-router"
 import {Ellipsis, LogOut, Settings} from "lucide-react"
-import type {ReactNode} from "react"
+import {useState, type ReactNode} from "react"
 import {Button} from "./ui/button"
 import {
   DropdownMenu,
@@ -9,8 +11,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu"
+import {Spinner} from "./ui/spinner"
 
 function UserDropDown() {
+  const navigate = useNavigate()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+  async function onSignOutClick() {
+    setIsLoggingOut(true)
+    await api.logout()
+    $authState.value = AuthState.UNAUTHENTICATED
+    await navigate({to: "/login"})
+  }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -26,8 +37,14 @@ function UserDropDown() {
               Settings
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem variant="destructive">
-            <LogOut />
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => void onSignOutClick()}
+            disabled={isLoggingOut}
+          >
+            {isLoggingOut ?
+              <Spinner />
+            : <LogOut />}
             Sign out
           </DropdownMenuItem>
         </DropdownMenuGroup>

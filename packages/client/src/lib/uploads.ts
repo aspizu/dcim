@@ -8,7 +8,7 @@ export const thumbnailWorkerPool = createWorkerPool(
   {workers: 2, jobsPerWorker: Infinity},
 )
 
-const _thumbhashWorkerPool = createWorkerPool(dcim().resize(16, 16).avif(0).compile(), {
+const _thumbhashWorkerPool = createWorkerPool(dcim().resize(16, 16).avif(1).compile(), {
   workers: 2,
   jobsPerWorker: Infinity,
 })

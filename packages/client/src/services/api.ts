@@ -7,6 +7,7 @@ export interface Image {
   id: string
   image_url: string
   thumbnail_url: string
+  thumbhash: string
   content_sha256: string
   timestamp: string
   content_type: ContentType
