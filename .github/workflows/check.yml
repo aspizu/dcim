@@ -28,8 +28,8 @@ jobs:
       - name: Lint Client
         run: cd packages/client && pnpm run lint
       - name: Type Check Client
-        run: cd packages/client && pnpm run typecheck
+        run: cd packages/client && pnpm run check
       - name: Lint Server
         run: cd packages/server && pnpm run lint
       - name: Type Check Server
-        run: cd packages/server && pnpm run typecheck
+        run: cd packages/server && pnpm run check
