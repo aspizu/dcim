@@ -1,6 +1,6 @@
 import {
-  $deleteImageDialogOpen,
-  DeleteImageDialog,
+  $deletePhotoDialogOpen,
+  DeletePhotoDialog,
 } from "#components/dialogs/image-delete-dialog"
 import {Button} from "#components/ui/button"
 import {
@@ -10,10 +10,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "#components/ui/dropdown-menu"
-import type {Image} from "#services/api"
+import type {Photo} from "#services/api"
 import {Ellipsis, Trash} from "lucide-react"
 
-export function ImageHeaderMenu(props: {image: Image}) {
+export function PhotoHeaderMenu(props: {photo: Photo}) {
   return (
     <>
       <DropdownMenu>
@@ -27,7 +27,7 @@ export function ImageHeaderMenu(props: {image: Image}) {
             <DropdownMenuItem
               variant="destructive"
               onClick={() => {
-                $deleteImageDialogOpen.value = true
+                $deletePhotoDialogOpen.value = true
               }}
             >
               <Trash />
@@ -36,7 +36,7 @@ export function ImageHeaderMenu(props: {image: Image}) {
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-      <DeleteImageDialog image={props.image} />
+      <DeletePhotoDialog photo={props.photo} />
     </>
   )
 }

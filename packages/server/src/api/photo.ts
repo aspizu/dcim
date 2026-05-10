@@ -8,31 +8,31 @@ import * as Path from "node:path"
 import * as uuid from "uuid"
 import {z} from "zod"
 
-function _getImageKey(c: Context, image: any): string {
-  return image.image_url.slice(c.env.R2_URL.length).replace(/^\//, "")
+function _getImageKey(c: Context, photo: any): string {
+  return photo.image_url.slice(c.env.R2_URL.length).replace(/^\//, "")
 }
 
-function _getThumbnailKey(c: Context, image: any): string {
-  return image.thumbnail_url.slice(c.env.R2_URL.length).replace(/^\//, "")
+function _getThumbnailKey(c: Context, photo: any): string {
+  return photo.thumbnail_url.slice(c.env.R2_URL.length).replace(/^\//, "")
 }
 
 export default hono()
-  .get("/image", async (c) => {
+  .get("/photo", async (c) => {
     await ensureLoggedIn(c)
-    const rows = await sql(c)`SELECT * FROM image`.all()
+    const rows = await sql(c)`SELECT * FROM photo`.all()
     return c.json(rows.results)
   })
-  .get("/image/:id", async (c) => {
+  .get("/photo/:id", async (c) => {
     await ensureLoggedIn(c)
     const {id} = c.req.param()
-    const row = await sql(c)`SELECT * FROM image WHERE id = ${id}`.first()
+    const row = await sql(c)`SELECT * FROM photo WHERE id = ${id}`.first()
     if (row === null) {
-      throw new HTTPException(404, {message: "Image not found."})
+      throw new HTTPException(404, {message: "Photo not found."})
     }
     return c.json(row)
   })
   .post(
-    "/image",
+    "/photo",
     zValidator(
       "json",
       z.object({
@@ -107,7 +107,7 @@ export default hono()
       const thumbnailURL = `${publicURL}/${thumbnailPathname}`
       await sql(
         c,
-      )`INSERT INTO image (id, image_url, thumbnail_url, thumbhash, content_sha256, timestamp, content_type, content_length, file_name, metadata, width, height) VALUES (${id}, ${imageURL}, ${thumbnailURL}, ${thumbhash}, ${contentSHA256}, ${timestamp}, ${contentType}, ${contentLength}, ${fileName}, ${JSON.stringify(metadata ?? {})}, ${width}, ${height})`.run()
+      )`INSERT INTO photo (id, image_url, thumbnail_url, thumbhash, content_sha256, timestamp, content_type, content_length, file_name, metadata, width, height) VALUES (${id}, ${imageURL}, ${thumbnailURL}, ${thumbhash}, ${contentSHA256}, ${timestamp}, ${contentType}, ${contentLength}, ${fileName}, ${JSON.stringify(metadata ?? {})}, ${width}, ${height})`.run()
       return c.json({
         id,
         imagePresignedURL,
@@ -115,12 +115,12 @@ export default hono()
       })
     },
   )
-  .patch("/image/:id", async (c) => {
+  .patch("/photo/:id", async (c) => {
     await ensureLoggedIn(c)
     const {id} = c.req.param()
-    const row = await sql(c)`SELECT * FROM image WHERE id = ${id}`.first()
+    const row = await sql(c)`SELECT * FROM photo WHERE id = ${id}`.first()
     if (row === null) {
-      throw new HTTPException(404, {message: "Image row not found."})
+      throw new HTTPException(404, {message: "Photo row not found."})
     }
     const imageKey = _getImageKey(c, row)
     const thumbnailKey = _getThumbnailKey(c, row)
@@ -134,19 +134,19 @@ export default hono()
     if (thumbnailObj === null) {
       throw new HTTPException(404, {message: "Thumbnail was not uploaded."})
     }
-    await sql(c)`UPDATE image SET status = 'uploaded' WHERE id = ${id}`.run()
+    await sql(c)`UPDATE photo SET status = 'uploaded' WHERE id = ${id}`.run()
     return c.json({})
   })
-  .delete("/image/:id", async (c) => {
+  .delete("/photo/:id", async (c) => {
     await ensureLoggedIn(c)
     const {id} = c.req.param()
-    const row = await sql(c)`SELECT * FROM image WHERE id = ${id}`.first()
+    const row = await sql(c)`SELECT * FROM photo WHERE id = ${id}`.first()
     if (row === null) {
-      throw new HTTPException(404, {message: "Image not found."})
+      throw new HTTPException(404, {message: "Photo not found."})
     }
     const imageKey = _getImageKey(c, row)
     const thumbnailKey = _getThumbnailKey(c, row)
     await Promise.all([c.env.R2.delete(imageKey), c.env.R2.delete(thumbnailKey)])
-    await sql(c)`DELETE FROM image WHERE id = ${id}`.run()
+    await sql(c)`DELETE FROM photo WHERE id = ${id}`.run()
     return c.json({})
   })

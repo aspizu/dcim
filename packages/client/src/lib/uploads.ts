@@ -73,7 +73,7 @@ export async function prepareFileUpload(handle: FileSystemFileHandle) {
     height,
   }
 
-  const response = await api.createImage(payload)
+  const response = await api.createPhoto(payload)
 
   return {
     ...response,

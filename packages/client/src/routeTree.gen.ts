@@ -12,7 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ImagesImageIdRouteImport } from './routes/images/$imageId'
+import { Route as PhotoIdRouteImport } from './routes/photo/$id'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -29,9 +29,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ImagesImageIdRoute = ImagesImageIdRouteImport.update({
-  id: '/images/$imageId',
-  path: '/images/$imageId',
+const PhotoIdRoute = PhotoIdRouteImport.update({
+  id: '/photo/$id',
+  path: '/photo/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -39,34 +39,34 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
-  '/images/$imageId': typeof ImagesImageIdRoute
+  '/photo/$id': typeof PhotoIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
-  '/images/$imageId': typeof ImagesImageIdRoute
+  '/photo/$id': typeof PhotoIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
-  '/images/$imageId': typeof ImagesImageIdRoute
+  '/photo/$id': typeof PhotoIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/settings' | '/images/$imageId'
+  fullPaths: '/' | '/login' | '/settings' | '/photo/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/settings' | '/images/$imageId'
-  id: '__root__' | '/' | '/login' | '/settings' | '/images/$imageId'
+  to: '/' | '/login' | '/settings' | '/photo/$id'
+  id: '__root__' | '/' | '/login' | '/settings' | '/photo/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   SettingsRoute: typeof SettingsRoute
-  ImagesImageIdRoute: typeof ImagesImageIdRoute
+  PhotoIdRoute: typeof PhotoIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -92,11 +92,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/images/$imageId': {
-      id: '/images/$imageId'
-      path: '/images/$imageId'
-      fullPath: '/images/$imageId'
-      preLoaderRoute: typeof ImagesImageIdRouteImport
+    '/photo/$id': {
+      id: '/photo/$id'
+      path: '/photo/$id'
+      fullPath: '/photo/$id'
+      preLoaderRoute: typeof PhotoIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -106,7 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   SettingsRoute: SettingsRoute,
-  ImagesImageIdRoute: ImagesImageIdRoute,
+  PhotoIdRoute: PhotoIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

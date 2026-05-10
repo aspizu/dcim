@@ -53,7 +53,7 @@ export function UploadDialog() {
         console.error("Failed to upload thumbnail", res2.status, res2.data)
         return
       }
-      await api.confirmImageUploaded({id: prepared.id})
+      await api.confirmPhotoUploaded({id: prepared.id})
     }
     $uploadDialogOpen.value = false
   }

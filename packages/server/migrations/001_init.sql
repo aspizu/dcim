@@ -1,4 +1,4 @@
-create table image (
+create table photo (
     id text not null,
     image_url text not null,
     thumbnail_url text not null,
@@ -23,10 +23,10 @@ create table album (
     primary key (id)
 );
 
-create table image_album (
+create table photo_album (
     album_id text not null,
-    image_id text not null,
+    photo_id text not null,
     foreign key (album_id) references album (id) on delete cascade,
-    foreign key (image_id) references image (id) on delete cascade,
-    primary key (album_id, image_id)
+    foreign key (photo_id) references photo (id) on delete cascade,
+    primary key (album_id, photo_id)
 );

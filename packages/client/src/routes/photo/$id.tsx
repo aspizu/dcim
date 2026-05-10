@@ -1,45 +1,45 @@
 import {Header} from "#components/header"
-import {ImageHeaderMenu} from "#components/header-menus/image-header-menu"
+import {PhotoHeaderMenu} from "#components/header-menus/image-header-menu"
 import {ImgFaded} from "#components/img-faded"
 import * as api from "#services/api"
 import {useQuery} from "@tanstack/react-query"
 import {createFileRoute} from "@tanstack/react-router"
 
 function RouteComponent() {
-  const {imageId} = Route.useParams()
-  const image = useQuery({
-    queryKey: ["images", imageId],
-    queryFn: () => api.getImage({id: imageId}),
+  const {id} = Route.useParams()
+  const photo = useQuery({
+    queryKey: ["photos", id],
+    queryFn: () => api.getPhoto({id: id}),
   })
   return (
     <div className="flex h-dvh flex-col">
       <Header
-        title={image.data?.file_name ?? "Photo"}
-        after={image.data && <ImageHeaderMenu image={image.data} />}
+        title={photo.data?.file_name ?? "Photo"}
+        after={photo.data && <PhotoHeaderMenu photo={photo.data} />}
       />
-      {image.data && (
+      {photo.data && (
         <div
           className="relative overflow-hidden"
           style={{
-            aspectRatio: `${image.data.width / image.data.height}`,
-            viewTransitionName: `image-${imageId}`,
+            aspectRatio: `${photo.data.width / photo.data.height}`,
+            viewTransitionName: `image-${id}`,
           }}
         >
           <div
             className="absolute top-[50%] left-[50%] h-full -translate-x-[50%] -translate-y-[50%] overflow-hidden"
             style={{
-              aspectRatio: `${image.data.width / image.data.height}`,
+              aspectRatio: `${photo.data.width / photo.data.height}`,
             }}
           >
             <ImgFaded
-              src={`data:image/avif;base64,${image.data.thumbhash}`}
-              alt={image.data.file_name}
+              src={`data:image/avif;base64,${photo.data.thumbhash}`}
+              alt={photo.data.file_name}
               className="h-full w-full scale-[1.05] object-fill blur-md"
             />
           </div>
           <ImgFaded
-            src={image.data.image_url}
-            alt={image.data.file_name}
+            src={photo.data.image_url}
+            alt={photo.data.file_name}
             className="absolute inset-0 h-full w-full object-contain"
           />
         </div>
@@ -48,4 +48,4 @@ function RouteComponent() {
   )
 }
 
-export const Route = createFileRoute("/images/$imageId")({component: RouteComponent})
+export const Route = createFileRoute("/photo/$id")({component: RouteComponent})

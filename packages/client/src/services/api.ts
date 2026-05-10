@@ -3,7 +3,7 @@ import {call as _call} from "./fetch"
 
 export type ContentType = "image/png" | "image/jpeg" | "image/webp" | "image/avif"
 
-export interface Image {
+export interface Photo {
   id: string
   image_url: string
   thumbnail_url: string
@@ -28,7 +28,7 @@ export interface Album {
 }
 
 export interface AlbumDetail extends Album {
-  images: {album_id: string; image_id: string}[]
+  photos: {album_id: string; photo_id: string}[]
 }
 
 export async function listAlbums(): Promise<Album[]> {
@@ -69,15 +69,15 @@ export async function addImageToAlbum({
   return _call("POST", `/album/${id}`, {imageID})
 }
 
-export async function listImages(): Promise<Image[]> {
-  return _call("GET", "/image")
+export async function listPhotos(): Promise<Photo[]> {
+  return _call("GET", "/photo")
 }
 
-export async function getImage({id}: {id: string}): Promise<Image> {
-  return _call("GET", `/image/${id}`)
+export async function getPhoto({id}: {id: string}): Promise<Photo> {
+  return _call("GET", `/photo/${id}`)
 }
 
-export async function createImage(body: {
+export async function createPhoto(body: {
   contentSHA256: string
   thumbnailContentSHA256: string
   thumbnailContentLength: number
@@ -91,15 +91,15 @@ export async function createImage(body: {
   width: number
   height: number
 }): Promise<{id: string; imagePresignedURL: string; thumbnailPresignedURL: string}> {
-  return _call("POST", "/image", body)
+  return _call("POST", "/photo", body)
 }
 
-export async function confirmImageUploaded({id}: {id: string}): Promise<void> {
-  return _call("PATCH", `/image/${id}`, {})
+export async function confirmPhotoUploaded({id}: {id: string}): Promise<void> {
+  return _call("PATCH", `/photo/${id}`, {})
 }
 
-export async function deleteImage({id}: {id: string}): Promise<void> {
-  return _call("DELETE", `/image/${id}`)
+export async function deletePhoto({id}: {id: string}): Promise<void> {
+  return _call("DELETE", `/photo/${id}`)
 }
 
 export async function login({totp}: {totp: string}): Promise<void> {

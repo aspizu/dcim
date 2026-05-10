@@ -6,26 +6,26 @@ import * as api from "#services/api"
 import {useQuery} from "@tanstack/react-query"
 import {createFileRoute, Link} from "@tanstack/react-router"
 
-function ImageItem(props: {image: api.Image}) {
+function PhotoItem(props: {photo: api.Photo}) {
   return (
-    <Link to={`/images/$imageId`} params={{imageId: props.image.id}}>
+    <Link to={`/images/$imageId`} params={{imageId: props.photo.id}}>
       <div
         className="relative aspect-square overflow-hidden rounded-md"
         style={{
-          viewTransitionName: `image-${props.image.id}`,
+          viewTransitionName: `image-${props.photo.id}`,
         }}
       >
         <ImgFaded
-          src={`data:image/avif;base64,${props.image.thumbhash}`}
-          alt={props.image.file_name}
+          src={`data:image/avif;base64,${props.photo.thumbhash}`}
+          alt={props.photo.file_name}
           className="absolute inset-0 h-full w-full scale-[1.05] object-cover blur-md"
           style={{
-            aspectRatio: `${props.image.width / props.image.height}`,
+            aspectRatio: `${props.photo.width / props.photo.height}`,
           }}
         />
         <ImgFaded
-          src={props.image.thumbnail_url}
-          alt={props.image.file_name}
+          src={props.photo.thumbnail_url}
+          alt={props.photo.file_name}
           className="absolute inset-0 h-full w-full object-cover"
         />
       </div>
@@ -34,16 +34,16 @@ function ImageItem(props: {image: api.Image}) {
 }
 
 function RouteComponent() {
-  const images = useQuery({
-    queryKey: ["images"],
-    queryFn: api.listImages,
+  const photos = useQuery({
+    queryKey: ["photos"],
+    queryFn: api.listPhotos,
   })
   return (
     <>
       <Header title="Photos" before={<UploadButton />} after={<UserHeaderMenu />} />
       <div className="grid grid-cols-3 gap-2 p-2 pt-0">
-        {images.data?.map((image) => (
-          <ImageItem key={image.id} image={image} />
+        {photos.data?.map((photo) => (
+          <PhotoItem key={photo.id} photo={photo} />
         ))}
       </div>
     </>
