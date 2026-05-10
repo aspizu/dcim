@@ -79,6 +79,7 @@ export async function createImage(body: {
   thumbnailContentSHA256: string
   thumbnailContentLength: number
   thumbnailContentType: ContentType
+  thumbhash: string
   timestamp: string
   contentType: ContentType
   contentLength: number

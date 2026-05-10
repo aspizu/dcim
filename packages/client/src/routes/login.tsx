@@ -20,9 +20,9 @@ function RouteComponent() {
   const navigate = useNavigate()
 
   const [isLoading, setIsLoading] = useState(false)
-  function then() {
-    navigate({
-      to: new URL(window.location.href).searchParams.get("then") ?? "/",
+  function redirect() {
+    void navigate({
+      to: new URL(window.location.href).searchParams.get("redirect") ?? "/",
       replace: true,
     })
   }
@@ -34,7 +34,7 @@ function RouteComponent() {
     )
   }
   if ($authState.value === AuthState.AUTHENTICATED) {
-    then()
+    redirect()
   }
   async function onLoginClick() {
     if (totp.length < 6) {
@@ -46,7 +46,7 @@ function RouteComponent() {
     try {
       await api.login({totp})
       $authState.value = AuthState.AUTHENTICATED
-      then()
+      redirect()
     } catch {
       $authState.value = AuthState.UNAUTHENTICATED
       setIsLoading(false)
@@ -72,7 +72,7 @@ function RouteComponent() {
               <InputOTPSlot index={5} />
             </InputOTPGroup>
           </InputOTP>
-          <Button size="icon" onClick={onLoginClick}>
+          <Button size="icon" onClick={() => void onLoginClick()} disabled={isLoading}>
             {isLoading ?
               <Spinner />
             : <LockOpen />}

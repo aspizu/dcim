@@ -1,21 +1,24 @@
 {
-  "$schema": "./node_modules/wrangler/config-schema.json",
-  "compatibility_date": "2026-04-24",
-  "name": "dcim",
-  "main": "src/index.ts",
-  "compatibility_flags": ["nodejs_compat"],
-  "upload_source_maps": true,
-  "d1_databases": [
-    {
-      "binding": "D1",
-      "database_name": "dcim",
-      "database_id": "4bb07b45-c565-4a2f-853b-88411d876648",
-    },
-  ],
-  "r2_buckets": [
-    {
-      "binding": "R2",
-      "bucket_name": "dcim",
-    },
-  ],
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"compatibility_date": "2026-04-24",
+	"name": "dcim",
+	"main": "src/index.ts",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"upload_source_maps": true,
+	"d1_databases": [
+		{
+			"binding": "D1",
+			"database_name": "dcim",
+			"database_id": "d3281f1d-a2b4-4c9d-89fd-9e9233653f86",
+			"remote": true
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "R2",
+			"bucket_name": "dcim",
+		},
+	],
 }

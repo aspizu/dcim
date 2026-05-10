@@ -28,10 +28,10 @@ function App() {
       .catch(() => {
         $authState.value = AuthState.UNAUTHENTICATED
         if (["/", "/settings"].includes(window.location.pathname)) {
-          router.navigate({
+          void router.navigate({
             to: "/login",
             replace: true,
-            search: {then: window.location.pathname},
+            search: {redirect: window.location.pathname},
           })
         }
       })

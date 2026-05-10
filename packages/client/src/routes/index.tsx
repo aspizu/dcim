@@ -6,11 +6,14 @@ import {createFileRoute, Link} from "@tanstack/react-router"
 
 function ImageItem(props: {image: api.Image}) {
   return (
-    <Link to={`/images/$imageId`} params={{imageId: props.image.id}}>
+    <Link to={`/images/$imageId`} params={{imageId: props.image.id}} viewTransition>
       <img
         src={props.image.thumbnail_url}
         alt={props.image.file_name}
         className="aspect-square rounded-md object-cover"
+        style={{
+          viewTransitionName: `image-${props.image.id}`,
+        }}
       />
     </Link>
   )
@@ -24,7 +27,7 @@ function RouteComponent() {
   return (
     <>
       <Header title="Photos" before={<UploadButton />} />
-      <div className="grid grid-cols-3 gap-2 p-2">
+      <div className="grid grid-cols-3 gap-2 p-2 pt-0">
         {images.data?.map((image) => (
           <ImageItem key={image.id} image={image} />
         ))}

@@ -43,7 +43,7 @@ export interface HeaderProps {
 
 export function Header(props: HeaderProps) {
   return (
-    <div className="grid grid-cols-3 px-2 pt-2">
+    <div className="sticky top-0 z-10 grid grid-cols-3 bg-white/85 p-2 backdrop-blur">
       <div className="self-center">{props.before}</div>
       <div className="self-center justify-self-center">
         <h1 className="font-medium">{props.title}</h1>

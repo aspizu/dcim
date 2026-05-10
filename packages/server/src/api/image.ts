@@ -32,6 +32,7 @@ export default hono()
         thumbnailContentSHA256: z.string().length(44),
         thumbnailContentLength: z.number().min(0),
         thumbnailContentType: z.enum(["image/png", "image/jpeg", "image/webp", "image/avif"]),
+        thumbhash: z.string().min(0),
         timestamp: z.iso.datetime(),
         contentType: z.enum(["image/png", "image/jpeg", "image/webp", "image/avif"]),
         contentLength: z.number().min(0),
@@ -51,6 +52,7 @@ export default hono()
         thumbnailContentSHA256,
         thumbnailContentLength,
         thumbnailContentType,
+        thumbhash,
       } = c.req.valid("json")
       const extension = Path.extname(fileName)
       if (!CT_EXTENSIONS[contentType]?.includes(extension.toLowerCase())) {
@@ -93,7 +95,7 @@ export default hono()
       const thumbnailURL = `${publicURL}/${thumbnailPathname}`
       await sql(
         c,
-      )`INSERT INTO image (id, image_url, thumbnail_url, content_sha256, timestamp, content_type, content_length, file_name, metadata) VALUES (${id}, ${imageURL}, ${thumbnailURL}, ${contentSHA256}, ${timestamp}, ${contentType}, ${contentLength}, ${fileName}, ${JSON.stringify(metadata ?? {})})`.run()
+      )`INSERT INTO image (id, image_url, thumbnail_url, thumbhash, content_sha256, timestamp, content_type, content_length, file_name, metadata) VALUES (${id}, ${imageURL}, ${thumbnailURL}, ${thumbhash}, ${contentSHA256}, ${timestamp}, ${contentType}, ${contentLength}, ${fileName}, ${JSON.stringify(metadata ?? {})})`.run()
       return c.json({
         id,
         imagePresignedURL,

@@ -3,12 +3,15 @@ import exifr from "exifr"
 import {createWorkerPool, dcim} from "lib-dcim"
 import {sha256} from "./hash"
 
-const poolOptions = {workers: 2, jobsPerWorker: Infinity}
-
-export const thumbnailWorkerPools = createWorkerPool(
-  dcim().resize(480, null).avif(65).compile(),
-  poolOptions,
+export const thumbnailWorkerPool = createWorkerPool(
+  dcim().resize(720, null).avif(50).compile(),
+  {workers: 2, jobsPerWorker: Infinity},
 )
+
+const _thumbhashWorkerPool = createWorkerPool(dcim().resize(16, 16).avif(0).compile(), {
+  workers: 2,
+  jobsPerWorker: Infinity,
+})
 
 function extractTimestamp(metadata?: Record<string, unknown>): string {
   const rawDate =
@@ -20,16 +23,25 @@ function extractTimestamp(metadata?: Record<string, unknown>): string {
 export async function prepareFileUpload(handle: FileSystemFileHandle) {
   const file = await handle.getFile()
 
-  const thumbnail = await thumbnailWorkerPools.run(file)
+  const [{thumbnail, thumbnailContentSHA256}, contentSHA256, thumbhashBlob] = await Promise.all(
+    [
+      thumbnailWorkerPool.run(file).then(async (thumb) => ({
+        thumbnail: thumb,
+        thumbnailContentSHA256: await sha256(thumb),
+      })),
 
-  const [contentSHA256, thumbnailContentSHA256] = await Promise.all([
-    sha256(file),
-    sha256(thumbnail),
-  ])
+      sha256(file),
+      _thumbhashWorkerPool.run(file),
+    ],
+  )
 
   const metadata = await exifr.parse(file)
 
   const timestamp = extractTimestamp(metadata)
+
+  const thumbhash = btoa(
+    String.fromCharCode(...new Uint8Array(await thumbhashBlob.arrayBuffer())),
+  )
 
   const payload = {
     contentLength: file.size,
@@ -39,6 +51,7 @@ export async function prepareFileUpload(handle: FileSystemFileHandle) {
     fileName: handle.name,
     contentSHA256,
     thumbnailContentSHA256,
+    thumbhash,
     timestamp,
     metadata,
   }

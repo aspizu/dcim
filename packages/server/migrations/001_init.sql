@@ -2,6 +2,7 @@ create table image (
     id text not null,
     image_url text not null,
     thumbnail_url text not null,
+    thumbhash text not null,
     content_sha256 text not null,
     timestamp text not null,
     content_type text not null,

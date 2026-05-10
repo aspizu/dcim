@@ -1,6 +1,6 @@
 import {useObjectURL} from "#hooks/files"
 import {useAsync} from "#hooks/promises"
-import {thumbnailWorkerPools as thumbnailWorkerPool} from "#lib/uploads"
+import {thumbnailWorkerPool} from "#lib/uploads"
 import type {UploadItem} from "#stores/upload"
 import {$uploadState} from "#stores/upload"
 import {Ellipsis} from "lucide-react"
