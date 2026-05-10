@@ -10,6 +10,8 @@ create table image (
     file_name text not null,
     status text not null default 'pending',
     metadata text not null,
+    width integer not null,
+    height integer not null,
     primary key (id)
 );
 
