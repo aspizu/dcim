@@ -15,7 +15,7 @@ declare module "@tanstack/react-router" {
 }
 
 const queryClient = new QueryClient()
-const router = createRouter({routeTree})
+const router = createRouter({routeTree, defaultViewTransition: true})
 
 function App() {
   useEffect(() => {

@@ -15,6 +15,8 @@ export interface Image {
   file_name: string
   metadata: Record<string, unknown>
   status: string
+  width: number
+  height: number
 }
 
 export interface Album {
@@ -86,12 +88,18 @@ export async function createImage(body: {
   contentLength: number
   fileName: string
   metadata?: Record<string, unknown>
+  width: number
+  height: number
 }): Promise<{id: string; imagePresignedURL: string; thumbnailPresignedURL: string}> {
   return _call("POST", "/image", body)
 }
 
 export async function confirmImageUploaded({id}: {id: string}): Promise<void> {
   return _call("PATCH", `/image/${id}`, {})
+}
+
+export async function deleteImage({id}: {id: string}): Promise<void> {
+  return _call("DELETE", `/image/${id}`)
 }
 
 export async function login({totp}: {totp: string}): Promise<void> {

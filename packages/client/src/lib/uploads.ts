@@ -20,20 +20,35 @@ function extractTimestamp(metadata?: Record<string, unknown>): string {
   return rawDate instanceof Date ? rawDate.toISOString() : String(rawDate)
 }
 
+function getImageDimensions(file: File): Promise<{width: number; height: number}> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file)
+    const img = new Image()
+    img.onload = () => {
+      resolve({width: img.naturalWidth, height: img.naturalHeight})
+      URL.revokeObjectURL(url)
+    }
+    img.onerror = () => {
+      reject(new Error("Failed to load image dimensions"))
+      URL.revokeObjectURL(url)
+    }
+    img.src = url
+  })
+}
+
 export async function prepareFileUpload(handle: FileSystemFileHandle) {
   const file = await handle.getFile()
 
-  const [{thumbnail, thumbnailContentSHA256}, contentSHA256, thumbhashBlob] = await Promise.all(
-    [
+  const [{thumbnail, thumbnailContentSHA256}, contentSHA256, thumbhashBlob, {width, height}] =
+    await Promise.all([
       thumbnailWorkerPool.run(file).then(async (thumb) => ({
         thumbnail: thumb,
         thumbnailContentSHA256: await sha256(thumb),
       })),
-
       sha256(file),
       _thumbhashWorkerPool.run(file),
-    ],
-  )
+      getImageDimensions(file),
+    ])
 
   const metadata = await exifr.parse(file)
 
@@ -54,6 +69,8 @@ export async function prepareFileUpload(handle: FileSystemFileHandle) {
     thumbhash,
     timestamp,
     metadata,
+    width,
+    height,
   }
 
   const response = await api.createImage(payload)

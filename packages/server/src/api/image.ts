@@ -1,5 +1,5 @@
 import {ensureLoggedIn} from "#utils/auth"
-import hono from "#utils/hono"
+import hono, {type Context} from "#utils/hono"
 import {CT_EXT, CT_EXTENSIONS, makeS3} from "#utils/s3"
 import sql from "#utils/sql"
 import {zValidator} from "@hono/zod-validator"
@@ -7,6 +7,14 @@ import {HTTPException} from "hono/http-exception"
 import * as Path from "node:path"
 import * as uuid from "uuid"
 import {z} from "zod"
+
+function _getImageKey(c: Context, image: any): string {
+  return image.image_url.slice(c.env.R2_URL.length).replace(/^\//, "")
+}
+
+function _getThumbnailKey(c: Context, image: any): string {
+  return image.thumbnail_url.slice(c.env.R2_URL.length).replace(/^\//, "")
+}
 
 export default hono()
   .get("/image", async (c) => {
@@ -38,6 +46,8 @@ export default hono()
         contentLength: z.number().min(0),
         fileName: z.string().min(1),
         metadata: z.record(z.string(), z.any()).optional(),
+        width: z.number().int().min(1),
+        height: z.number().int().min(1),
       }),
     ),
     async (c) => {
@@ -53,6 +63,8 @@ export default hono()
         thumbnailContentLength,
         thumbnailContentType,
         thumbhash,
+        width,
+        height,
       } = c.req.valid("json")
       const extension = Path.extname(fileName)
       if (!CT_EXTENSIONS[contentType]?.includes(extension.toLowerCase())) {
@@ -95,7 +107,7 @@ export default hono()
       const thumbnailURL = `${publicURL}/${thumbnailPathname}`
       await sql(
         c,
-      )`INSERT INTO image (id, image_url, thumbnail_url, thumbhash, content_sha256, timestamp, content_type, content_length, file_name, metadata) VALUES (${id}, ${imageURL}, ${thumbnailURL}, ${thumbhash}, ${contentSHA256}, ${timestamp}, ${contentType}, ${contentLength}, ${fileName}, ${JSON.stringify(metadata ?? {})})`.run()
+      )`INSERT INTO image (id, image_url, thumbnail_url, thumbhash, content_sha256, timestamp, content_type, content_length, file_name, metadata, width, height) VALUES (${id}, ${imageURL}, ${thumbnailURL}, ${thumbhash}, ${contentSHA256}, ${timestamp}, ${contentType}, ${contentLength}, ${fileName}, ${JSON.stringify(metadata ?? {})}, ${width}, ${height})`.run()
       return c.json({
         id,
         imagePresignedURL,
@@ -110,10 +122,8 @@ export default hono()
     if (row === null) {
       throw new HTTPException(404, {message: "Image row not found."})
     }
-    const imageKey = (row.image_url as string).slice(c.env.R2_URL.length).replace(/^\//, "")
-    const thumbnailKey = (row.thumbnail_url as string)
-      .slice(c.env.R2_URL.length)
-      .replace(/^\//, "")
+    const imageKey = _getImageKey(c, row)
+    const thumbnailKey = _getThumbnailKey(c, row)
     const [imageObj, thumbnailObj] = await Promise.all([
       c.env.R2.head(imageKey),
       c.env.R2.head(thumbnailKey),
@@ -125,5 +135,18 @@ export default hono()
       throw new HTTPException(404, {message: "Thumbnail was not uploaded."})
     }
     await sql(c)`UPDATE image SET status = 'uploaded' WHERE id = ${id}`.run()
+    return c.json({})
+  })
+  .delete("/image/:id", async (c) => {
+    await ensureLoggedIn(c)
+    const {id} = c.req.param()
+    const row = await sql(c)`SELECT * FROM image WHERE id = ${id}`.first()
+    if (row === null) {
+      throw new HTTPException(404, {message: "Image not found."})
+    }
+    const imageKey = _getImageKey(c, row)
+    const thumbnailKey = _getThumbnailKey(c, row)
+    await Promise.all([c.env.R2.delete(imageKey), c.env.R2.delete(thumbnailKey)])
+    await sql(c)`DELETE FROM image WHERE id = ${id}`.run()
     return c.json({})
   })

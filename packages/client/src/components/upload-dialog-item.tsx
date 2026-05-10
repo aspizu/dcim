@@ -5,6 +5,7 @@ import type {UploadItem} from "#stores/upload"
 import {$uploadState} from "#stores/upload"
 import {Ellipsis} from "lucide-react"
 import prettyBytes from "pretty-bytes"
+import {ImgFaded} from "./img-faded"
 import {Button} from "./ui/button"
 import {
   DropdownMenu,
@@ -51,7 +52,7 @@ export function UploadDialogItem(props: UploadItem & {progress: number | null}) 
   return (
     <div className="flex items-center gap-2">
       {objectURL ?
-        <img
+        <ImgFaded
           src={objectURL}
           alt={props.handle.name}
           className="aspect-square h-16 w-16 shrink-0 rounded-md object-cover"
