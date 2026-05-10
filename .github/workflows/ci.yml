@@ -32,11 +32,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: build
-          path: packages/client/dist
       - name: Checkout Repository
         uses: actions/checkout@v6
       - name: Install Node
@@ -47,6 +42,11 @@ jobs:
         uses: pnpm/action-setup@v6
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: build
+          path: packages/client/dist
       - name: Deploy
         run: pnpm wrangler deploy
         env:
