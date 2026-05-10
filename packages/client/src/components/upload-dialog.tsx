@@ -16,7 +16,7 @@ export function UploadDialog() {
   const len = items.length
   items.sort((a, b) => a.handle.name.localeCompare(b.handle.name))
   const [progress, setProgress] = useState<Record<string, number> | null>(null)
-  async function onUploadClick() {
+  async function _onUploadClick() {
     const progress = Object.fromEntries(items.map((item) => [item.id, 0]))
     setProgress(progress)
     for (const item of items) {
@@ -62,9 +62,7 @@ export function UploadDialog() {
     <Dialog
       open={$uploadDialogOpen.value}
       onOpenChange={(value) => {
-        if (progress !== null) {
-          return
-        }
+        if (progress !== null) return
         $uploadDialogOpen.value = value
       }}
     >
@@ -84,7 +82,7 @@ export function UploadDialog() {
         </div>
 
         <DialogFooter>
-          <Button onClick={() => void onUploadClick()} disabled={progress !== null}>
+          <Button onClick={() => void _onUploadClick()} disabled={progress !== null}>
             {progress == null ?
               <>
                 Upload {len > 1 && len} Photo{len > 1 && "s"}

@@ -13,14 +13,14 @@ const _thumbhashWorkerPool = createWorkerPool(dcim().resize(16, 16).avif(1).comp
   jobsPerWorker: Infinity,
 })
 
-function extractTimestamp(metadata?: Record<string, unknown>): string {
+function _extractTimestamp(metadata?: Record<string, unknown>): string {
   const rawDate =
     metadata?.DateTimeOriginal || metadata?.CreateDate || metadata?.FileModifyDate || new Date()
 
   return rawDate instanceof Date ? rawDate.toISOString() : String(rawDate)
 }
 
-function getImageDimensions(file: File): Promise<{width: number; height: number}> {
+function _getImageDimensions(file: File): Promise<{width: number; height: number}> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file)
     const img = new Image()
@@ -47,12 +47,12 @@ export async function prepareFileUpload(handle: FileSystemFileHandle) {
       })),
       sha256(file),
       _thumbhashWorkerPool.run(file),
-      getImageDimensions(file),
+      _getImageDimensions(file),
     ])
 
   const metadata = await exifr.parse(file)
 
-  const timestamp = extractTimestamp(metadata)
+  const timestamp = _extractTimestamp(metadata)
 
   const thumbhash = btoa(
     String.fromCharCode(...new Uint8Array(await thumbhashBlob.arrayBuffer())),

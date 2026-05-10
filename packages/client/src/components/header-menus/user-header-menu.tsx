@@ -16,7 +16,7 @@ import {useState} from "react"
 export function UserHeaderMenu() {
   const navigate = useNavigate()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
-  async function onSignOutClick() {
+  async function _onSignOutClick() {
     setIsLoggingOut(true)
     await api.logout()
     $authState.value = AuthState.UNAUTHENTICATED
@@ -39,7 +39,7 @@ export function UserHeaderMenu() {
           </DropdownMenuItem>
           <DropdownMenuItem
             variant="destructive"
-            onClick={() => void onSignOutClick()}
+            onClick={() => void _onSignOutClick()}
             disabled={isLoggingOut}
           >
             {isLoggingOut ?

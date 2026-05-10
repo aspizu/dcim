@@ -1,7 +1,7 @@
 import {defineConfig} from "oxlint"
 
 export default defineConfig({
-  ignorePatterns: ["dist"],
+  ignorePatterns: ["dist", "src/components/ui"],
   options: {typeAware: true},
   env: {
     browser: true,

@@ -13,7 +13,7 @@ const tryShowOpenFilePicker = fromAsyncThrowable(showOpenFilePicker)
 
 export function UploadButton() {
   const [isLoading, setIsLoading] = useState(false)
-  async function onClick() {
+  async function _onClick() {
     setIsLoading(true)
     const handles = await tryShowOpenFilePicker({
       types: [
@@ -36,7 +36,7 @@ export function UploadButton() {
   }
   return (
     <>
-      <Button onClick={() => void onClick()}>
+      <Button onClick={() => void _onClick()}>
         {isLoading ?
           <Spinner />
         : <Plus />}

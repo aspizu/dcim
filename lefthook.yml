@@ -1,0 +1,22 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: typecheck-client
+      glob: "packages/client/**/*.{ts,tsx}"
+      run: pnpm --filter @dcim/client run check
+
+    - name: typecheck-server
+      glob: "packages/server/**/*.{ts}"
+      run: pnpm --filter @dcim/server run check
+
+    - name: lint-client
+      glob: "packages/client/**/*.{ts,tsx}"
+      run: pnpm --filter @dcim/client run lint
+
+    - name: lint-server
+      glob: "packages/server/**/*.{ts}"
+      run: pnpm --filter @dcim/server run lint
+
+    - name: format
+      glob: "**/*.{ts,tsx,js,jsx,json,css,md}"
+      run: pnpm exec prettier --ignore-unknown --check {staged_files}

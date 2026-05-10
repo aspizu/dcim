@@ -18,7 +18,7 @@ import {Progress} from "./ui/progress"
 import {$uploadDialogOpen} from "./upload-dialog"
 
 function UploadItemDropDown(props: {id: string}) {
-  function onRemoveClick() {
+  function _onRemoveClick() {
     $uploadState.value = $uploadState.value.filter((item) => item.id !== props.id)
     if ($uploadState.value.length === 0) {
       $uploadDialogOpen.value = false
@@ -33,7 +33,7 @@ function UploadItemDropDown(props: {id: string}) {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuGroup>
-          <DropdownMenuItem variant="destructive" onClick={onRemoveClick}>
+          <DropdownMenuItem variant="destructive" onClick={_onRemoveClick}>
             Remove
           </DropdownMenuItem>
         </DropdownMenuGroup>

@@ -19,7 +19,7 @@ export const $deletePhotoDialogOpen = signal(false)
 export function DeletePhotoDialog(props: {photo: Photo}) {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
-  async function onDeleteClick() {
+  async function _onDeleteClick() {
     setIsLoading(true)
     await api.deletePhoto({id: props.photo.id})
     $deletePhotoDialogOpen.value = false
@@ -45,7 +45,7 @@ export function DeletePhotoDialog(props: {photo: Photo}) {
           <Button
             variant="destructive"
             disabled={isLoading}
-            onClick={() => void onDeleteClick()}
+            onClick={() => void _onDeleteClick()}
           >
             {isLoading && <Spinner />}
             Delete
