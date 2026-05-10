@@ -13,6 +13,10 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+      - name: Install Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
       - name: Install Package Manager
         uses: pnpm/action-setup@v6
       - name: Install Dependencies
