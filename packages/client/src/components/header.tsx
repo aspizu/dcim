@@ -8,7 +8,7 @@ export interface HeaderProps {
 
 export function Header(props: HeaderProps) {
   return (
-    <div className="sticky top-0 z-10 grid grid-cols-[1fr_auto_1fr] bg-white/85 p-2 backdrop-blur">
+    <div className="bg-primary-background/85 sticky top-0 z-10 grid grid-cols-[1fr_auto_1fr] p-2 backdrop-blur">
       <div className="self-center">{props.before}</div>
       <div className="self-center justify-self-center">
         <h1 className="truncate font-medium">{props.title}</h1>
