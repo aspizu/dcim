@@ -13,11 +13,17 @@ const _thumbhashWorkerPool = createWorkerPool(dcim().resize(16, 16).avif(1).comp
   jobsPerWorker: Infinity,
 })
 
-function _extractTimestamp(metadata?: Record<string, unknown>): string {
-  const rawDate =
-    metadata?.DateTimeOriginal || metadata?.CreateDate || metadata?.FileModifyDate || new Date()
-
-  return rawDate instanceof Date ? rawDate.toISOString() : String(rawDate)
+function _extractTimestamp(metadata?: Record<string, string | Date>): string {
+  let rawDate: string | Date = new Date()
+  if (metadata) {
+    rawDate =
+      metadata.DateTimeOriginal || metadata.CreateDate || metadata.FileModifyDate || rawDate
+  }
+  if (rawDate instanceof Date) {
+    return rawDate.toISOString()
+  }
+  const date = new Date(rawDate)
+  return date.toISOString()
 }
 
 function _getImageDimensions(file: File): Promise<{width: number; height: number}> {
