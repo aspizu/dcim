@@ -16,7 +16,7 @@ function PhotoItem(props: {photo: api.Photo}) {
         }}
       >
         <img
-          src={`data:image/avif;base64,${props.photo.thumbhash}`}
+          src={props.photo.thumbhash}
           alt={props.photo.file_name}
           className="absolute inset-0 h-full w-full scale-[1.05] object-cover blur-md"
           style={{

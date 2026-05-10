@@ -13,6 +13,14 @@ const _thumbhashWorkerPool = createWorkerPool(dcim().resize(16, 16).avif(1).comp
   jobsPerWorker: Infinity,
 })
 
+async function _blobToDataURL(blob: Blob) {
+  const buffer = await blob.arrayBuffer()
+  const bytes = new Uint8Array(buffer)
+  const binary = bytes.reduce((acc, byte) => acc + String.fromCharCode(byte), "")
+  const base64 = btoa(binary)
+  return `data:${blob.type};base64,${base64}`
+}
+
 function _extractTimestamp(metadata?: Record<string, string | Date>): string {
   let rawDate: string | Date = new Date()
   if (metadata) {
@@ -44,7 +52,6 @@ function _getImageDimensions(file: File): Promise<{width: number; height: number
 
 export async function prepareFileUpload(handle: FileSystemFileHandle) {
   const file = await handle.getFile()
-
   const [{thumbnail, thumbnailContentSHA256}, contentSHA256, thumbhashBlob, {width, height}] =
     await Promise.all([
       thumbnailWorkerPool.run(file).then(async (thumb) => ({
@@ -55,15 +62,9 @@ export async function prepareFileUpload(handle: FileSystemFileHandle) {
       _thumbhashWorkerPool.run(file),
       _getImageDimensions(file),
     ])
-
   const metadata = await exifr.parse(file)
-
   const timestamp = _extractTimestamp(metadata)
-
-  const thumbhash = btoa(
-    String.fromCharCode(...new Uint8Array(await thumbhashBlob.arrayBuffer())),
-  )
-
+  const thumbhash = await _blobToDataURL(thumbhashBlob)
   return {
     upload: {
       contentLength: file.size,

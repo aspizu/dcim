@@ -27,7 +27,7 @@ function RouteComponent() {
             }}
           >
             <img
-              src={`data:image/avif;base64,${photo.data.thumbhash}`}
+              src={photo.data.thumbhash}
               alt={photo.data.file_name}
               className="absolute inset-0 h-full w-full scale-[1.05] blur-md"
             />
