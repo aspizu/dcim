@@ -18,5 +18,5 @@ pre-commit:
       run: pnpm --filter @dcim/server run lint
 
     - name: format
-      glob: "**/*.{ts,tsx,js,jsx,json,css,md}"
+      glob: "**/*.{ts,tsx,js,jsx,json,css,md,yml,yaml,jsonc}"
       run: pnpm exec prettier --ignore-unknown --check {staged_files}
