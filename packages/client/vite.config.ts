@@ -1,4 +1,3 @@
-import {cloudflare} from "@cloudflare/vite-plugin"
 import babel from "@rolldown/plugin-babel"
 import tailwindcss from "@tailwindcss/vite"
 import {tanstackRouter} from "@tanstack/router-plugin/vite"
@@ -14,7 +13,6 @@ export default defineConfig(({mode}) => {
         autoCodeSplitting: true,
       }),
       react(),
-      cloudflare(),
       babel({
         plugins: [["module:@preact/signals-react-transform"]],
       }),

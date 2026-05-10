@@ -31,7 +31,7 @@ importers:
         version: 3.10.0(react@19.2.6)
       '@tailwindcss/vite':
         specifier: ^4.3.0
-        version: 4.3.0(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0))
+        version: 4.3.0(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0))
       '@tanstack/react-query':
         specifier: ^5.100.9
         version: 5.100.9(react@19.2.6)
@@ -95,9 +95,6 @@ importers:
       tailwindcss:
         specifier: ^4.3.0
         version: 4.3.0
-      thumbhash:
-        specifier: ^0.1.1
-        version: 0.1.1
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
@@ -105,9 +102,6 @@ importers:
         specifier: ^14.0.0
         version: 14.0.0
     devDependencies:
-      '@cloudflare/vite-plugin':
-        specifier: ^1.36.3
-        version: 1.36.3(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0))(workerd@1.20260507.1)(wrangler@4.90.0)
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.3.0(jiti@2.7.0))
@@ -116,10 +110,10 @@ importers:
         version: 0.8.1(@babel/core@7.29.0)(react@19.2.6)
       '@rolldown/plugin-babel':
         specifier: ^0.2.3
-        version: 0.2.3(@babel/core@7.29.0)(rolldown@1.0.0-rc.18)(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0))
+        version: 0.2.3(@babel/core@7.29.0)(rolldown@1.0.0-rc.18)(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0))
       '@tanstack/router-plugin':
         specifier: ^1.167.35
-        version: 1.167.35(@tanstack/react-router@1.169.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0))
+        version: 1.167.35(@tanstack/react-router@1.169.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0))
       '@types/lodash':
         specifier: ^4.17.24
         version: 4.17.24
@@ -137,7 +131,7 @@ importers:
         version: 7.0.0-dev.20260510.1
       '@vitejs/plugin-react':
         specifier: ^6.0.1
-        version: 6.0.1(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.0)(rolldown@1.0.0-rc.18)(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0)))(babel-plugin-react-compiler@1.0.0)(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0))
+        version: 6.0.1(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.0)(rolldown@1.0.0-rc.18)(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)))(babel-plugin-react-compiler@1.0.0)(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0))
       babel-plugin-react-compiler:
         specifier: ^1.0.0
         version: 1.0.0
@@ -173,7 +167,7 @@ importers:
         version: 8.59.2(eslint@10.3.0(jiti@2.7.0))(typescript@6.0.3)
       vite:
         specifier: ^8.0.11
-        version: 8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0)
+        version: 8.0.11(@types/node@25.6.2)(jiti@2.7.0)
 
   packages/server:
     dependencies:
@@ -370,12 +364,6 @@ packages:
     peerDependenciesMeta:
       workerd:
         optional: true
-
-  '@cloudflare/vite-plugin@1.36.3':
-    resolution: {integrity: sha512-n3SZhEZQxk4B2xHaCwgXfc7oLkx/4leTxL254P09DK2Qoj1VVOqVELo62CsUYq5dZS+okMdeWqNa13xEOKMs4g==}
-    peerDependencies:
-      vite: ^6.1.0 || ^7.0.0 || ^8.0.0
-      wrangler: ^4.90.0
 
   '@cloudflare/workerd-darwin-64@1.20260507.1':
     resolution: {integrity: sha512-S85aMwcaPJUjKWDiG6iMMnioKWtPLACa6m0j/EhHR1GYfVpnxb974cBc6d25L+sf7jHWHJI2u5hGp0UTJ7MtXQ==}
@@ -4029,9 +4017,6 @@ packages:
     resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
     engines: {node: '>=6'}
 
-  thumbhash@0.1.1:
-    resolution: {integrity: sha512-kH5pKeIIBPQXAOni2AiY/Cu/NKdkFREdpH+TLdM0g6WA7RriCv0kPLgP731ady67MhTAqrVG/4mnEeibVuCJcg==}
-
   tiny-invariant@1.3.3:
     resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
 
@@ -4547,19 +4532,6 @@ snapshots:
       unenv: 2.0.0-rc.24
     optionalDependencies:
       workerd: 1.20260507.1
-
-  '@cloudflare/vite-plugin@1.36.3(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0))(workerd@1.20260507.1)(wrangler@4.90.0)':
-    dependencies:
-      '@cloudflare/unenv-preset': 2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260507.1)
-      miniflare: 4.20260507.1
-      unenv: 2.0.0-rc.24
-      vite: 8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0)
-      wrangler: 4.90.0
-      ws: 8.18.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-      - workerd
 
   '@cloudflare/workerd-darwin-64@1.20260507.1':
     optional: true
@@ -5925,13 +5897,13 @@ snapshots:
   '@rolldown/binding-win32-x64-msvc@1.0.0-rc.18':
     optional: true
 
-  '@rolldown/plugin-babel@0.2.3(@babel/core@7.29.0)(rolldown@1.0.0-rc.18)(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0))':
+  '@rolldown/plugin-babel@0.2.3(@babel/core@7.29.0)(rolldown@1.0.0-rc.18)(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0))':
     dependencies:
       '@babel/core': 7.29.0
       picomatch: 4.0.4
       rolldown: 1.0.0-rc.18
     optionalDependencies:
-      vite: 8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0)
+      vite: 8.0.11(@types/node@25.6.2)(jiti@2.7.0)
 
   '@rolldown/pluginutils@1.0.0-rc.18': {}
 
@@ -6011,12 +5983,12 @@ snapshots:
       '@tailwindcss/oxide-win32-arm64-msvc': 4.3.0
       '@tailwindcss/oxide-win32-x64-msvc': 4.3.0
 
-  '@tailwindcss/vite@4.3.0(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0))':
+  '@tailwindcss/vite@4.3.0(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0))':
     dependencies:
       '@tailwindcss/node': 4.3.0
       '@tailwindcss/oxide': 4.3.0
       tailwindcss: 4.3.0
-      vite: 8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0)
+      vite: 8.0.11(@types/node@25.6.2)(jiti@2.7.0)
 
   '@tanstack/history@1.161.6': {}
 
@@ -6063,7 +6035,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/router-plugin@1.167.35(@tanstack/react-router@1.169.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0))':
+  '@tanstack/router-plugin@1.167.35(@tanstack/react-router@1.169.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0))':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/plugin-syntax-jsx': 7.28.6(@babel/core@7.29.0)
@@ -6080,7 +6052,7 @@ snapshots:
       zod: 3.25.76
     optionalDependencies:
       '@tanstack/react-router': 1.169.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      vite: 8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0)
+      vite: 8.0.11(@types/node@25.6.2)(jiti@2.7.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -6271,12 +6243,12 @@ snapshots:
       '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260510.1
       '@typescript/native-preview-win32-x64': 7.0.0-dev.20260510.1
 
-  '@vitejs/plugin-react@6.0.1(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.0)(rolldown@1.0.0-rc.18)(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0)))(babel-plugin-react-compiler@1.0.0)(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0))':
+  '@vitejs/plugin-react@6.0.1(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.0)(rolldown@1.0.0-rc.18)(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0)))(babel-plugin-react-compiler@1.0.0)(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0))':
     dependencies:
       '@rolldown/pluginutils': 1.0.0-rc.7
-      vite: 8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0)
+      vite: 8.0.11(@types/node@25.6.2)(jiti@2.7.0)
     optionalDependencies:
-      '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.0)(rolldown@1.0.0-rc.18)(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0))
+      '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.0)(rolldown@1.0.0-rc.18)(vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0))
       babel-plugin-react-compiler: 1.0.0
 
   accepts@2.0.0:
@@ -7985,8 +7957,6 @@ snapshots:
 
   tapable@2.3.3: {}
 
-  thumbhash@0.1.1: {}
-
   tiny-invariant@1.3.3: {}
 
   tinyglobby@0.2.16:
@@ -8115,7 +8085,7 @@ snapshots:
 
   vary@1.1.2: {}
 
-  vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.3)(jiti@2.7.0):
+  vite@8.0.11(@types/node@25.6.2)(jiti@2.7.0):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.4
@@ -8124,7 +8094,6 @@ snapshots:
       tinyglobby: 0.2.16
     optionalDependencies:
       '@types/node': 25.6.2
-      esbuild: 0.27.3
       fsevents: 2.3.3
       jiti: 2.7.0
 
