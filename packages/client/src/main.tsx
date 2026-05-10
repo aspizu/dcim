@@ -1,3 +1,4 @@
+import {Toaster} from "#components/ui/sonner"
 import {Spinner} from "#components/ui/spinner"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
@@ -67,5 +68,6 @@ function App() {
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />
+    <Toaster position="bottom-center" />
   </StrictMode>,
 )

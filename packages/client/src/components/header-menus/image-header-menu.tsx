@@ -11,7 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "#components/ui/dropdown-menu"
 import type {Photo} from "#services/api"
-import {Ellipsis, Trash} from "lucide-react"
+import {Download, Ellipsis, Link, Trash} from "lucide-react"
+import {toast} from "sonner"
 
 export function PhotoHeaderMenu(props: {photo: Photo}) {
   return (
@@ -24,6 +25,21 @@ export function PhotoHeaderMenu(props: {photo: Photo}) {
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuGroup>
+            <DropdownMenuItem
+              onClick={() => {
+                void navigator.clipboard.writeText(props.photo.image_url)
+                toast("Copied link to clipboard")
+              }}
+            >
+              <Link />
+              Copy Link
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <a href={props.photo.image_url} download>
+                <Download />
+                Download
+              </a>
+            </DropdownMenuItem>
             <DropdownMenuItem
               variant="destructive"
               onClick={() => {

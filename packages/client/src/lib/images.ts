@@ -24,3 +24,19 @@ export async function createThumbnail(blob: Blob) {
   const sha256 = btoa(String.fromCharCode(...hashArray))
   return {blob, size: blob.size, sha256}
 }
+
+export function getImageDimensions(file: File): Promise<{width: number; height: number}> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file)
+    const img = new Image()
+    img.onload = () => {
+      resolve({width: img.naturalWidth, height: img.naturalHeight})
+      URL.revokeObjectURL(url)
+    }
+    img.onerror = () => {
+      reject(new Error("Failed to load image dimensions"))
+      URL.revokeObjectURL(url)
+    }
+    img.src = url
+  })
+}

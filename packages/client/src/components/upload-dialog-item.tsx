@@ -1,8 +1,9 @@
 import {useObjectURL} from "#hooks/files"
 import {useAsync} from "#hooks/promises"
 import {thumbnailWorkerPool} from "#lib/uploads"
+import {cn} from "#lib/utils"
 import type {UploadItem} from "#stores/upload"
-import {$uploadState} from "#stores/upload"
+import {$uploadDialogOpen, $uploadState} from "#stores/upload"
 import {Ellipsis} from "lucide-react"
 import prettyBytes from "pretty-bytes"
 import {ImgFaded} from "./img-faded"
@@ -15,7 +16,6 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu"
 import {Progress} from "./ui/progress"
-import {$uploadDialogOpen} from "./upload-dialog"
 
 function UploadItemDropDown(props: {id: string}) {
   function _onRemoveClick() {
@@ -50,7 +50,13 @@ export function UploadDialogItem(props: UploadItem & {progress: number | null}) 
   }, [props.handle])
   const objectURL = useObjectURL(thumbnail.value?.transformed)
   return (
-    <div className="flex items-center gap-2">
+    <div
+      className={cn(
+        "flex items-center gap-2 transition-opacity",
+        props.progress != null && props.progress >= 99 && "opacity-75",
+      )}
+      id={`upload-item-${props.id}`}
+    >
       {objectURL ?
         <ImgFaded
           src={objectURL}

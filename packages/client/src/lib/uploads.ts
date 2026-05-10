@@ -1,7 +1,9 @@
-import type * as api from "#services/api"
+import * as api from "#services/api"
+import axios from "axios"
 import exifr from "exifr"
 import {createWorkerPool, dcim} from "lib-dcim"
 import {sha256} from "./hash"
+import {getImageDimensions} from "./images"
 
 export const thumbnailWorkerPool = createWorkerPool(
   dcim().resize(720, null).avif(50).compile(),
@@ -34,22 +36,6 @@ function _extractTimestamp(metadata?: Record<string, string | Date>): string {
   return date.toISOString()
 }
 
-function _getImageDimensions(file: File): Promise<{width: number; height: number}> {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file)
-    const img = new Image()
-    img.onload = () => {
-      resolve({width: img.naturalWidth, height: img.naturalHeight})
-      URL.revokeObjectURL(url)
-    }
-    img.onerror = () => {
-      reject(new Error("Failed to load image dimensions"))
-      URL.revokeObjectURL(url)
-    }
-    img.src = url
-  })
-}
-
 export async function prepareFileUpload(handle: FileSystemFileHandle) {
   const file = await handle.getFile()
   const [{thumbnail, thumbnailContentSHA256}, contentSHA256, thumbhashBlob, {width, height}] =
@@ -60,7 +46,7 @@ export async function prepareFileUpload(handle: FileSystemFileHandle) {
       })),
       sha256(file),
       _thumbhashWorkerPool.run(file),
-      _getImageDimensions(file),
+      getImageDimensions(file),
     ])
   const metadata = await exifr.parse(file)
   const timestamp = _extractTimestamp(metadata)
@@ -83,4 +69,44 @@ export async function prepareFileUpload(handle: FileSystemFileHandle) {
     file,
     thumbnail,
   }
+}
+
+type Prepared = Awaited<ReturnType<typeof prepareFileUpload>>
+
+export async function completeFileUpload(
+  prepared: Prepared,
+  onUploadProgress: (id: string, progress: number) => void,
+) {
+  const uploaded = await api.createPhoto(prepared.upload)
+  const res1 = await axios.put(uploaded.imagePresignedURL, prepared.file, {
+    headers: {
+      "Content-Type": prepared.file.type,
+      "x-amz-checksum-sha256": prepared.upload.contentSHA256,
+      "Cache-Control": "public, max-age=31536000, immutable, no-transform",
+      "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.file.name)}`,
+    },
+    onUploadProgress(e) {
+      onUploadProgress(uploaded.id, (e.loaded / e.total!) * 75)
+    },
+  })
+  if (res1.status !== 200) {
+    console.error("Failed to upload image", res1.status, res1.data)
+    return
+  }
+  const res2 = await axios.put(uploaded.thumbnailPresignedURL, prepared.thumbnail, {
+    headers: {
+      "Content-Type": "image/avif",
+      "x-amz-checksum-sha256": prepared.upload.thumbnailContentSHA256,
+      "Cache-Control": "public, max-age=31536000, immutable, no-transform",
+      "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.file.name.replace(/\.[^.]+$/, ".avif"))}`,
+    },
+    onUploadProgress(e) {
+      onUploadProgress(uploaded.id, 75 + (e.loaded / e.total!) * 25)
+    },
+  })
+  if (res2.status !== 200) {
+    console.error("Failed to upload thumbnail", res2.status, res2.data)
+    return
+  }
+  await api.confirmPhotoUploaded({id: uploaded.id})
 }

@@ -1,86 +1,44 @@
-import {prepareFileUpload} from "#lib/uploads"
-import * as api from "#services/api"
-import {$uploadState} from "#stores/upload"
-import {signal} from "@preact/signals-react"
-import {useMutation} from "@tanstack/react-query"
-import axios from "axios"
+import {completeFileUpload, prepareFileUpload} from "#lib/uploads"
+import {$uploadDialogOpen, $uploadState} from "#stores/upload"
+import {useQueryClient} from "@tanstack/react-query"
 import {useState} from "react"
 import {Button} from "./ui/button"
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "./ui/dialog"
 import {Spinner} from "./ui/spinner"
 import {UploadDialogItem} from "./upload-dialog-item"
 
-export const $uploadDialogOpen = signal(false)
+function UploadStatus(props: {progress: Record<string, number>; total: number}) {
+  const done = Object.values(props.progress).filter((v) => v >= 100).length
+  const left = props.total - done
+  return (
+    <span className="text-muted-foreground mr-auto font-medium">
+      {done} of {props.total} done{left > 0 && `, ${left} left`}
+    </span>
+  )
+}
 
 export function UploadDialog() {
   const items = [...$uploadState.value]
   const len = items.length
   items.sort((a, b) => a.handle.name.localeCompare(b.handle.name))
-
   const [progress, setProgress] = useState<Record<string, number> | null>(null)
-
-  async function _preparePhotos() {
+  const queryClient = useQueryClient()
+  async function _onUploadClick() {
     const preparedPhotos = []
     for (const item of items) {
       const prepared = await prepareFileUpload(item.handle)
       preparedPhotos.push({id: item.id, prepared})
     }
-    return preparedPhotos
-  }
-
-  async function _uploadPhotos(preparedPhotos: Awaited<ReturnType<typeof _preparePhotos>>) {
-    const progress = Object.fromEntries(items.map((item) => [item.id, 0]))
-    setProgress(progress)
+    setProgress(Object.fromEntries(items.map((item) => [item.id, 0])))
     for (const {id, prepared} of preparedPhotos) {
-      const uploaded = await api.createPhoto(prepared.upload)
-      const res1 = await axios.put(uploaded.imagePresignedURL, prepared.file, {
-        headers: {
-          "Content-Type": prepared.file.type,
-          "x-amz-checksum-sha256": prepared.upload.contentSHA256,
-          "Cache-Control": "public, max-age=31536000, immutable, no-transform",
-          "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.file.name)}`,
-        },
-        onUploadProgress(e) {
-          progress[id] = (e.loaded / e.total!) * 75
-          setProgress({...progress})
-        },
+      document.getElementById(`upload-item-${id}`)?.scrollIntoView({behavior: "smooth"})
+      await completeFileUpload(prepared, (id, value) => {
+        setProgress((progress) => ({...progress, [id]: value}))
       })
-      if (res1.status !== 200) {
-        console.error("Failed to upload image", res1.status, res1.data)
-        return
-      }
-      const res2 = await axios.put(uploaded.thumbnailPresignedURL, prepared.thumbnail, {
-        headers: {
-          "Content-Type": "image/avif",
-          "x-amz-checksum-sha256": prepared.upload.thumbnailContentSHA256,
-          "Cache-Control": "public, max-age=31536000, immutable, no-transform",
-          "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.file.name.replace(/\.[^.]+$/, ".avif"))}`,
-        },
-        onUploadProgress(e) {
-          progress[id] = 75 + (e.loaded / e.total!) * 25
-          setProgress({...progress})
-        },
-      })
-      if (res2.status !== 200) {
-        console.error("Failed to upload thumbnail", res2.status, res2.data)
-        return
-      }
-      await api.confirmPhotoUploaded({id: uploaded.id})
     }
+    await queryClient.invalidateQueries({queryKey: ["photos"]})
+    $uploadDialogOpen.value = false
   }
-  const mutation = useMutation({
-    mutationFn: _uploadPhotos,
-    onSettled: async (_data, _error, _variables, _onMutateResult, context) => {
-      await context.client.invalidateQueries({queryKey: ["photos"]})
-      $uploadDialogOpen.value = false
-    },
-  })
-
-  async function _onUploadClick() {
-    const preparedPhotos = await _preparePhotos()
-    mutation.mutate(preparedPhotos)
-  }
-
   return (
     <Dialog
       open={$uploadDialogOpen.value}
@@ -103,8 +61,8 @@ export function UploadDialog() {
             />
           ))}
         </div>
-
-        <DialogFooter>
+        <DialogFooter className="flex items-center">
+          {progress !== null && <UploadStatus progress={progress} total={len} />}
           <Button onClick={() => void _onUploadClick()} disabled={progress !== null}>
             {progress == null ?
               <>
