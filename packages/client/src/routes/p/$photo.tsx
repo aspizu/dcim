@@ -37,8 +37,7 @@ function PageAuthenticated(props: {id: string}) {
 }
 
 function RouteComponent() {
-  const {photo} = Route.useParams()
-  const id = photo.split("--")[0]
+  const {photo: id} = Route.useParams()
   if ($authState.value === AuthState.AUTHENTICATED) {
     return <PageAuthenticated id={id} />
   }

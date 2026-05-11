@@ -47,9 +47,7 @@ function PageAuthenticated(props: {albumID: string; photoID: string}) {
 }
 
 function RouteComponent() {
-  const {album, photo} = Route.useParams()
-  const albumID = album.split("--")[0]
-  const photoID = photo.split("--")[0]
+  const {album: albumID, photo: photoID} = Route.useParams()
   if ($authState.value === AuthState.AUTHENTICATED) {
     return <PageAuthenticated albumID={albumID} photoID={photoID} />
   }
@@ -59,4 +57,4 @@ function RouteComponent() {
   return null
 }
 
-export const Route = createFileRoute("/a/$album/$photo")({component: RouteComponent})
+export const Route = createFileRoute("/a/$album/p/$photo")({component: RouteComponent})

@@ -39,20 +39,16 @@ export function Photo(props: {
         >
           {props.album ?
             <Link
-              to="/a/$album/$photo"
+              to="/a/$album/p/$photo"
               params={{
-                album: `${props.album.id}--${props.album.name}`,
-                photo: `${props.previousPhoto.id}--${props.previousPhoto.file_name}`,
+                album: props.album.id,
+                photo: props.previousPhoto.id,
               }}
               replace
             >
               <ArrowLeft />
             </Link>
-          : <Link
-              to="/p/$photo"
-              params={{photo: `${props.previousPhoto.id}--${props.previousPhoto.file_name}`}}
-              replace
-            >
+          : <Link to="/p/$photo" params={{photo: props.previousPhoto.id}} replace>
               <ArrowLeft />
             </Link>
           }
@@ -67,20 +63,16 @@ export function Photo(props: {
         >
           {props.album ?
             <Link
-              to="/a/$album/$photo"
+              to="/a/$album/p/$photo"
               params={{
-                album: `${props.album.id}--${props.album.name}`,
-                photo: `${props.nextPhoto.id}--${props.nextPhoto.file_name}`,
+                album: props.album.id,
+                photo: props.nextPhoto.id,
               }}
               replace
             >
               <ArrowRight />
             </Link>
-          : <Link
-              to="/p/$photo"
-              params={{photo: `${props.nextPhoto.id}--${props.nextPhoto.file_name}`}}
-              replace
-            >
+          : <Link to="/p/$photo" params={{photo: props.nextPhoto.id}} replace>
               <ArrowRight />
             </Link>
           }

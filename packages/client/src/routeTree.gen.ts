@@ -14,7 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PPhotoRouteImport } from './routes/p/$photo'
 import { Route as AAlbumRouteImport } from './routes/a/$album'
-import { Route as AAlbumPhotoRouteImport } from './routes/a/$album/$photo'
+import { Route as AAlbumPPhotoRouteImport } from './routes/a/$album/p/$photo'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -41,9 +41,9 @@ const AAlbumRoute = AAlbumRouteImport.update({
   path: '/a/$album',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AAlbumPhotoRoute = AAlbumPhotoRouteImport.update({
-  id: '/$photo',
-  path: '/$photo',
+const AAlbumPPhotoRoute = AAlbumPPhotoRouteImport.update({
+  id: '/p/$photo',
+  path: '/p/$photo',
   getParentRoute: () => AAlbumRoute,
 } as any)
 
@@ -53,7 +53,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/a/$album': typeof AAlbumRouteWithChildren
   '/p/$photo': typeof PPhotoRoute
-  '/a/$album/$photo': typeof AAlbumPhotoRoute
+  '/a/$album/p/$photo': typeof AAlbumPPhotoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -61,7 +61,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/a/$album': typeof AAlbumRouteWithChildren
   '/p/$photo': typeof PPhotoRoute
-  '/a/$album/$photo': typeof AAlbumPhotoRoute
+  '/a/$album/p/$photo': typeof AAlbumPPhotoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -70,7 +70,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/a/$album': typeof AAlbumRouteWithChildren
   '/p/$photo': typeof PPhotoRoute
-  '/a/$album/$photo': typeof AAlbumPhotoRoute
+  '/a/$album/p/$photo': typeof AAlbumPPhotoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -80,7 +80,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/a/$album'
     | '/p/$photo'
-    | '/a/$album/$photo'
+    | '/a/$album/p/$photo'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -88,7 +88,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/a/$album'
     | '/p/$photo'
-    | '/a/$album/$photo'
+    | '/a/$album/p/$photo'
   id:
     | '__root__'
     | '/'
@@ -96,7 +96,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/a/$album'
     | '/p/$photo'
-    | '/a/$album/$photo'
+    | '/a/$album/p/$photo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -144,22 +144,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AAlbumRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/a/$album/$photo': {
-      id: '/a/$album/$photo'
-      path: '/$photo'
-      fullPath: '/a/$album/$photo'
-      preLoaderRoute: typeof AAlbumPhotoRouteImport
+    '/a/$album/p/$photo': {
+      id: '/a/$album/p/$photo'
+      path: '/p/$photo'
+      fullPath: '/a/$album/p/$photo'
+      preLoaderRoute: typeof AAlbumPPhotoRouteImport
       parentRoute: typeof AAlbumRoute
     }
   }
 }
 
 interface AAlbumRouteChildren {
-  AAlbumPhotoRoute: typeof AAlbumPhotoRoute
+  AAlbumPPhotoRoute: typeof AAlbumPPhotoRoute
 }
 
 const AAlbumRouteChildren: AAlbumRouteChildren = {
-  AAlbumPhotoRoute: AAlbumPhotoRoute,
+  AAlbumPPhotoRoute: AAlbumPPhotoRoute,
 }
 
 const AAlbumRouteWithChildren =
