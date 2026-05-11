@@ -42,9 +42,7 @@ export function UserHeaderMenu() {
             onClick={() => void _onSignOutClick()}
             disabled={isLoggingOut}
           >
-            {isLoggingOut ?
-              <Spinner />
-            : <LogOut />}
+            {isLoggingOut ? <Spinner /> : <LogOut />}
             Sign out
           </DropdownMenuItem>
         </DropdownMenuGroup>

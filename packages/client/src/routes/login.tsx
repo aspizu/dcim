@@ -73,9 +73,7 @@ function RouteComponent() {
             </InputOTPGroup>
           </InputOTP>
           <Button size="icon" onClick={() => void _onLoginClick()} disabled={isLoading}>
-            {isLoading ?
-              <Spinner />
-            : <LockOpen />}
+            {isLoading ? <Spinner /> : <LockOpen />}
           </Button>
         </motion.div>
         <div className="flex h-32">

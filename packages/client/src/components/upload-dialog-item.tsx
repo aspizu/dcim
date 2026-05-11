@@ -57,13 +57,15 @@ export function UploadDialogItem(props: UploadItem & {progress: number | null}) 
       )}
       id={`upload-item-${props.id}`}
     >
-      {objectURL ?
+      {objectURL ? (
         <ImgFaded
           src={objectURL}
           alt={props.handle.name}
           className="aspect-square h-16 w-16 shrink-0 rounded-md object-cover"
         />
-      : <div className="h-16 w-16 shrink-0 rounded-md bg-neutral-500" />}
+      ) : (
+        <div className="h-16 w-16 shrink-0 rounded-md bg-neutral-500" />
+      )}
 
       <div className="flex min-w-0 grow flex-col gap-2">
         <div className="flex items-center gap-2">

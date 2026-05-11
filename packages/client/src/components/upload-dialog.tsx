@@ -64,14 +64,15 @@ export function UploadDialog() {
         <DialogFooter className="flex items-center">
           {progress !== null && <UploadStatus progress={progress} total={len} />}
           <Button onClick={() => void _onUploadClick()} disabled={progress !== null}>
-            {progress == null ?
+            {progress == null ? (
               <>
                 Upload {len > 1 && len} Photo{len > 1 && "s"}
               </>
-            : <>
+            ) : (
+              <>
                 <Spinner /> Uploading
               </>
-            }
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

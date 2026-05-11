@@ -1,0 +1,10 @@
+{
+  "tabWidth": 2,
+  "semi": false,
+  "printWidth": 96,
+  "bracketSpacing": false,
+  "endOfLine": "lf",
+  "sortTailwindcss": {},
+  "sortPackageJson": false,
+  "ignorePatterns": ["routeTree.gen.ts", "worker-configuration.d.ts", "pnpm-lock.yaml"]
+}

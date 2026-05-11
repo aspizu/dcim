@@ -1,9 +1,0 @@
-{
-  "tabWidth": 2,
-  "semi": false,
-  "printWidth": 96,
-  "bracketSpacing": false,
-  "endOfLine": "lf",
-  "experimentalTernaries": true,
-  "plugins": ["prettier-plugin-tailwindcss"]
-}

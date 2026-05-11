@@ -7,7 +7,7 @@
     "dev": "vite",
     "lint": "oxlint",
     "check": "tsgo -p tsconfig.app.json",
-    "fmt": "prettier --ignore-unknown --write ."
+    "fmt": "oxfmt ."
   },
   "imports": {
     "#components/*": "./src/components/*.tsx",

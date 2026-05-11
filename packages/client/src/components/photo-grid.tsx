@@ -35,12 +35,12 @@ export function PhotoGrid(props: {photos: api.Photo[]; album?: api.Album}) {
           key={photo.id}
           to={props.album ? `/a/$album/p/$photo` : `/p/$photo`}
           params={
-            props.album ?
-              {
-                album: props.album.id,
-                photo: photo.id,
-              }
-            : {photo: photo.id}
+            props.album
+              ? {
+                  album: props.album.id,
+                  photo: photo.id,
+                }
+              : {photo: photo.id}
           }
         >
           <Photo photo={photo} />

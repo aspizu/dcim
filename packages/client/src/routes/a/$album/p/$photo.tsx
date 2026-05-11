@@ -20,14 +20,15 @@ function PageUnauthenticated(props: {albumID: string; photoID: string}) {
 
 function PageAuthenticated(props: {albumID: string; photoID: string}) {
   const album = useQueryAlbum(props.albumID)
-  const photoIdx =
-    album.data ? album.data.photos.findIndex((photo) => photo.id === props.photoID) : -1
+  const photoIdx = album.data
+    ? album.data.photos.findIndex((photo) => photo.id === props.photoID)
+    : -1
   const previousPhoto = photoIdx > 0 ? album.data?.photos[photoIdx - 1] : undefined
   const photo = album.data?.photos[photoIdx]
   const nextPhoto =
-    photoIdx < (album.data?.photos.length ?? 0) - 1 ?
-      album.data?.photos[photoIdx + 1]
-    : undefined
+    photoIdx < (album.data?.photos.length ?? 0) - 1
+      ? album.data?.photos[photoIdx + 1]
+      : undefined
   return (
     <div className="grid h-dvh grid-rows-[auto_1fr]">
       <Header

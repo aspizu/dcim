@@ -37,7 +37,7 @@ export function Photo(props: {
           size="icon-lg"
           asChild
         >
-          {props.album ?
+          {props.album ? (
             <Link
               to="/a/$album/p/$photo"
               params={{
@@ -48,10 +48,11 @@ export function Photo(props: {
             >
               <ArrowLeft />
             </Link>
-          : <Link to="/p/$photo" params={{photo: props.previousPhoto.id}} replace>
+          ) : (
+            <Link to="/p/$photo" params={{photo: props.previousPhoto.id}} replace>
               <ArrowLeft />
             </Link>
-          }
+          )}
         </Button>
       )}
       {props.nextPhoto && (
@@ -61,7 +62,7 @@ export function Photo(props: {
           size="icon-lg"
           asChild
         >
-          {props.album ?
+          {props.album ? (
             <Link
               to="/a/$album/p/$photo"
               params={{
@@ -72,10 +73,11 @@ export function Photo(props: {
             >
               <ArrowRight />
             </Link>
-          : <Link to="/p/$photo" params={{photo: props.nextPhoto.id}} replace>
+          ) : (
+            <Link to="/p/$photo" params={{photo: props.nextPhoto.id}} replace>
               <ArrowRight />
             </Link>
-          }
+          )}
         </Button>
       )}
     </div>

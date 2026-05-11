@@ -22,7 +22,7 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
       - name: Check Formatting
-        run: pnpm prettier --ignore-unknown --check .
+        run: pnpm oxfmt --check
       - name: Check Wrangler Types
         run: pnpm wrangler types --check
       - name: Lint Client

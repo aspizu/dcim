@@ -19,4 +19,4 @@ pre-commit:
 
     - name: format
       glob: "**/*.{ts,tsx,js,jsx,json,css,md,yml,yaml,jsonc}"
-      run: pnpm exec prettier --ignore-unknown --check {staged_files}
+      run: pnpm exec oxfmt --check {staged_files}
