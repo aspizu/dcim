@@ -1,7 +1,11 @@
 import {
   $deletePhotoDialogOpen,
   DeletePhotoDialog,
-} from "#components/dialogs/image-delete-dialog"
+} from "#components/dialogs/delete-photo-dialog"
+import {
+  $removeFromAlbumDialogOpen,
+  RemoveFromAlbumDialog,
+} from "#components/dialogs/remove-from-album-dialog"
 import {Button} from "#components/ui/button"
 import {
   DropdownMenu,
@@ -10,12 +14,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "#components/ui/dropdown-menu"
-import type {Photo} from "#services/api"
+import type {Album, Photo} from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
-import {Download, Ellipsis, Link, Trash} from "lucide-react"
+import {Download, Ellipsis, Link, Trash, X} from "lucide-react"
 import {toast} from "sonner"
 
-export function PhotoHeaderMenu(props: {photo: Photo}) {
+export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
   return (
     <>
       <DropdownMenu>
@@ -33,7 +37,7 @@ export function PhotoHeaderMenu(props: {photo: Photo}) {
               }}
             >
               <Link />
-              Copy Raw Link
+              Copy raw link
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <a href={props.photo.image_url} download>
@@ -41,6 +45,16 @@ export function PhotoHeaderMenu(props: {photo: Photo}) {
                 Download
               </a>
             </DropdownMenuItem>
+            {$authState.value === AuthState.AUTHENTICATED && props.album && (
+              <DropdownMenuItem
+                onClick={() => {
+                  $removeFromAlbumDialogOpen.value = true
+                }}
+              >
+                <X />
+                Remove from album
+              </DropdownMenuItem>
+            )}
             {$authState.value === AuthState.AUTHENTICATED && (
               <DropdownMenuItem
                 variant="destructive"
@@ -56,6 +70,7 @@ export function PhotoHeaderMenu(props: {photo: Photo}) {
         </DropdownMenuContent>
       </DropdownMenu>
       <DeletePhotoDialog photo={props.photo} />
+      {props.album && <RemoveFromAlbumDialog photo={props.photo} album={props.album} />}
     </>
   )
 }

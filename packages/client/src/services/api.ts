@@ -27,11 +27,13 @@ export interface Album {
   created_at: string
 }
 
+export type AlbumWithPhotos = Album & {photos: Photo[]}
+
 export async function listAlbums(): Promise<Album[]> {
   return _call("GET", "/album")
 }
 
-export async function getAlbum({id}: {id: string}): Promise<Album & {photos: Photo[]}> {
+export async function getAlbum({id}: {id: string}): Promise<AlbumWithPhotos> {
   return _call("GET", `/album/${id}`)
 }
 
@@ -92,6 +94,16 @@ export async function createPhoto(body: {
 
 export async function confirmPhotoUploaded({id}: {id: string}): Promise<void> {
   return _call("PATCH", `/photo/${id}`, {})
+}
+
+export async function removePhotoFromAlbum({
+  id,
+  photoID,
+}: {
+  id: string
+  photoID: string
+}): Promise<void> {
+  return _call("DELETE", `/album/${id}/${photoID}`)
 }
 
 export async function deletePhoto({id}: {id: string}): Promise<void> {

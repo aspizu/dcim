@@ -32,7 +32,7 @@ function PageAuthenticated(props: {albumID: string; photoID: string}) {
     <div className="grid h-dvh grid-rows-[auto_1fr]">
       <Header
         title={photo?.file_name ?? "Photo"}
-        after={photo && <PhotoHeaderMenu photo={photo} />}
+        after={photo && <PhotoHeaderMenu photo={photo} album={album.data} />}
       />
       {album.data && photo && (
         <Photo

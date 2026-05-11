@@ -19,9 +19,10 @@ export default hono()
     if (row === null) {
       throw new HTTPException(404, {message: "Album not found."})
     }
-    const photos = await sql(
-      c,
-    )`SELECT photo.* FROM photo_album JOIN photo ON photo.id = photo_album.photo_id WHERE album_id = ${id}`.all()
+    const photos = await sql(c)`
+      SELECT photo.* FROM photo_album JOIN photo ON photo.id = photo_album.photo_id
+      WHERE album_id = ${id}
+      ORDER BY photo.timestamp DESC`.all()
     return c.json({
       ...row,
       photos: photos.results.map((row) => {
@@ -93,5 +94,11 @@ export default hono()
     const {id} = c.req.param()
     const {photoID} = c.req.valid("json")
     await sql(c)`INSERT INTO photo_album (album_id, photo_id) VALUES (${id}, ${photoID})`.run()
+    return c.json({})
+  })
+  .delete("/album/:id/:photoID", async (c) => {
+    await ensureLoggedIn(c)
+    const {id, photoID} = c.req.param()
+    await sql(c)`DELETE FROM photo_album WHERE album_id = ${id} AND photo_id = ${photoID}`.run()
     return c.json({})
   })

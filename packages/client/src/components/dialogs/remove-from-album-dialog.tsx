@@ -8,52 +8,52 @@ import {
   DialogTitle,
 } from "#components/ui/dialog"
 import {Spinner} from "#components/ui/spinner"
-import type {Photo} from "#services/api"
 import * as api from "#services/api"
 import {signal} from "@preact/signals-react"
 import {useQueryClient} from "@tanstack/react-query"
 import {useNavigate} from "@tanstack/react-router"
 import {useState} from "react"
 
-export const $deletePhotoDialogOpen = signal(false)
+export const $removeFromAlbumDialogOpen = signal(false)
 
-export function DeletePhotoDialog(props: {photo: Photo}) {
+export function RemoveFromAlbumDialog(props: {photo: api.Photo; album: api.Album}) {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
-  async function _onDeleteClick() {
+  async function _onRemoveClick() {
     setIsLoading(true)
-    await api.deletePhoto({id: props.photo.id})
-    queryClient.setQueryData(["photos"], (old: api.Photo[]) =>
-      old.filter((photo) => photo.id !== props.photo.id),
-    )
-    $deletePhotoDialogOpen.value = false
+    await api.removePhotoFromAlbum({id: props.album.id, photoID: props.photo.id})
+    queryClient.setQueryData(["album", props.album.id], (old: api.AlbumWithPhotos) => ({
+      ...old,
+      photos: old.photos.filter((photo) => photo.id !== props.photo.id),
+    }))
+    $removeFromAlbumDialogOpen.value = false
     setIsLoading(false)
-    await navigate({to: "/"})
+    await navigate({to: "/a/$album", params: {album: props.album.id}})
   }
   return (
     <Dialog
-      open={$deletePhotoDialogOpen.value}
+      open={$removeFromAlbumDialogOpen.value}
       onOpenChange={(value) => {
-        $deletePhotoDialogOpen.value = value
+        $removeFromAlbumDialogOpen.value = value
       }}
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Photo</DialogTitle>
+          <DialogTitle>Remove from Album</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete the photo{" "}
-            {props.photo.file_name}
+            This will remove the photo {props.photo.file_name} from the album {props.album.name}
+            . The photo will not be deleted.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button
             variant="destructive"
+            onClick={() => void _onRemoveClick()}
             disabled={isLoading}
-            onClick={() => void _onDeleteClick()}
           >
             {isLoading && <Spinner />}
-            Delete
+            Remove
           </Button>
         </DialogFooter>
       </DialogContent>
