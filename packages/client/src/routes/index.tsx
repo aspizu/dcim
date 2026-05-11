@@ -2,8 +2,8 @@ import {Header} from "#components/header"
 import {UserHeaderMenu} from "#components/header-menus/user-header-menu"
 import {ImgFaded} from "#components/img-faded"
 import {UploadButton} from "#components/upload-button"
-import * as api from "#services/api"
-import {useQuery, useQueryClient} from "@tanstack/react-query"
+import {useQueryPhotos} from "#hooks/queries/photos"
+import type * as api from "#services/api"
 import {createFileRoute, Link} from "@tanstack/react-router"
 
 function PhotoItem(props: {photo: api.Photo}) {
@@ -34,17 +34,7 @@ function PhotoItem(props: {photo: api.Photo}) {
 }
 
 function RouteComponent() {
-  const queryClient = useQueryClient()
-  const photos = useQuery({
-    queryKey: ["photos"],
-    queryFn: async () => {
-      const photos = await api.listPhotos()
-      for (const photo of photos) {
-        queryClient.setQueryData(["photos", photo.id], photo)
-      }
-      return photos
-    },
-  })
+  const photos = useQueryPhotos()
   return (
     <>
       <Header title="Photos" before={<UploadButton />} after={<UserHeaderMenu />} />
@@ -57,6 +47,4 @@ function RouteComponent() {
   )
 }
 
-export const Route = createFileRoute("/")({
-  component: RouteComponent,
-})
+export const Route = createFileRoute("/")({component: RouteComponent})

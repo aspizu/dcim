@@ -10,11 +10,11 @@ export const ImgFaded = forwardRef<HTMLImageElement, ComponentPropsWithoutRef<"i
         {...props}
         className={cn(
           loaded ? "opacity-100" : "opacity-0",
-          "transition-opacity",
+          "transition-opacity duration-300",
           props.className,
         )}
         onLoad={(event) => {
-          setLoaded(true)
+          setTimeout(() => setLoaded(true), 100)
           props.onLoad?.(event)
         }}
       />
