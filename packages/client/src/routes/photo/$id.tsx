@@ -1,5 +1,5 @@
 import {Header} from "#components/header"
-import {PhotoHeaderMenu} from "#components/header-menus/image-header-menu"
+import {PhotoHeaderMenu} from "#components/header-menus/photo-header-menu"
 import {ImgFaded} from "#components/img-faded"
 import {Button} from "#components/ui/button"
 import {useQueryPhoto, useQueryPhotos} from "#hooks/queries/photos"

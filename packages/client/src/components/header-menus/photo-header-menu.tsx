@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "#components/ui/dropdown-menu"
 import type {Photo} from "#services/api"
+import {$authState, AuthState} from "#stores/auth"
 import {Download, Ellipsis, Link, Trash} from "lucide-react"
 import {toast} from "sonner"
 
@@ -32,7 +33,7 @@ export function PhotoHeaderMenu(props: {photo: Photo}) {
               }}
             >
               <Link />
-              Copy Link
+              Copy Raw Link
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <a href={props.photo.image_url} download>
@@ -40,15 +41,17 @@ export function PhotoHeaderMenu(props: {photo: Photo}) {
                 Download
               </a>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              variant="destructive"
-              onClick={() => {
-                $deletePhotoDialogOpen.value = true
-              }}
-            >
-              <Trash />
-              Delete
-            </DropdownMenuItem>
+            {$authState.value === AuthState.AUTHENTICATED && (
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => {
+                  $deletePhotoDialogOpen.value = true
+                }}
+              >
+                <Trash />
+                Delete
+              </DropdownMenuItem>
+            )}
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
