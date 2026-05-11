@@ -26,3 +26,11 @@ export function makeS3(env: {
     region: "auto",
   })
 }
+
+export function generateRandomID() {
+  const bytes = crypto.getRandomValues(new Uint8Array(8))
+  return btoa(String.fromCharCode(...bytes))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "")
+}

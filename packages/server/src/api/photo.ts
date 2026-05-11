@@ -1,11 +1,10 @@
 import {ensureLoggedIn, tryCheckLoggedIn} from "#utils/auth"
 import hono, {type Context} from "#utils/hono"
-import {CT_EXT, CT_EXTENSIONS, makeS3} from "#utils/s3"
+import {CT_EXT, CT_EXTENSIONS, generateRandomID, makeS3} from "#utils/s3"
 import sql from "#utils/sql"
 import {zValidator} from "@hono/zod-validator"
 import {HTTPException} from "hono/http-exception"
 import * as Path from "node:path"
-import * as uuid from "uuid"
 import {z} from "zod"
 
 function _getImageKey(c: Context, photo: any): string {
@@ -76,7 +75,7 @@ export default hono()
         throw new HTTPException(400, {message: "File extension does not match content type."})
       }
       const s3 = makeS3(c.env)
-      const id = uuid.v7()
+      const id = generateRandomID()
       const imagePathname = `images/${id}${extension}`
       const thumbnailPathname = `thumbnails/${id}${CT_EXT[thumbnailContentType]}`
       const [imagePresignedURL, thumbnailPresignedURL] = await Promise.all([

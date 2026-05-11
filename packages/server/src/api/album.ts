@@ -1,9 +1,9 @@
 import {ensureLoggedIn} from "#utils/auth"
 import hono from "#utils/hono"
+import {generateRandomID} from "#utils/s3"
 import sql from "#utils/sql"
 import {zValidator} from "@hono/zod-validator"
 import {HTTPException} from "hono/http-exception"
-import * as uuid from "uuid"
 import z from "zod"
 
 export default hono()
@@ -35,7 +35,7 @@ export default hono()
     ),
     async (c) => {
       await ensureLoggedIn(c)
-      const id = uuid.v7()
+      const id = generateRandomID()
       const {name, description, metadata} = c.req.valid("json")
       await sql(c)`
       INSERT INTO album (
