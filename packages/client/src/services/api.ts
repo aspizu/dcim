@@ -13,7 +13,7 @@ export interface Photo {
   content_type: ContentType
   content_length: number
   file_name: string
-  metadata: Record<string, unknown>
+  metadata: Record<string, unknown> | null
   status: string
   width: number
   height: number
@@ -23,19 +23,15 @@ export interface Album {
   id: string
   name: string
   description?: string
-  metadata: Record<string, unknown>
+  metadata: Record<string, unknown> | null
   created_at: string
-}
-
-export interface AlbumDetail extends Album {
-  photos: {album_id: string; photo_id: string}[]
 }
 
 export async function listAlbums(): Promise<Album[]> {
   return _call("GET", "/album")
 }
 
-export async function getAlbum({id}: {id: string}): Promise<AlbumDetail> {
+export async function getAlbum({id}: {id: string}): Promise<Album & {photos: Photo[]}> {
   return _call("GET", `/album/${id}`)
 }
 
@@ -59,14 +55,14 @@ export async function updateAlbum({
   return _call("PUT", `/album/${id}`, body)
 }
 
-export async function addImageToAlbum({
+export async function addPhotoToAlbum({
   id,
-  imageID,
+  photoID,
 }: {
   id: string
-  imageID: string
+  photoID: string
 }): Promise<void> {
-  return _call("POST", `/album/${id}`, {imageID})
+  return _call("POST", `/album/${id}`, {photoID})
 }
 
 export async function listPhotos(): Promise<Photo[]> {

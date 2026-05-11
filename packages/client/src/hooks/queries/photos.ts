@@ -7,8 +7,8 @@ export function useQueryPhotos() {
     queryKey: ["photos"],
     queryFn: async () => {
       const photos = await api.listPhotos()
-      for (const image of photos) {
-        queryClient.setQueryData(["photos", image.id], image)
+      for (const photo of photos) {
+        queryClient.setQueryData(["photos", photo.id], photo)
       }
       return photos
     },
@@ -28,6 +28,20 @@ export function useQueryPhoto(id: string) {
           oldPhotos.map((oldPhoto) => (photo.id === oldPhoto.id ? photo : oldPhoto)),
       )
       return photo
+    },
+  })
+}
+
+export function useQueryAlbum(id: string) {
+  const queryClient = useQueryClient()
+  return useQuery({
+    queryKey: ["album", id],
+    queryFn: async () => {
+      const album = await api.getAlbum({id})
+      for (const photo of album.photos) {
+        queryClient.setQueryData(["photos", photo.id], photo)
+      }
+      return album
     },
   })
 }

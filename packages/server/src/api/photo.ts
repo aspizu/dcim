@@ -19,7 +19,12 @@ export default hono()
   .get("/photo", async (c) => {
     await ensureLoggedIn(c)
     const rows = await sql(c)`SELECT * FROM photo ORDER BY timestamp DESC`.all()
-    return c.json(rows.results)
+    return c.json(
+      rows.results.map((row) => {
+        const metadata = JSON.parse(row.metadata as string)
+        return {...row, metadata}
+      }),
+    )
   })
   .get("/photo/:id", async (c) => {
     const {id} = c.req.param()
@@ -30,10 +35,11 @@ export default hono()
     if (row === null) {
       throw new HTTPException(404, {message: "Photo not found."})
     }
-    if (isLoggedIn) {
-      return c.json(row)
+    if (!isLoggedIn) {
+      return c.json({...row, metadata: null})
     }
-    return c.json({...row, metadata: "{}"})
+    const metadata = JSON.parse(row.metadata as string)
+    return c.json({...row, metadata})
   })
   .post(
     "/photo",

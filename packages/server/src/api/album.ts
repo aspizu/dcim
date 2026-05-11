@@ -1,4 +1,4 @@
-import {ensureLoggedIn} from "#utils/auth"
+import {ensureLoggedIn, tryCheckLoggedIn} from "#utils/auth"
 import hono from "#utils/hono"
 import {generateRandomID} from "#utils/s3"
 import sql from "#utils/sql"
@@ -8,19 +8,29 @@ import z from "zod"
 
 export default hono()
   .get("/album", async (c) => {
+    await ensureLoggedIn(c)
     const rows = await sql(c)`SELECT * FROM album`.all()
     return c.json(rows)
   })
   .get("/album/:id", async (c) => {
+    const isLoggedIn = await tryCheckLoggedIn(c)
     const {id} = c.req.param()
     const row = await sql(c)`SELECT * FROM album WHERE id = ${id}`.first()
     if (row === null) {
       throw new HTTPException(404, {message: "Album not found."})
     }
-    const images = await sql(c)`SELECT * FROM image_album WHERE album_id = ${id}`.all()
+    const photos = await sql(
+      c,
+    )`SELECT photo.* FROM photo_album JOIN photo ON photo.id = photo_album.photo_id WHERE album_id = ${id}`.all()
     return c.json({
       ...row,
-      images,
+      photos: photos.results.map((row) => {
+        if (!isLoggedIn) {
+          return {...row, metadata: null}
+        }
+        const metadata = JSON.parse(row.metadata as string)
+        return {...row, metadata}
+      }),
     })
   })
   .post(
@@ -78,14 +88,10 @@ export default hono()
       return c.json({})
     },
   )
-  .post("/album/:id", zValidator("json", z.object({imageID: z.string()})), async (c) => {
+  .post("/album/:id", zValidator("json", z.object({photoID: z.string()})), async (c) => {
     await ensureLoggedIn(c)
     const {id} = c.req.param()
-    const {imageID} = c.req.valid("json")
-    const obj = await c.env.R2.head(imageID)
-    if (obj === null) {
-      throw new HTTPException(400, {message: "Image not uploaded."})
-    }
-    await sql(c)`INSERT INTO image_album (album_id, image_id) VALUES (${id}, ${imageID})`.run()
+    const {photoID} = c.req.valid("json")
+    await sql(c)`INSERT INTO photo_album (album_id, photo_id) VALUES (${id}, ${photoID})`.run()
     return c.json({})
   })
