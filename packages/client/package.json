@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "lint": "oxlint",
-    "check": "tsgo",
+    "check": "tsgo -p tsconfig.app.json",
     "fmt": "prettier --ignore-unknown --write ."
   },
   "imports": {

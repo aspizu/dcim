@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "lint": "oxlint",
-    "check": "tsgo",
+    "check": "tsgo -p tsconfig.json",
     "fmt": "prettier --ignore-unknown --write ."
   },
   "type": "module",
