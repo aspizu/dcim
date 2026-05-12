@@ -63,7 +63,11 @@ function RouteComponent() {
   const album = useQueryAlbum(id)
   return (
     <>
-      <Header title="Album" before={<NewMenu isAlbumType />} after={<UserHeaderMenu />} />
+      <Header
+        title="Album"
+        before={$authState.value === AuthState.AUTHENTICATED && <NewMenu isAlbumType />}
+        after={<UserHeaderMenu />}
+      />
       {album.data && <AlbumTitle album={album.data} />}
       {album.data && <PhotoGrid photos={album.data.photos} album={album.data} />}
       {album.data && <UploadDialog album={album.data} />}
