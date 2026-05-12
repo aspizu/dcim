@@ -66,7 +66,7 @@ function RouteComponent() {
       <Header
         title="Album"
         before={$authState.value === AuthState.AUTHENTICATED && <NewMenu isAlbumType />}
-        after={<UserHeaderMenu />}
+        after={$authState.value === AuthState.AUTHENTICATED && <UserHeaderMenu />}
       />
       {album.data && <AlbumTitle album={album.data} />}
       {album.data && <PhotoGrid photos={album.data.photos} album={album.data} />}
