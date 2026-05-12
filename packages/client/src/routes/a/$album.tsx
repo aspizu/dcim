@@ -2,6 +2,8 @@ import {useQueryClient} from "@tanstack/react-query"
 import {createFileRoute} from "@tanstack/react-router"
 import {useRef} from "react"
 
+import {AddToAlbumDialog} from "#components/dialogs/add-to-album-dialog"
+import {UploadDialog} from "#components/dialogs/upload-dialog"
 import {Header} from "#components/header"
 import {NewMenu} from "#components/new-menu"
 import {PhotoGrid} from "#components/photo-grid"
@@ -61,9 +63,11 @@ function RouteComponent() {
   const album = useQueryAlbum(id)
   return (
     <>
-      <Header title="Album" before={<NewMenu />} after={<UserHeaderMenu />} />
+      <Header title="Album" before={<NewMenu isAlbumType />} after={<UserHeaderMenu />} />
       {album.data && <AlbumTitle album={album.data} />}
       {album.data && <PhotoGrid photos={album.data.photos} album={album.data} />}
+      {album.data && <UploadDialog album={album.data} />}
+      {album.data && <AddToAlbumDialog album={album.data} />}
     </>
   )
 }

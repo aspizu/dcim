@@ -47,7 +47,7 @@ export function DeletePhotoDialog(props: {photo: Photo}) {
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Photo</DialogTitle>
+          <DialogTitle>Delete photo</DialogTitle>
           <DialogDescription>
             This action cannot be undone. This will permanently delete the photo{" "}
             {props.photo.file_name}

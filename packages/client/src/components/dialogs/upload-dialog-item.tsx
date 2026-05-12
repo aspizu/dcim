@@ -8,16 +8,16 @@ import {cn} from "#lib/utils"
 import type {UploadItem} from "#stores/upload"
 import {$uploadDialogOpen, $uploadState} from "#stores/upload"
 
-import {ImgFaded} from "./img-faded"
-import {Button} from "./ui/button"
+import {ImgFaded} from "../img-faded"
+import {Button} from "../ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu"
-import {Progress} from "./ui/progress"
+} from "../ui/dropdown-menu"
+import {Progress} from "../ui/progress"
 
 function UploadItemDropDown(props: {id: string}) {
   function _onRemoveClick() {

@@ -41,10 +41,10 @@ export function RemoveFromAlbumDialog(props: {photo: api.Photo; album: api.Album
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Remove from Album</DialogTitle>
+          <DialogTitle>Remove from {props.album.name}</DialogTitle>
           <DialogDescription>
-            This will remove the photo {props.photo.file_name} from the album {props.album.name}
-            . The photo will not be deleted.
+            This will remove the photo {props.photo.file_name} from this album. The photo will
+            not be deleted.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

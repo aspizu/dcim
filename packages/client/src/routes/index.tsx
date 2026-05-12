@@ -1,5 +1,6 @@
 import {createFileRoute} from "@tanstack/react-router"
 
+import {UploadDialog} from "#components/dialogs/upload-dialog"
 import {Header} from "#components/header"
 import {NewMenu} from "#components/new-menu"
 import {PhotoGrid} from "#components/photo-grid"
@@ -12,6 +13,7 @@ function RouteComponent() {
     <>
       <Header title="Photos" before={<NewMenu />} after={<UserHeaderMenu />} />
       {photos.data && <PhotoGrid photos={photos.data} />}
+      <UploadDialog />
     </>
   )
 }

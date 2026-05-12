@@ -2,11 +2,19 @@ import {useQueryClient} from "@tanstack/react-query"
 import {useState} from "react"
 
 import {completeFileUpload, prepareFileUpload} from "#lib/uploads"
+import * as api from "#services/api"
 import {$uploadDialogOpen, $uploadState} from "#stores/upload"
 
-import {Button} from "./ui/button"
-import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "./ui/dialog"
-import {Spinner} from "./ui/spinner"
+import {Button} from "../ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog"
+import {Spinner} from "../ui/spinner"
 import {UploadDialogItem} from "./upload-dialog-item"
 
 function UploadStatus(props: {progress: Record<string, number>; total: number}) {
@@ -19,7 +27,7 @@ function UploadStatus(props: {progress: Record<string, number>; total: number}) 
   )
 }
 
-export function UploadDialog() {
+export function UploadDialog(props: {album?: api.Album}) {
   const items = [...$uploadState.value]
   const len = items.length
   items.sort((a, b) => a.handle.name.localeCompare(b.handle.name))
@@ -34,11 +42,17 @@ export function UploadDialog() {
     setProgress(Object.fromEntries(items.map((item) => [item.id, 0])))
     for (const {id, prepared} of preparedPhotos) {
       document.getElementById(`upload-item-${id}`)?.scrollIntoView({behavior: "smooth"})
-      await completeFileUpload(prepared, (id, value) => {
+      const photoID = await completeFileUpload(prepared, id, (id, value) => {
         setProgress((progress) => ({...progress, [id]: value}))
       })
+      if (props.album && photoID) {
+        await api.addPhotoToAlbum({id: props.album.id, photoID})
+      }
     }
     await queryClient.invalidateQueries({queryKey: ["photos"]})
+    if (props.album) {
+      await queryClient.invalidateQueries({queryKey: ["album", props.album.id]})
+    }
     $uploadDialogOpen.value = false
   }
   return (
@@ -51,7 +65,12 @@ export function UploadDialog() {
     >
       <DialogContent showCloseButton={progress === null}>
         <DialogHeader>
-          <DialogTitle>Upload Photos</DialogTitle>
+          <DialogTitle>Upload photos</DialogTitle>
+          {props.album && (
+            <DialogDescription>
+              Uploaded photos will be added to the album {props.album.name}
+            </DialogDescription>
+          )}
         </DialogHeader>
 
         <div className="flex max-h-[80dvh] flex-col gap-2 overflow-y-auto">
@@ -68,7 +87,7 @@ export function UploadDialog() {
           <Button onClick={() => void _onUploadClick()} disabled={progress !== null}>
             {progress == null ? (
               <>
-                Upload {len > 1 && len} Photo{len > 1 && "s"}
+                Upload {len > 1 && len} photo{len > 1 && "s"}
               </>
             ) : (
               <>

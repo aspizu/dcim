@@ -77,6 +77,7 @@ type Prepared = Awaited<ReturnType<typeof prepareFileUpload>>
 
 export async function completeFileUpload(
   prepared: Prepared,
+  clientId: string,
   onUploadProgress: (id: string, progress: number) => void,
 ) {
   const uploaded = await api.createPhoto(prepared.upload)
@@ -88,7 +89,7 @@ export async function completeFileUpload(
       "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.file.name)}`,
     },
     onUploadProgress(e) {
-      onUploadProgress(uploaded.id, (e.loaded / e.total!) * 75)
+      onUploadProgress(clientId, (e.loaded / e.total!) * 75)
     },
   })
   if (res1.status !== 200) {
@@ -103,7 +104,7 @@ export async function completeFileUpload(
       "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.file.name.replace(/\.[^.]+$/, ".avif"))}`,
     },
     onUploadProgress(e) {
-      onUploadProgress(uploaded.id, 75 + (e.loaded / e.total!) * 25)
+      onUploadProgress(clientId, 75 + (e.loaded / e.total!) * 25)
     },
   })
   if (res2.status !== 200) {
@@ -111,4 +112,5 @@ export async function completeFileUpload(
     return
   }
   await api.confirmPhotoUploaded({id: uploaded.id})
+  return uploaded.id
 }
