@@ -10,7 +10,7 @@ export default defineConfig({
     functions: ["cva", "cn"],
   },
   sortPackageJson: true,
-  ignorePattern: [
+  ignorePatterns: [
     "packages/client/src/routeTree.gen.ts",
     "worker-configuration.d.ts",
     "pnpm-lock.yaml",
