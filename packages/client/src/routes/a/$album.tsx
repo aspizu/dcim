@@ -48,7 +48,7 @@ function EditableAlbumTitle(props: {album: api.Album}) {
 
 function AlbumTitle(props: {album: api.Album}) {
   return (
-    <div className="px-2">
+    <div className="px-2 pt-8 pb-4">
       {$authState.value === AuthState.AUTHENTICATED ? (
         <EditableAlbumTitle album={props.album} />
       ) : (
