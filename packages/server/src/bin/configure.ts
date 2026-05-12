@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import {spawnSync} from "node:child_process"
+
 import * as otplib from "otplib"
 import * as qrcode from "qrcode"
 

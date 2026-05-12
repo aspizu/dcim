@@ -1,5 +1,6 @@
-import * as api from "#services/api"
 import {useQuery, useQueryClient} from "@tanstack/react-query"
+
+import * as api from "#services/api"
 
 export function useQueryPhotos() {
   const queryClient = useQueryClient()

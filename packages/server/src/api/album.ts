@@ -1,16 +1,22 @@
-import {ensureLoggedIn, tryCheckLoggedIn} from "#utils/auth"
-import hono from "#utils/hono"
-import {generateRandomID} from "#utils/s3"
-import sql from "#utils/sql"
 import {zValidator} from "@hono/zod-validator"
 import {HTTPException} from "hono/http-exception"
 import z from "zod"
 
+import {ensureLoggedIn, tryCheckLoggedIn} from "#utils/auth"
+import hono from "#utils/hono"
+import {generateRandomID} from "#utils/s3"
+import sql from "#utils/sql"
+
 export default hono()
   .get("/album", async (c) => {
     await ensureLoggedIn(c)
-    const rows = await sql(c)`SELECT * FROM album`.all()
-    return c.json(rows)
+    const rows = await sql(c)`SELECT * FROM album ORDER BY timestamp DESC`.all()
+    return c.json(
+      rows.results.map((row) => {
+        const metadata = JSON.parse(row.metadata as string)
+        return {...row, metadata}
+      }),
+    )
   })
   .get("/album/:id", async (c) => {
     const isLoggedIn = await tryCheckLoggedIn(c)
@@ -23,8 +29,10 @@ export default hono()
       SELECT photo.* FROM photo_album JOIN photo ON photo.id = photo_album.photo_id
       WHERE album_id = ${id}
       ORDER BY photo.timestamp DESC`.all()
+    const metadata = isLoggedIn ? JSON.parse(row.metadata as string) : null
     return c.json({
       ...row,
+      metadata,
       photos: photos.results.map((row) => {
         if (!isLoggedIn) {
           return {...row, metadata: null}
@@ -40,8 +48,8 @@ export default hono()
       "json",
       z.object({
         name: z.string().min(1),
-        description: z.string().optional(),
-        metadata: z.record(z.string(), z.any()).optional(),
+        description: z.string().optional().nullable(),
+        metadata: z.record(z.string(), z.any()).optional().nullable(),
       }),
     ),
     async (c) => {
@@ -54,14 +62,14 @@ export default hono()
         name,
         description,
         metadata,
-        created_at
+        timestamp
       )
       VALUES (
         ${id},
         ${name},
         ${description},
         ${JSON.stringify(metadata ?? {})},
-        ${new Date().toISOString()}
+        ${new Date()}
       )`.run()
       return c.json({id})
     },
@@ -72,8 +80,8 @@ export default hono()
       "json",
       z.object({
         name: z.string().min(1),
-        description: z.string(),
-        metadata: z.record(z.string(), z.any()).optional(),
+        description: z.string().optional().nullable(),
+        metadata: z.record(z.string(), z.any()).optional().nullable(),
       }),
     ),
     async (c) => {

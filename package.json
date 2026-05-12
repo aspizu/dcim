@@ -4,6 +4,7 @@
   "workspaces": [
     "packages/*"
   ],
+  "type": "module",
   "scripts": {
     "postinstall": "lefthook install"
   },
@@ -13,14 +14,14 @@
     "wrangler": "^4.90.0"
   },
   "devEngines": {
-    "runtime": {
-      "name": "node",
-      "version": ">=24.0.0",
-      "onFail": "error"
-    },
     "packageManager": {
       "name": "pnpm",
       "version": ">=11.0.0",
+      "onFail": "error"
+    },
+    "runtime": {
+      "name": "node",
+      "version": ">=24.0.0",
       "onFail": "error"
     }
   }

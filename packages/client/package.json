@@ -1,14 +1,8 @@
 {
   "name": "@dcim/client",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "lint": "oxlint",
-    "check": "tsgo -p tsconfig.app.json",
-    "fmt": "oxfmt ."
-  },
   "imports": {
     "#components/*": "./src/components/*.tsx",
     "#styles/*": "./src/styles/*",
@@ -17,6 +11,12 @@
     "#hooks/*": "./src/hooks/*.ts",
     "#stores/*": "./src/stores/*.ts",
     "#services/*": "./src/services/*.ts"
+  },
+  "scripts": {
+    "dev": "vite",
+    "lint": "oxlint",
+    "check": "tsgo -p tsconfig.app.json",
+    "fmt": "oxfmt ."
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.8",

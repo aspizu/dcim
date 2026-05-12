@@ -1,12 +1,17 @@
 {
   "files.readonlyInclude": {
-    "**/routeTree.gen.ts": true
+    "**/routeTree.gen.ts": true,
+    "**/pnpm-lock.yaml": true,
+    "**/worker-configuration.d.ts": true
   },
   "files.watcherExclude": {
-    "**/routeTree.gen.ts": true
+    "**/routeTree.gen.ts": true,
+    "**/pnpm-lock.yaml": true,
+    "**/worker-configuration.d.ts": true
   },
   "search.exclude": {
-    "**/routeTree.gen.ts": true
+    "**/routeTree.gen.ts": true,
+    "**/worker-configuration.d.ts": true
   },
   "editor.rulers": [96]
 }

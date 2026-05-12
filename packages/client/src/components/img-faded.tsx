@@ -1,5 +1,6 @@
-import {cn} from "#lib/utils"
 import {forwardRef, useState, type ComponentPropsWithoutRef} from "react"
+
+import {cn} from "#lib/utils"
 
 export const ImgFaded = forwardRef<HTMLImageElement, ComponentPropsWithoutRef<"img">>(
   (props, ref) => {

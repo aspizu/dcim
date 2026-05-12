@@ -1,11 +1,13 @@
+import {Ellipsis} from "lucide-react"
+import prettyBytes from "pretty-bytes"
+
 import {useObjectURL} from "#hooks/files"
 import {useAsync} from "#hooks/promises"
 import {thumbnailWorkerPool} from "#lib/uploads"
 import {cn} from "#lib/utils"
 import type {UploadItem} from "#stores/upload"
 import {$uploadDialogOpen, $uploadState} from "#stores/upload"
-import {Ellipsis} from "lucide-react"
-import prettyBytes from "pretty-bytes"
+
 import {ImgFaded} from "./img-faded"
 import {Button} from "./ui/button"
 import {
@@ -74,7 +76,7 @@ export function UploadDialogItem(props: UploadItem & {progress: number | null}) 
           <div className="grow" />
 
           {thumbnail.value && (
-            <span className="text-muted-foreground shrink-0 font-medium">
+            <span className="shrink-0 font-medium text-muted-foreground">
               {prettyBytes(thumbnail.value.size)}
             </span>
           )}

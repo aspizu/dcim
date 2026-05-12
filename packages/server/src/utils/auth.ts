@@ -1,5 +1,6 @@
 import {getSignedCookie} from "hono/cookie"
 import {HTTPException} from "hono/http-exception"
+
 import type {Context} from "./hono"
 
 export async function ensureLoggedIn(c: Context) {

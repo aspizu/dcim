@@ -20,6 +20,7 @@ create table album (
     name text not null,
     description text default null,
     metadata text not null,
+    timestamp text not null,
     primary key (id)
 );
 

@@ -1,9 +1,10 @@
+import {createFileRoute} from "@tanstack/react-router"
+
 import {Header} from "#components/header"
-import {PhotoHeaderMenu} from "#components/header-menus/photo-header-menu"
 import {Photo} from "#components/photo"
+import {PhotoHeaderMenu} from "#components/photo-header-menu"
 import {useQueryPhoto, useQueryPhotos} from "#hooks/queries/photos"
 import {$authState, AuthState} from "#stores/auth"
-import {createFileRoute} from "@tanstack/react-router"
 
 function PageUnauthenticated(props: {id: string}) {
   const photo = useQueryPhoto(props.id)

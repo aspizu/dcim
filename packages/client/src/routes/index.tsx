@@ -1,15 +1,16 @@
-import {Header} from "#components/header"
-import {UserHeaderMenu} from "#components/header-menus/user-header-menu"
-import {PhotoGrid} from "#components/photo-grid"
-import {UploadButton} from "#components/upload-button"
-import {useQueryPhotos} from "#hooks/queries/photos"
 import {createFileRoute} from "@tanstack/react-router"
+
+import {Header} from "#components/header"
+import {NewMenu} from "#components/new-menu"
+import {PhotoGrid} from "#components/photo-grid"
+import {UserHeaderMenu} from "#components/user-header-menu"
+import {useQueryPhotos} from "#hooks/queries/photos"
 
 function RouteComponent() {
   const photos = useQueryPhotos()
   return (
     <>
-      <Header title="Photos" before={<UploadButton />} after={<UserHeaderMenu />} />
+      <Header title="Photos" before={<NewMenu />} after={<UserHeaderMenu />} />
       {photos.data && <PhotoGrid photos={photos.data} />}
     </>
   )

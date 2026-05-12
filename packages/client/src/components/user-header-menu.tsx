@@ -1,3 +1,7 @@
+import {Link, useNavigate} from "@tanstack/react-router"
+import {Ellipsis, LogOut, Settings} from "lucide-react"
+import {useState} from "react"
+
 import {Button} from "#components/ui/button"
 import {
   DropdownMenu,
@@ -9,9 +13,6 @@ import {
 import {Spinner} from "#components/ui/spinner"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
-import {Link, useNavigate} from "@tanstack/react-router"
-import {Ellipsis, LogOut, Settings} from "lucide-react"
-import {useState} from "react"
 
 export function UserHeaderMenu() {
   const navigate = useNavigate()

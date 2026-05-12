@@ -1,12 +1,12 @@
 {
   "name": "@dcim/server",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "lint": "oxlint",
     "check": "tsgo -p tsconfig.json",
     "fmt": "oxfmt ."
   },
-  "type": "module",
   "dependencies": {
     "@hono/zod-validator": "^0.8.0",
     "@otplib/plugin-base32-scure": "^13.4.0",

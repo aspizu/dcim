@@ -1,3 +1,8 @@
+import {createFileRoute, useNavigate} from "@tanstack/react-router"
+import {motion, useAnimate} from "framer-motion"
+import {LockOpen} from "lucide-react"
+import {useState} from "react"
+
 import {Button} from "#components/ui/button"
 import {
   InputOTP,
@@ -8,10 +13,6 @@ import {
 import {Spinner} from "#components/ui/spinner"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
-import {createFileRoute, useNavigate} from "@tanstack/react-router"
-import {motion, useAnimate} from "framer-motion"
-import {LockOpen} from "lucide-react"
-import {useState} from "react"
 
 function RouteComponent() {
   const [scope, animate] = useAnimate()
@@ -77,7 +78,7 @@ function RouteComponent() {
           </Button>
         </motion.div>
         <div className="flex h-32">
-          <h2 className="text-muted-foreground text-xs font-medium">
+          <h2 className="text-xs font-medium text-muted-foreground">
             Enter the code from your authenticator app
           </h2>
         </div>

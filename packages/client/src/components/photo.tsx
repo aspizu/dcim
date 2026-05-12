@@ -1,8 +1,9 @@
+import {Link} from "@tanstack/react-router"
+import {ArrowLeft, ArrowRight} from "lucide-react"
+
 import {ImgFaded} from "#components/img-faded"
 import {Button} from "#components/ui/button"
 import type * as api from "#services/api"
-import {Link} from "@tanstack/react-router"
-import {ArrowLeft, ArrowRight} from "lucide-react"
 
 export function Photo(props: {
   photo: api.Photo

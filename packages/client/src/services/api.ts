@@ -1,5 +1,5 @@
-export {ApiError, NetworkError} from "./fetch"
-import {call as _call} from "./fetch"
+export type * from "./fetch"
+import {call} from "./fetch"
 
 export type ContentType = "image/png" | "image/jpeg" | "image/webp" | "image/avif"
 
@@ -13,7 +13,7 @@ export interface Photo {
   content_type: ContentType
   content_length: number
   file_name: string
-  metadata: Record<string, unknown> | null
+  metadata?: Record<string, unknown> | null
   status: string
   width: number
   height: number
@@ -22,27 +22,27 @@ export interface Photo {
 export interface Album {
   id: string
   name: string
-  description?: string
-  metadata: Record<string, unknown> | null
+  description?: string | null
+  metadata?: Record<string, unknown> | null
   created_at: string
 }
 
 export type AlbumWithPhotos = Album & {photos: Photo[]}
 
 export async function listAlbums(): Promise<Album[]> {
-  return _call("GET", "/album")
+  return call("GET", "/album")
 }
 
 export async function getAlbum({id}: {id: string}): Promise<AlbumWithPhotos> {
-  return _call("GET", `/album/${id}`)
+  return call("GET", `/album/${id}`)
 }
 
 export async function createAlbum(body: {
   name: string
-  description?: string
-  metadata?: Record<string, unknown>
+  description?: string | null
+  metadata?: Record<string, unknown> | null
 }): Promise<{id: string}> {
-  return _call("POST", "/album", body)
+  return call("POST", "/album", body)
 }
 
 export async function updateAlbum({
@@ -51,28 +51,22 @@ export async function updateAlbum({
 }: {
   id: string
   name: string
-  description: string
-  metadata?: Record<string, unknown>
+  description?: string | null
+  metadata?: Record<string, unknown> | null
 }): Promise<void> {
-  return _call("PUT", `/album/${id}`, body)
+  return call("PUT", `/album/${id}`, body)
 }
 
-export async function addPhotoToAlbum({
-  id,
-  photoID,
-}: {
-  id: string
-  photoID: string
-}): Promise<void> {
-  return _call("POST", `/album/${id}`, {photoID})
+export async function addPhotoToAlbum(opts: {id: string; photoID: string}): Promise<void> {
+  return call("POST", `/album/${opts.id}`, {photoID: opts.photoID})
 }
 
 export async function listPhotos(): Promise<Photo[]> {
-  return _call("GET", "/photo")
+  return call("GET", "/photo")
 }
 
-export async function getPhoto({id}: {id: string}): Promise<Photo> {
-  return _call("GET", `/photo/${id}`)
+export async function getPhoto(opts: {id: string}): Promise<Photo> {
+  return call("GET", `/photo/${opts.id}`)
 }
 
 export async function createPhoto(body: {
@@ -85,39 +79,33 @@ export async function createPhoto(body: {
   contentType: ContentType
   contentLength: number
   fileName: string
-  metadata?: Record<string, unknown>
+  metadata?: Record<string, unknown> | null
   width: number
   height: number
 }): Promise<{id: string; imagePresignedURL: string; thumbnailPresignedURL: string}> {
-  return _call("POST", "/photo", body)
+  return call("POST", "/photo", body)
 }
 
-export async function confirmPhotoUploaded({id}: {id: string}): Promise<void> {
-  return _call("PATCH", `/photo/${id}`, {})
+export async function confirmPhotoUploaded(opts: {id: string}): Promise<void> {
+  return call("PATCH", `/photo/${opts.id}`, {})
 }
 
-export async function removePhotoFromAlbum({
-  id,
-  photoID,
-}: {
-  id: string
-  photoID: string
-}): Promise<void> {
-  return _call("DELETE", `/album/${id}/${photoID}`)
+export async function removePhotoFromAlbum(opts: {id: string; photoID: string}): Promise<void> {
+  return call("DELETE", `/album/${opts.id}/${opts.photoID}`)
 }
 
 export async function deletePhoto({id}: {id: string}): Promise<void> {
-  return _call("DELETE", `/photo/${id}`)
+  return call("DELETE", `/photo/${id}`)
 }
 
 export async function login({totp}: {totp: string}): Promise<void> {
-  return _call("POST", "/auth/login", {totp})
+  return call("POST", "/auth/login", {totp})
 }
 
 export async function logout(): Promise<void> {
-  return _call("POST", "/auth/logout")
+  return call("POST", "/auth/logout")
 }
 
 export async function whoami(): Promise<void> {
-  return _call("GET", "/auth/whoami")
+  return call("GET", "/auth/whoami")
 }

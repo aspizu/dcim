@@ -1,11 +1,13 @@
+import * as Path from "node:path"
+
+import {zValidator} from "@hono/zod-validator"
+import {HTTPException} from "hono/http-exception"
+import {z} from "zod"
+
 import {ensureLoggedIn, tryCheckLoggedIn} from "#utils/auth"
 import hono, {type Context} from "#utils/hono"
 import {CT_EXT, CT_EXTENSIONS, generateRandomID, makeS3} from "#utils/s3"
 import sql from "#utils/sql"
-import {zValidator} from "@hono/zod-validator"
-import {HTTPException} from "hono/http-exception"
-import * as Path from "node:path"
-import {z} from "zod"
 
 function _getImageKey(c: Context, photo: any): string {
   return photo.image_url.slice(c.env.R2_URL.length).replace(/^\//, "")
@@ -55,7 +57,7 @@ export default hono()
         contentType: z.enum(["image/png", "image/jpeg", "image/webp", "image/avif"]),
         contentLength: z.number().min(0),
         fileName: z.string().min(1),
-        metadata: z.record(z.string(), z.any()).optional(),
+        metadata: z.record(z.string(), z.any()).optional().nullable(),
         width: z.number().int().min(1),
         height: z.number().int().min(1),
       }),

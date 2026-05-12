@@ -1,7 +1,9 @@
-import {completeFileUpload, prepareFileUpload} from "#lib/uploads"
-import {$uploadDialogOpen, $uploadState} from "#stores/upload"
 import {useQueryClient} from "@tanstack/react-query"
 import {useState} from "react"
+
+import {completeFileUpload, prepareFileUpload} from "#lib/uploads"
+import {$uploadDialogOpen, $uploadState} from "#stores/upload"
+
 import {Button} from "./ui/button"
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "./ui/dialog"
 import {Spinner} from "./ui/spinner"
@@ -11,7 +13,7 @@ function UploadStatus(props: {progress: Record<string, number>; total: number}) 
   const done = Object.values(props.progress).filter((v) => v >= 100).length
   const left = props.total - done
   return (
-    <span className="text-muted-foreground mr-auto font-medium">
+    <span className="mr-auto font-medium text-muted-foreground">
       {done} of {props.total} done{left > 0 && `, ${left} left`}
     </span>
   )

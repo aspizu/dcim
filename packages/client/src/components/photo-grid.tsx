@@ -1,6 +1,7 @@
+import {Link} from "@tanstack/react-router"
+
 import {ImgFaded} from "#components/img-faded"
 import type * as api from "#services/api"
-import {Link} from "@tanstack/react-router"
 
 function Photo(props: {photo: api.Photo}) {
   return (

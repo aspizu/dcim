@@ -1,5 +1,3 @@
-import {ensureLoggedIn} from "#utils/auth"
-import hono from "#utils/hono"
 import {zValidator} from "@hono/zod-validator"
 import {base32} from "@otplib/plugin-base32-scure"
 import {crypto} from "@otplib/plugin-crypto-web"
@@ -7,6 +5,9 @@ import {deleteCookie, setSignedCookie} from "hono/cookie"
 import {HTTPException} from "hono/http-exception"
 import * as otplib from "otplib"
 import z from "zod"
+
+import {ensureLoggedIn} from "#utils/auth"
+import hono from "#utils/hono"
 
 export default hono()
   .post(

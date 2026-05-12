@@ -1,5 +1,6 @@
-import {Header} from "#components/header"
 import {createFileRoute} from "@tanstack/react-router"
+
+import {Header} from "#components/header"
 
 function RouteComponent() {
   return (
