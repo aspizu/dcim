@@ -48,4 +48,4 @@ function RouteComponent() {
   return null
 }
 
-export const Route = createFileRoute("/p/$photo")({component: RouteComponent})
+export const Route = createFileRoute("/p_/$photo")({component: RouteComponent})

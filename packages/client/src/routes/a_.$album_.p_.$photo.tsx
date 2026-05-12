@@ -59,4 +59,4 @@ function RouteComponent() {
   return null
 }
 
-export const Route = createFileRoute("/a/$album/p/$photo")({component: RouteComponent})
+export const Route = createFileRoute("/a_/$album_/p_/$photo")({component: RouteComponent})
