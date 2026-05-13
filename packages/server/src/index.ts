@@ -14,7 +14,7 @@ export default hono()
     if (!success) {
       return c.text("Rate limit exceeded", 429)
     }
-    next()
+    await next()
   })
   .route("/api", auth)
   .route("/api", album)
