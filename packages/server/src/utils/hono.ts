@@ -10,6 +10,7 @@ export interface Bindings {
   R2_URL: string
   TOTP_SECRET: string
   JWT_SECRET: string
+  RATELIMIT: RateLimit
 }
 
 export type Context = HonoContext<{Bindings: Bindings}>
