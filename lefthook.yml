@@ -17,6 +17,10 @@ pre-commit:
       glob: "packages/server/**/*.{ts}"
       run: pnpm --filter @dcim/server run lint
 
+    - name: wrangler-types
+      glob: "wrangler.jsonc"
+      run: pnpm wrangler types --check
+
     - name: format
       glob: "**/*.{ts,tsx,js,jsx,json,css,md,yml,yaml,jsonc}"
       run: pnpm exec oxfmt --check {staged_files}
