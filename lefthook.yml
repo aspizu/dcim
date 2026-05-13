@@ -22,5 +22,5 @@ pre-commit:
       run: pnpm wrangler types --check
 
     - name: format
-      glob: "**/*.{ts,tsx,js,jsx,json,css,md,yml,yaml,jsonc}"
+      glob: "**/*"
       run: pnpm exec oxfmt --check {staged_files}
