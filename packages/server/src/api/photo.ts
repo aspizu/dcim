@@ -107,8 +107,8 @@ export default hono()
           {},
           {
             "Cache-Control": "public, max-age=31536000, immutable, no-transform",
-            "Content-Disposition": `attachment; filename=${JSON.stringify(fileName.replace(/\.[^.]+$/, ".avif"))}`,
-            "Content-Type": thumbnailContentType ?? "image/avif",
+            "Content-Disposition": `attachment; filename=${JSON.stringify(fileName.replace(/\.[^.]+$/, CT_EXT[thumbnailContentType]!))}`,
+            "Content-Type": thumbnailContentType,
             "Content-Length": thumbnailContentLength.toString(),
             "x-amz-checksum-sha256": thumbnailContentSHA256,
           },

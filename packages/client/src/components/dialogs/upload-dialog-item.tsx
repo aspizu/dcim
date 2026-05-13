@@ -3,8 +3,8 @@ import prettyBytes from "pretty-bytes"
 
 import {useObjectURL} from "#hooks/files"
 import {useAsync} from "#hooks/promises"
-import {thumbnailWorkerPool} from "#lib/uploads"
 import {cn} from "#lib/utils"
+import {transform} from "#lib/workers/transformations-client"
 import type {UploadItem} from "#stores/upload"
 import {$uploadDialogOpen, $uploadState} from "#stores/upload"
 
@@ -45,12 +45,30 @@ function UploadItemDropDown(props: {id: string}) {
 }
 
 export function UploadDialogItem(props: UploadItem & {progress: number | null}) {
-  const thumbnail = useAsync(async () => {
+  const params = useAsync(async () => {
     const file = await props.handle.getFile()
-    const transformed = await thumbnailWorkerPool.run(file)
-    return {transformed, size: file.size}
+    return {
+      thumbnail: new Blob(
+        [
+          await transform(file, {
+            resize: {
+              width: 250,
+              height: 250,
+              fit: "scale-down",
+              letterbox: false,
+            },
+            convert: {
+              format: "image/avif",
+              quality: 0.3,
+            },
+          }),
+        ],
+        {type: "image/avif"},
+      ),
+      original_size: file.size,
+    }
   }, [props.handle])
-  const objectURL = useObjectURL(thumbnail.value?.transformed)
+  const objectURL = useObjectURL(params.value?.thumbnail)
   return (
     <div
       className={cn(
@@ -75,9 +93,9 @@ export function UploadDialogItem(props: UploadItem & {progress: number | null}) 
 
           <div className="grow" />
 
-          {thumbnail.value && (
+          {params.value && (
             <span className="shrink-0 font-medium text-muted-foreground">
-              {prettyBytes(thumbnail.value.size)}
+              {prettyBytes(params.value.original_size)}
             </span>
           )}
 

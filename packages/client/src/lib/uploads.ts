@@ -1,21 +1,21 @@
 import axios from "axios"
 import exifr from "exifr"
-import {createWorkerPool, dcim} from "lib-dcim"
 
 import * as api from "#services/api"
 
 import {sha256} from "./hash"
-import {getImageDimensions} from "./images"
+import {loadImage} from "./transformations/core/images"
+import type {PipelineOptions} from "./transformations/types"
+import {transform} from "./workers/transformations-client"
 
-export const thumbnailWorkerPool = createWorkerPool(
-  dcim().resize(720, null).avif(50).compile(),
-  {workers: 2, jobsPerWorker: Infinity},
-)
-
-const _thumbhashWorkerPool = createWorkerPool(dcim().resize(16, 16).avif(1).compile(), {
-  workers: 2,
-  jobsPerWorker: Infinity,
-})
+const _thumbnailOptions: PipelineOptions = {
+  resize: {width: 720, height: 720, fit: "scale-down", letterbox: false},
+  convert: {format: "image/webp", quality: 0.3},
+}
+const _thumbhashOptions: PipelineOptions = {
+  resize: {width: 8, height: 8, fit: "fill", letterbox: false},
+  convert: {format: "image/webp", quality: 0.0},
+}
 
 async function _blobToDataURL(blob: Blob) {
   const buffer = await blob.arrayBuffer()
@@ -42,13 +42,16 @@ export async function prepareFileUpload(handle: FileSystemFileHandle) {
   const file = await handle.getFile()
   const [{thumbnail, thumbnailContentSHA256}, contentSHA256, thumbhashBlob, {width, height}] =
     await Promise.all([
-      thumbnailWorkerPool.run(file).then(async (thumb) => ({
-        thumbnail: thumb,
-        thumbnailContentSHA256: await sha256(thumb),
-      })),
+      transform(file, _thumbnailOptions).then(async (arrayBuffer) => {
+        const thumbnail = new Blob([arrayBuffer], {type: "image/webp"})
+        const thumbnailContentSHA256 = await sha256(thumbnail)
+        return {thumbnail, thumbnailContentSHA256}
+      }),
       sha256(file),
-      _thumbhashWorkerPool.run(file),
-      getImageDimensions(file),
+      transform(file, _thumbhashOptions).then(
+        (arrayBuffer) => new Blob([arrayBuffer], {type: "image/webp"}),
+      ),
+      loadImage(file).then((image) => ({width: image.width, height: image.height})),
     ])
   const metadata = await exifr.parse(file)
   const timestamp = _extractTimestamp(metadata)
@@ -58,7 +61,7 @@ export async function prepareFileUpload(handle: FileSystemFileHandle) {
       contentLength: file.size,
       contentType: file.type as api.ContentType,
       thumbnailContentLength: thumbnail.size,
-      thumbnailContentType: "image/avif" as const,
+      thumbnailContentType: "image/webp" as const,
       fileName: handle.name,
       contentSHA256,
       thumbnailContentSHA256,
@@ -98,10 +101,10 @@ export async function completeFileUpload(
   }
   const res2 = await axios.put(uploaded.thumbnailPresignedURL, prepared.thumbnail, {
     headers: {
-      "Content-Type": "image/avif",
+      "Content-Type": "image/webp",
       "x-amz-checksum-sha256": prepared.upload.thumbnailContentSHA256,
       "Cache-Control": "public, max-age=31536000, immutable, no-transform",
-      "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.file.name.replace(/\.[^.]+$/, ".avif"))}`,
+      "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.file.name.replace(/\.[^.]+$/, ".webp"))}`,
     },
     onUploadProgress(e) {
       onUploadProgress(clientId, 75 + (e.loaded / e.total!) * 25)
