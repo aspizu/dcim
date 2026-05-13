@@ -24,7 +24,7 @@ export interface Album {
   name: string
   description?: string | null
   metadata?: Record<string, unknown> | null
-  created_at: string
+  timestamp: string
 }
 
 export type AlbumWithPhotos = Album & {photos: Photo[]}

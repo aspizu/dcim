@@ -30,7 +30,7 @@ function Photo(props: {photo: api.Photo}) {
 
 export function PhotoGrid(props: {photos: api.Photo[]; album?: api.Album}) {
   return (
-    <div className="grid grid-cols-3 gap-2 p-2 pt-0">
+    <div className="grid grid-cols-3 gap-2">
       {props.photos.map((photo) => (
         <Link
           key={photo.id}
