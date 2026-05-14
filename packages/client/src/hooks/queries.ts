@@ -100,3 +100,5 @@ export function queryAlbumOptions(id: string) {
 export function useQueryAlbum(id: string) {
   return useSuspenseQuery(queryAlbumOptions(id))
 }
+
+export type QueryData<T extends (...args: any[]) => {data: unknown}> = ReturnType<T>["data"]

@@ -1,14 +1,6 @@
 import {Download, Ellipsis, Link, Trash, X} from "lucide-react"
 import {toast} from "sonner"
 
-import {
-  $deletePhotoDialogOpen,
-  DeletePhotoDialog,
-} from "#components/dialogs/delete-photo-dialog"
-import {
-  $removeFromAlbumDialogOpen,
-  RemoveFromAlbumDialog,
-} from "#components/dialogs/remove-from-album-dialog"
 import {Button} from "#components/ui/button"
 import {
   DropdownMenu,
@@ -19,6 +11,13 @@ import {
 } from "#components/ui/dropdown-menu"
 import type {Album, Photo} from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
+
+import {
+  $deletePhotoDialogOpen,
+  $removePhotoFromAlbumDialogOpen,
+  DeletePhotoDialog,
+  RemovePhotoFromAlbumDialog,
+} from "./dialogs"
 
 export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
   return (
@@ -49,7 +48,7 @@ export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
             {$authState.value === AuthState.AUTHENTICATED && props.album && (
               <DropdownMenuItem
                 onClick={() => {
-                  $removeFromAlbumDialogOpen.value = true
+                  $removePhotoFromAlbumDialogOpen.value = true
                 }}
               >
                 <X />
@@ -70,8 +69,8 @@ export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-      <DeletePhotoDialog photo={props.photo} />
-      {props.album && <RemoveFromAlbumDialog photo={props.photo} album={props.album} />}
+      <DeletePhotoDialog photo={props.photo} album={props.album} />
+      {props.album && <RemovePhotoFromAlbumDialog photo={props.photo} album={props.album} />}
     </>
   )
 }

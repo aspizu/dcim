@@ -14,7 +14,6 @@ import {
   DropdownMenuTrigger,
 } from "#components/ui/dropdown-menu"
 import * as api from "#services/api"
-import {$addToAlbumDialogOpen} from "#stores/album"
 import {$uploadDialogOpen, $uploadState} from "#stores/upload"
 
 import {Button} from "./ui/button"
@@ -49,7 +48,7 @@ export function NewMenu(props: {isAlbumType?: boolean}) {
     setIsLoading(false)
   }
   function _onAddExistingClick() {
-    $addToAlbumDialogOpen.value = true
+    throw new Error("Not implemented")
   }
   return (
     <DropdownMenu>

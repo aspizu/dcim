@@ -1,7 +1,4 @@
-import {signal} from "@preact/signals-react"
-import {useQueryClient} from "@tanstack/react-query"
 import {useNavigate} from "@tanstack/react-router"
-import {useState} from "react"
 
 import {Button} from "#components/ui/button"
 import {
@@ -13,32 +10,14 @@ import {
   DialogTitle,
 } from "#components/ui/dialog"
 import {Spinner} from "#components/ui/spinner"
-import type {Photo} from "#services/api"
-import * as api from "#services/api"
+import {useDeletePhoto} from "#hooks/mutations"
+import type {Album, Photo} from "#services/api"
 
-export const $deletePhotoDialogOpen = signal(false)
+import {$deletePhotoDialogOpen} from "."
 
-export function DeletePhotoDialog(props: {photo: Photo}) {
-  const queryClient = useQueryClient()
+export function DeletePhotoDialog(props: {photo: Photo; album?: Album}) {
   const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(false)
-  async function _onDeleteClick() {
-    setIsLoading(true)
-    await api.deletePhoto({id: props.photo.id})
-    queryClient.setQueryData(["photos"], (old: {next: string | null; photos: api.Photo[]}) => ({
-      ...old,
-      photos: old.photos.filter((photo) => photo.id !== props.photo.id),
-    }))
-    const albumKeys = queryClient.getQueriesData({queryKey: ["albums"]})
-    for (const albumKey of albumKeys) {
-      queryClient.setQueryData(albumKey, (old: api.AlbumWithPhotos) => {
-        return {...old, photos: old.photos.filter((photo) => photo.id !== props.photo.id)}
-      })
-    }
-    $deletePhotoDialogOpen.value = false
-    setIsLoading(false)
-    await navigate({to: "/"})
-  }
+  const deletePhoto = useDeletePhoto()
   return (
     <Dialog
       open={$deletePhotoDialogOpen.value}
@@ -48,7 +27,7 @@ export function DeletePhotoDialog(props: {photo: Photo}) {
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete photo</DialogTitle>
+          <DialogTitle>Delete {props.photo.file_name}</DialogTitle>
           <DialogDescription>
             This action cannot be undone. This will permanently delete the photo{" "}
             {props.photo.file_name}
@@ -57,10 +36,17 @@ export function DeletePhotoDialog(props: {photo: Photo}) {
         <DialogFooter>
           <Button
             variant="destructive"
-            disabled={isLoading}
-            onClick={() => void _onDeleteClick()}
+            disabled={deletePhoto.isPending}
+            onClick={() =>
+              void deletePhoto.mutateAsync(props.photo.id).then(() =>
+                navigate({
+                  to: props.album ? "/a/$album" : "/",
+                  params: props.album ? {album: props.album.id} : {},
+                }),
+              )
+            }
           >
-            {isLoading && <Spinner />}
+            {deletePhoto.isPending && <Spinner />}
             Delete
           </Button>
         </DialogFooter>

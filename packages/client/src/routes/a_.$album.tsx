@@ -2,7 +2,6 @@ import {useQueryClient} from "@tanstack/react-query"
 import {createFileRoute} from "@tanstack/react-router"
 import {useRef} from "react"
 
-import {AddToAlbumDialog} from "#components/dialogs/add-to-album-dialog"
 import {UploadDialog} from "#components/dialogs/upload-dialog"
 import {Header} from "#components/header"
 import {NewMenu} from "#components/new-menu"
@@ -83,7 +82,6 @@ function RouteComponent() {
       <AlbumTitle album={album.data} />
       <PhotoGrid photos={allPhotos} album={album.data} />
       <UploadDialog album={album.data} />
-      <AddToAlbumDialog album={album.data} />
     </>
   )
 }
