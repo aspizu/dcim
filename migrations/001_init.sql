@@ -10,7 +10,7 @@ create table photo (
     width integer not null,
     height integer not null,
     uploaded_at text not null
-) strict without rowid;
+) strict, without rowid;
 
 create table album (
     id text primary key,
@@ -19,7 +19,7 @@ create table album (
     oldest text default null,
     newest text default null,
     updated_at text not null
-) strict without rowid;
+) strict, without rowid;
 
 create table photo_album (
     album_id integer not null,
@@ -27,4 +27,4 @@ create table photo_album (
     foreign key (album_id) references album (id) on delete cascade,
     foreign key (photo_id) references photo (id) on delete cascade,
     primary key (album_id, photo_id)
-) strict without rowid;
+) strict, without rowid;

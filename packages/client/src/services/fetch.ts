@@ -29,6 +29,9 @@ export async function call<T>(method: string, path: string, body?: unknown): Pro
     throw new NetworkError(cause)
   }
   if (!res.ok) {
+    if (res.headers.get("content-type")?.startsWith("text/html")) {
+      throw new ApiError(res.status, `Worker threw exception (${res.headers.get("cf-ray")})`)
+    }
     throw new ApiError(res.status, await res.text())
   }
   try {
