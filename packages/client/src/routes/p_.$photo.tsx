@@ -3,7 +3,7 @@ import {createFileRoute} from "@tanstack/react-router"
 import {Header} from "#components/header"
 import {Photo} from "#components/photo"
 import {PhotoHeaderMenu} from "#components/photo-header-menu"
-import {useQueryPhoto, useQueryPhotos} from "#hooks/queries/photos"
+import {useQueryPhoto, useQueryPhotos} from "#hooks/queries"
 import {$authState, AuthState} from "#stores/auth"
 
 function PageUnauthenticated(props: {id: string}) {
@@ -21,11 +21,11 @@ function PageUnauthenticated(props: {id: string}) {
 
 function PageAuthenticated(props: {id: string}) {
   const photos = useQueryPhotos()
-  const photoIdx = photos.data ? photos.data.findIndex((photo) => photo.id === props.id) : -1
-  const previousPhoto = photoIdx > 0 ? photos.data?.[photoIdx - 1] : undefined
-  const photo = photos.data?.[photoIdx]
-  const nextPhoto =
-    photoIdx < (photos.data?.length ?? 0) - 1 ? photos.data?.[photoIdx + 1] : undefined
+  const photosData = photos.data?.photos ?? []
+  const photoIdx = photosData.findIndex((photo) => photo.id === props.id)
+  const previousPhoto = photoIdx > 0 ? photosData[photoIdx - 1] : undefined
+  const photo = photosData[photoIdx]
+  const nextPhoto = photoIdx < photosData.length - 1 ? photosData[photoIdx + 1] : undefined
   return (
     <div className="grid h-dvh grid-rows-[auto_1fr]">
       <Header

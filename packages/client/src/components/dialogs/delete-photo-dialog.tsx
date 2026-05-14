@@ -25,9 +25,10 @@ export function DeletePhotoDialog(props: {photo: Photo}) {
   async function _onDeleteClick() {
     setIsLoading(true)
     await api.deletePhoto({id: props.photo.id})
-    queryClient.setQueryData(["photos"], (old: api.Photo[]) =>
-      old.filter((photo) => photo.id !== props.photo.id),
-    )
+    queryClient.setQueryData(["photos"], (old: {next: string | null; photos: api.Photo[]}) => ({
+      ...old,
+      photos: old.photos.filter((photo) => photo.id !== props.photo.id),
+    }))
     const albumKeys = queryClient.getQueriesData({queryKey: ["albums"]})
     for (const albumKey of albumKeys) {
       queryClient.setQueryData(albumKey, (old: api.AlbumWithPhotos) => {

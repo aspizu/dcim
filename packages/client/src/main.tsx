@@ -4,12 +4,12 @@ import {StrictMode, useEffect} from "react"
 import {createRoot} from "react-dom/client"
 
 import {Toaster} from "#components/ui/sonner"
-
-import "#styles/global.css"
 import {Spinner} from "#components/ui/spinner"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
 import {$theme, Theme} from "#stores/themes"
+
+import "#styles/global.css"
 
 import {routeTree} from "./routeTree.gen"
 
@@ -19,7 +19,7 @@ declare module "@tanstack/react-router" {
   }
 }
 
-const queryClient = new QueryClient()
+export const queryClient = new QueryClient()
 const router = createRouter({
   routeTree,
   defaultViewTransition: true,

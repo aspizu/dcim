@@ -8,7 +8,7 @@ import {Header} from "#components/header"
 import {NewMenu} from "#components/new-menu"
 import {PhotoGrid} from "#components/photo-grid"
 import {UserHeaderMenu} from "#components/user-header-menu"
-import {useQueryAlbum} from "#hooks/queries/photos"
+import {useQueryAlbum} from "#hooks/queries"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
 
@@ -19,7 +19,7 @@ function EditableAlbumTitle(props: {album: api.Album}) {
     clearTimeout(timeout.current)
     value = value.trim()
     if (value === "") return
-    await api.updateAlbum({...props.album, name: value})
+    await api.updateAlbum({id: props.album.id, name: value})
     queryClient.setQueryData(["album", props.album.id], (oldAlbum: api.Album) => ({
       ...oldAlbum,
       name: value,

@@ -8,52 +8,45 @@ export interface Photo {
   image_url: string
   thumbnail_url: string
   thumbhash: string
-  content_sha256: string
-  timestamp: string
-  content_type: ContentType
   content_length: number
   file_name: string
-  metadata?: Record<string, unknown> | null
   status: string
+  metadata: Record<string, unknown>
   width: number
   height: number
+  uploaded_at: string
 }
 
 export interface Album {
   id: string
   name: string
-  description?: string | null
-  metadata?: Record<string, unknown> | null
-  timestamp: string
+  count: number
+  oldest: string | null
+  newest: string | null
+  updated_at: string
 }
 
-export type AlbumWithPhotos = Album & {photos: Photo[]}
+export type AlbumWithPhotos = Album & {next: string | null; photos: Photo[]}
 
-export async function listAlbums(): Promise<Album[]> {
+export async function listAlbums(): Promise<Array<Album & {cover: Photo | null}>> {
   return call("GET", "/album")
 }
 
-export async function getAlbum({id}: {id: string}): Promise<AlbumWithPhotos> {
-  return call("GET", `/album/${id}`)
+export async function getAlbum({
+  id,
+  next,
+}: {
+  id: string
+  next?: string
+}): Promise<AlbumWithPhotos> {
+  return call("GET", next ? `/album?next=${id}` : `/album/${id}`)
 }
 
-export async function createAlbum(body: {
-  name: string
-  description?: string | null
-  metadata?: Record<string, unknown> | null
-}): Promise<{id: string}> {
+export async function createAlbum(body: {name: string}): Promise<{id: string}> {
   return call("POST", "/album", body)
 }
 
-export async function updateAlbum({
-  id,
-  ...body
-}: {
-  id: string
-  name: string
-  description?: string | null
-  metadata?: Record<string, unknown> | null
-}): Promise<void> {
+export async function updateAlbum({id, ...body}: {id: string; name: string}): Promise<void> {
   return call("PUT", `/album/${id}`, body)
 }
 
@@ -61,8 +54,10 @@ export async function addPhotoToAlbum(opts: {id: string; photoID: string}): Prom
   return call("POST", `/album/${opts.id}`, {photoID: opts.photoID})
 }
 
-export async function listPhotos(): Promise<Photo[]> {
-  return call("GET", "/photo")
+export async function listPhotos(opts: {
+  next?: string
+}): Promise<{next: string | null; photos: Photo[]}> {
+  return call("GET", opts.next ? `/photo?next=${opts.next}` : "/photo")
 }
 
 export async function getPhoto(opts: {id: string}): Promise<Photo> {
@@ -70,24 +65,19 @@ export async function getPhoto(opts: {id: string}): Promise<Photo> {
 }
 
 export async function createPhoto(body: {
-  contentSHA256: string
-  thumbnailContentSHA256: string
-  thumbnailContentLength: number
-  thumbnailContentType: ContentType
-  thumbhash: string
-  timestamp: string
-  contentType: ContentType
-  contentLength: number
   fileName: string
-  metadata?: Record<string, unknown> | null
+  image: {contentType: ContentType; contentSHA256: string; contentLength: number}
+  thumbnail: {contentType: ContentType; contentSHA256: string; contentLength: number}
+  thumbhash: string
   width: number
   height: number
+  metadata: Record<string, unknown>
 }): Promise<{id: string; imagePresignedURL: string; thumbnailPresignedURL: string}> {
   return call("POST", "/photo", body)
 }
 
 export async function confirmPhotoUploaded(opts: {id: string}): Promise<void> {
-  return call("PATCH", `/photo/${opts.id}`, {})
+  return call("PATCH", `/photo/${opts.id}/mark-as-uploaded`)
 }
 
 export async function removePhotoFromAlbum(opts: {id: string; photoID: string}): Promise<void> {

@@ -5,7 +5,7 @@ import {useState} from "react"
 import {ImgFaded} from "#components/img-faded"
 import {Button} from "#components/ui/button"
 import {Spinner} from "#components/ui/spinner"
-import {useQueryPhotos} from "#hooks/queries/photos"
+import {useQueryPhotos} from "#hooks/queries"
 import type * as api from "#services/api"
 import * as apiClient from "#services/api"
 import {$addToAlbumDialogOpen, $addToAlbumSelection} from "#stores/album"
@@ -45,7 +45,7 @@ export function AddToAlbumDialog(props: {album: api.AlbumWithPhotos}) {
   const queryClient = useQueryClient()
   const [isLoading, setIsLoading] = useState(false)
   const albumPhotoIDs = new Set(props.album.photos.map((p) => p.id))
-  const availablePhotos = photos.data?.filter((p) => !albumPhotoIDs.has(p.id)) ?? []
+  const availablePhotos = photos.data?.photos.filter((p) => !albumPhotoIDs.has(p.id)) ?? []
   const len = $addToAlbumSelection.value.length
 
   function _toggle(id: string) {

@@ -25,19 +25,6 @@ async function _blobToDataURL(blob: Blob) {
   return `data:${blob.type};base64,${base64}`
 }
 
-function _extractTimestamp(metadata?: Record<string, string | Date>): string {
-  let rawDate: string | Date = new Date()
-  if (metadata) {
-    rawDate =
-      metadata.DateTimeOriginal || metadata.CreateDate || metadata.FileModifyDate || rawDate
-  }
-  if (rawDate instanceof Date) {
-    return rawDate.toISOString()
-  }
-  const date = new Date(rawDate)
-  return date.toISOString()
-}
-
 export async function prepareFileUpload(handle: FileSystemFileHandle) {
   const file = await handle.getFile()
   const [{thumbnail, thumbnailContentSHA256}, contentSHA256, thumbhashBlob, {width, height}] =
@@ -54,22 +41,24 @@ export async function prepareFileUpload(handle: FileSystemFileHandle) {
       loadImage(file).then((image) => ({width: image.width, height: image.height})),
     ])
   const metadata = await exifr.parse(file)
-  const timestamp = _extractTimestamp(metadata)
   const thumbhash = await _blobToDataURL(thumbhashBlob)
   return {
     upload: {
-      contentLength: file.size,
-      contentType: file.type as api.ContentType,
-      thumbnailContentLength: thumbnail.size,
-      thumbnailContentType: "image/webp" as const,
       fileName: handle.name,
-      contentSHA256,
-      thumbnailContentSHA256,
+      image: {
+        contentType: file.type as api.ContentType,
+        contentSHA256,
+        contentLength: file.size,
+      },
+      thumbnail: {
+        contentType: "image/webp" as api.ContentType,
+        contentSHA256: thumbnailContentSHA256,
+        contentLength: thumbnail.size,
+      },
       thumbhash,
-      timestamp,
-      metadata,
       width,
       height,
+      metadata,
     },
     file,
     thumbnail,
@@ -87,7 +76,7 @@ export async function completeFileUpload(
   const res1 = await axios.put(uploaded.imagePresignedURL, prepared.file, {
     headers: {
       "Content-Type": prepared.file.type,
-      "x-amz-checksum-sha256": prepared.upload.contentSHA256,
+      "x-amz-checksum-sha256": prepared.upload.image.contentSHA256,
       "Cache-Control": "public, max-age=31536000, immutable, no-transform",
       "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.file.name)}`,
     },
@@ -102,7 +91,7 @@ export async function completeFileUpload(
   const res2 = await axios.put(uploaded.thumbnailPresignedURL, prepared.thumbnail, {
     headers: {
       "Content-Type": "image/webp",
-      "x-amz-checksum-sha256": prepared.upload.thumbnailContentSHA256,
+      "x-amz-checksum-sha256": prepared.upload.thumbnail.contentSHA256,
       "Cache-Control": "public, max-age=31536000, immutable, no-transform",
       "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.file.name.replace(/\.[^.]+$/, ".webp"))}`,
     },
