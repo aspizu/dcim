@@ -13,17 +13,16 @@ import {queryClient} from "../main"
 
 function RouteComponent() {
   const photos = useQueryPhotos()
+  const allPhotos = photos.data.pages.reduce(
+    (prev: Photo[], cur) => [...prev, ...cur.photos],
+    [],
+  )
   return (
     <>
       <Header title="Photos" before={<NewMenu />} after={<UserHeaderMenu />} />
       <div className="grid grid-cols-[200px_auto] gap-2 px-2 pb-2">
         <Sidebar />
-        <PhotoGrid
-          photos={photos.data.pages.reduce(
-            (prev: Photo[], cur) => [...prev, ...cur.photos],
-            [],
-          )}
-        />
+        <PhotoGrid photos={allPhotos} />
       </div>
       <UploadDialog />
     </>

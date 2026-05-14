@@ -26,20 +26,22 @@ export interface Album {
   updated_at: string
 }
 
-export type AlbumWithPhotos = Album & {next: string | null; photos: Photo[]}
+export async function getAlbum({id}: {id: string}): Promise<Album> {
+  return call("GET", `/album/${id}`)
+}
 
 export async function listAlbums(): Promise<Array<Album & {cover: Photo | null}>> {
   return call("GET", "/album")
 }
 
-export async function getAlbum({
-  id,
-  next,
-}: {
+export async function listAlbumPhotos(opts: {
   id: string
   next?: string
-}): Promise<AlbumWithPhotos> {
-  return call("GET", next ? `/album?next=${id}` : `/album/${id}`)
+}): Promise<{photos: Photo[]; next: string | null}> {
+  return call(
+    "GET",
+    opts.next ? `/album/${opts.id}/photo?next=${opts.next}` : `/album/${opts.id}/photo`,
+  )
 }
 
 export async function createAlbum(body: {name: string}): Promise<{id: string}> {
@@ -64,6 +66,13 @@ export async function getPhoto(opts: {
   id: string
 }): Promise<Photo & {next: string | null; prev: string | null}> {
   return call("GET", `/photo/${opts.id}`)
+}
+
+export async function getAlbumPhoto(opts: {
+  album: string
+  photo: string
+}): Promise<Photo & {next: string | null; prev: string | null}> {
+  return call("GET", `/album/${opts.album}/photo/${opts.photo}`)
 }
 
 export async function createPhoto(body: {

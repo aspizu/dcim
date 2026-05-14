@@ -66,14 +66,18 @@ export default hono()
     )
   })
   .get("/album/:id", async (c) => {
-    const isLoggedIn = await tryCheckLoggedIn(c)
-    const limit = 50
     const {id} = c.req.param()
-    const next = c.req.query("next")
     const row = await sql(c)`SELECT * FROM album WHERE id = ${id}`.first()
     if (row === null) {
       throw new HTTPException(404, {message: "Album not found."})
     }
+    return c.json(row)
+  })
+  .get("/album/:id/photo", async (c) => {
+    const isLoggedIn = await tryCheckLoggedIn(c)
+    const limit = 50
+    const {id} = c.req.param()
+    const next = c.req.query("next")
     let rows
     if (next) {
       rows = await sql(c)`
@@ -91,11 +95,54 @@ export default hono()
         `.all()
     }
     return c.json({
-      ...row,
       next: rows.results.length > limit ? rows.results[limit]!.id : null,
       photos: rows.results.slice(0, limit).map((row) => {
         const metadata = isLoggedIn ? JSON.parse(row.metadata as string) : {}
         return {...row, metadata}
       }),
     })
+  })
+  .get("/album/:album/photo/:photo", async (c) => {
+    const isLoggedIn = await tryCheckLoggedIn(c)
+    const {album, photo} = c.req.param()
+    const row = await sql(c)`
+      SELECT
+        ph.*,
+
+        (
+          SELECT pa2.photo_id
+          FROM photo_album pa2
+          WHERE
+            pa2.album_id = ${album}
+            AND pa2.photo_id > ph.id
+          ORDER BY pa2.photo_id ASC
+          LIMIT 1
+        ) AS prev,
+
+        (
+          SELECT pa2.photo_id
+          FROM photo_album pa2
+          WHERE
+            pa2.album_id = ${album}
+            AND pa2.photo_id < ph.id
+          ORDER BY pa2.photo_id DESC
+          LIMIT 1
+        ) AS next
+
+      FROM photo_album pa
+      JOIN photo ph ON ph.id = pa.photo_id
+
+      WHERE
+        pa.album_id = ${album}
+        AND pa.photo_id = ${photo}
+
+      LIMIT 1
+    `.first()
+    if (row === null) {
+      throw new HTTPException(404, {message: "Photo not found."})
+    }
+    if (isLoggedIn) {
+      return c.json({...row, metadata: JSON.parse(row.metadata as string)})
+    }
+    return c.json({...row, metadata: {}})
   })

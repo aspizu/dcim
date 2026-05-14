@@ -8,9 +8,16 @@ import {Header} from "#components/header"
 import {NewMenu} from "#components/new-menu"
 import {PhotoGrid} from "#components/photo-grid"
 import {UserHeaderMenu} from "#components/user-header-menu"
-import {useQueryAlbum} from "#hooks/queries"
+import {
+  queryAlbumOptions,
+  queryAlbumPhotosOptions,
+  useQueryAlbum,
+  useQueryAlbumPhotos,
+} from "#hooks/queries"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
+
+import {queryClient} from "../main"
 
 function EditableAlbumTitle(props: {album: api.Album}) {
   const timeout = useRef<ReturnType<typeof setTimeout>>(undefined)
@@ -61,6 +68,11 @@ function AlbumTitle(props: {album: api.Album}) {
 function RouteComponent() {
   const {album: id} = Route.useParams()
   const album = useQueryAlbum(id)
+  const albumPhotos = useQueryAlbumPhotos(id)
+  const allPhotos = albumPhotos.data.pages.reduce(
+    (prev: api.Photo[], cur) => [...prev, ...cur.photos],
+    [],
+  )
   return (
     <>
       <Header
@@ -68,12 +80,19 @@ function RouteComponent() {
         before={$authState.value === AuthState.AUTHENTICATED && <NewMenu isAlbumType />}
         after={$authState.value === AuthState.AUTHENTICATED && <UserHeaderMenu />}
       />
-      {album.data && <AlbumTitle album={album.data} />}
-      {album.data && <PhotoGrid photos={album.data.photos} album={album.data} />}
-      {album.data && <UploadDialog album={album.data} />}
-      {album.data && <AddToAlbumDialog album={album.data} />}
+      <AlbumTitle album={album.data} />
+      <PhotoGrid photos={allPhotos} album={album.data} />
+      <UploadDialog album={album.data} />
+      <AddToAlbumDialog album={album.data} />
     </>
   )
 }
 
-export const Route = createFileRoute("/a_/$album")({component: RouteComponent})
+export const Route = createFileRoute("/a_/$album")({
+  component: RouteComponent,
+  loader: ({params}) =>
+    Promise.all([
+      queryClient.ensureQueryData(queryAlbumOptions(params.album)),
+      queryClient.ensureInfiniteQueryData(queryAlbumPhotosOptions(params.album)),
+    ]),
+})

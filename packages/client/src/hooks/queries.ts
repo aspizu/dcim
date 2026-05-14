@@ -14,6 +14,17 @@ export function queryPhotoOptions(id: string) {
   })
 }
 
+export function queryAlbumPhotoOptions(album: string, photo: string) {
+  return queryOptions({
+    queryKey: ["album", album, "photo", photo],
+    queryFn: async () => api.getAlbumPhoto({photo, album}),
+  })
+}
+
+export function useQueryAlbumPhoto(album: string, photo: string) {
+  return useSuspenseQuery(queryAlbumPhotoOptions(album, photo))
+}
+
 export function useQueryPhoto(id: string) {
   return useSuspenseQuery(queryPhotoOptions(id))
 }
@@ -22,7 +33,10 @@ export const queryPhotosOptions = infiniteQueryOptions({
   queryKey: ["photo"],
   queryFn: async ({pageParam, client}) => {
     const res = await api.listPhotos({next: pageParam})
-    for (const photo of res.photos) {
+    for (let i = 0; i < res.photos.length; i++) {
+      const prev = res.photos[i - 1]?.id ?? null
+      const next = res.photos[i + 1]?.id ?? res.next ?? null
+      const photo = {...res.photos[i], prev, next}
       client.setQueryData(["photo", photo.id], photo)
     }
     return res
@@ -36,13 +50,13 @@ export function useQueryPhotos() {
   return useSuspenseInfiniteQuery(queryPhotosOptions)
 }
 
-export function queryAlbumOptions(id: string) {
+export function queryAlbumPhotosOptions(id: string) {
   return infiniteQueryOptions({
-    queryKey: ["album", id],
+    queryKey: ["album", id, "photo"],
     queryFn: async ({pageParam, client}) => {
-      const res = await api.getAlbum({id, next: pageParam})
+      const res = await api.listAlbumPhotos({id, next: pageParam})
       for (const photo of res.photos) {
-        client.setQueryData(["photo", photo.id], photo)
+        client.setQueryData(["album", id, "photo", photo.id], photo)
       }
       return res
     },
@@ -52,8 +66,8 @@ export function queryAlbumOptions(id: string) {
   })
 }
 
-export function useQueryAlbum(id: string) {
-  return useSuspenseInfiniteQuery(queryAlbumOptions(id))
+export function useQueryAlbumPhotos(id: string) {
+  return useSuspenseInfiniteQuery(queryAlbumPhotosOptions(id))
 }
 
 export const queryAlbumsOptions = queryOptions({
@@ -70,4 +84,19 @@ export const queryAlbumsOptions = queryOptions({
 
 export function useQueryAlbums() {
   return useSuspenseQuery(queryAlbumsOptions)
+}
+
+export function queryAlbumOptions(id: string) {
+  return queryOptions({
+    queryKey: ["album", id],
+    queryFn: async ({client}) => {
+      const res = await api.getAlbum({id})
+      client.setQueryData(["album", id], res)
+      return res
+    },
+  })
+}
+
+export function useQueryAlbum(id: string) {
+  return useSuspenseQuery(queryAlbumOptions(id))
 }
