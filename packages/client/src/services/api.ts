@@ -60,7 +60,9 @@ export async function listPhotos(opts: {
   return call("GET", opts.next ? `/photo?next=${opts.next}` : "/photo")
 }
 
-export async function getPhoto(opts: {id: string}): Promise<Photo> {
+export async function getPhoto(opts: {
+  id: string
+}): Promise<Photo & {next: string | null; prev: string | null}> {
   return call("GET", `/photo/${opts.id}`)
 }
 

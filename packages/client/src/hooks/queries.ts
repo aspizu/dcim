@@ -7,11 +7,12 @@ import {
 
 import * as api from "#services/api"
 
-export const queryPhotoOptions = (id: string) =>
-  queryOptions({
+export function queryPhotoOptions(id: string) {
+  return queryOptions({
     queryKey: ["photo", id],
     queryFn: async () => api.getPhoto({id}),
   })
+}
 
 export function useQueryPhoto(id: string) {
   return useSuspenseQuery(queryPhotoOptions(id))
@@ -35,8 +36,8 @@ export function useQueryPhotos() {
   return useSuspenseInfiniteQuery(queryPhotosOptions)
 }
 
-export const queryAlbumOptions = (id: string) =>
-  infiniteQueryOptions({
+export function queryAlbumOptions(id: string) {
+  return infiniteQueryOptions({
     queryKey: ["album", id],
     queryFn: async ({pageParam, client}) => {
       const res = await api.getAlbum({id, next: pageParam})
@@ -49,6 +50,7 @@ export const queryAlbumOptions = (id: string) =>
     getNextPageParam: (lastPage) => lastPage.next,
     getPreviousPageParam: (firstPage) => firstPage.photos[0]?.id,
   })
+}
 
 export function useQueryAlbum(id: string) {
   return useSuspenseInfiniteQuery(queryAlbumOptions(id))

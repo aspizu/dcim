@@ -6,9 +6,7 @@ import {Button} from "#components/ui/button"
 import type * as api from "#services/api"
 
 export function Photo(props: {
-  photo: api.Photo
-  previousPhoto?: api.Photo
-  nextPhoto?: api.Photo
+  photo: api.Photo & {prev: string | null; next: string | null}
   album?: api.Album
 }) {
   return (
@@ -31,7 +29,7 @@ export function Photo(props: {
           className="absolute inset-0"
         />
       </div>
-      {props.previousPhoto && (
+      {props.photo.prev && (
         <Button
           className="absolute top-[50%] left-4 -translate-y-[50%]"
           variant="secondary"
@@ -43,20 +41,20 @@ export function Photo(props: {
               to="/a/$album/p/$photo"
               params={{
                 album: props.album.id,
-                photo: props.previousPhoto.id,
+                photo: props.photo.prev,
               }}
               replace
             >
               <ArrowLeft />
             </Link>
           ) : (
-            <Link to="/p/$photo" params={{photo: props.previousPhoto.id}} replace>
+            <Link to="/p/$photo" params={{photo: props.photo.prev}} replace>
               <ArrowLeft />
             </Link>
           )}
         </Button>
       )}
-      {props.nextPhoto && (
+      {props.photo.next && (
         <Button
           className="absolute top-[50%] right-4 -translate-y-[50%]"
           variant="secondary"
@@ -68,14 +66,14 @@ export function Photo(props: {
               to="/a/$album/p/$photo"
               params={{
                 album: props.album.id,
-                photo: props.nextPhoto.id,
+                photo: props.photo.next,
               }}
               replace
             >
               <ArrowRight />
             </Link>
           ) : (
-            <Link to="/p/$photo" params={{photo: props.nextPhoto.id}} replace>
+            <Link to="/p/$photo" params={{photo: props.photo.next}} replace>
               <ArrowRight />
             </Link>
           )}
