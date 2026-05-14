@@ -49,9 +49,9 @@ export function UploadDialog(props: {album?: api.Album}) {
         await api.addPhotoToAlbum({id: props.album.id, photoID})
       }
     }
-    await queryClient.invalidateQueries({queryKey: ["photos"]})
+    void queryClient.invalidateQueries({queryKey: ["photo"]})
     if (props.album) {
-      await queryClient.invalidateQueries({queryKey: ["album", props.album.id]})
+      void queryClient.invalidateQueries({queryKey: ["album", props.album.id]})
     }
     $uploadDialogOpen.value = false
   }

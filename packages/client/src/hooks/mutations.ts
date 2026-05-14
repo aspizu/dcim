@@ -19,7 +19,6 @@ export function useRemovePhotoFromAlbum(album: string) {
     mutationFn: (photo: string) => api.removePhotoFromAlbum({id: album, photoID: photo}),
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: ["album", album]})
-      void queryClient.invalidateQueries({queryKey: ["album", album, "photo"]})
     },
   })
 }
@@ -30,7 +29,6 @@ export function useAddPhotoToAlbum(album: string) {
     mutationFn: (photo: string) => api.addPhotoToAlbum({id: album, photoID: photo}),
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: ["album", album]})
-      void queryClient.invalidateQueries({queryKey: ["album", album, "photo"]})
     },
   })
 }
@@ -51,16 +49,6 @@ export function useCreateAlbum() {
     mutationFn: (name: string) => api.createAlbum({name}),
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: ["album"]})
-    },
-  })
-}
-
-export function useCreatePhoto() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (body: Parameters<typeof api.createPhoto>[0]) => api.createPhoto(body),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({queryKey: ["photo"]})
     },
   })
 }

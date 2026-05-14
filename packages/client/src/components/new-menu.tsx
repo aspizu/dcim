@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "#components/ui/dropdown-menu"
-import * as api from "#services/api"
+import {useCreateAlbum} from "#hooks/mutations"
 import {$uploadDialogOpen, $uploadState} from "#stores/upload"
 
 import {Button} from "./ui/button"
@@ -24,6 +24,7 @@ const tryShowOpenFilePicker = fromAsyncThrowable(showOpenFilePicker)
 export function NewMenu(props: {isAlbumType?: boolean}) {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+  const createAlbum = useCreateAlbum()
   async function _onUploadPhotosClick() {
     setIsLoading(true)
     const handles = await tryShowOpenFilePicker({
@@ -41,20 +42,18 @@ export function NewMenu(props: {isAlbumType?: boolean}) {
     })
     setIsLoading(false)
   }
-  async function _onCreateAlbumClick() {
-    setIsLoading(true)
-    const res = await api.createAlbum({name: "Untitled"})
-    await navigate({to: "/a/$album", params: {album: res.id}})
-    setIsLoading(false)
-  }
   function _onAddExistingClick() {
     throw new Error("Not implemented")
+  }
+  async function _onCreateAlbumClick() {
+    const res = await createAlbum.mutateAsync("Untitled")
+    await navigate({to: "/a/$album", params: {album: res.id}})
   }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button disabled={isLoading}>
-          {isLoading ? <Spinner /> : <Plus />}
+        <Button disabled={isLoading || createAlbum.isPending}>
+          {isLoading || createAlbum.isPending ? <Spinner /> : <Plus />}
           {props.isAlbumType ? "Add" : "New"}
         </Button>
       </DropdownMenuTrigger>
