@@ -9,7 +9,7 @@
     {
       "binding": "D1",
       "database_name": "dcim",
-      "database_id": "d3281f1d-a2b4-4c9d-89fd-9e9233653f86",
+      "database_id": "02814551-3e5e-4163-bbaf-756521a69db9",
       "remote": true,
     },
   ],
@@ -35,12 +35,19 @@
     {
       "name": "RATELIMIT",
       "namespace_id": "001",
-      "simple": {"limit": 1000, "period": 10},
+      "simple": {
+        "limit": 1000,
+        "period": 10,
+      },
     },
   ],
   "observability": {
     "enabled": true,
-    "logs": {"enabled": true},
-    "traces": {"enabled": true},
+    "logs": {
+      "enabled": true,
+    },
+    "traces": {
+      "enabled": true,
+    },
   },
 }
