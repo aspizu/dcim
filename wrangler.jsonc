@@ -22,6 +22,7 @@
   "assets": {
     "not_found_handling": "single-page-application",
     "directory": "packages/client/dist",
+    "run_worker_first": ["/api/*"],
   },
   "routes": [
     {

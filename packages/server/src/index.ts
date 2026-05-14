@@ -1,21 +1,35 @@
-import auth from "#api/auth"
+import {HTTPException} from "hono/http-exception"
 
-import album from "./api/album"
-import photo from "./api/photo"
-import hono from "./utils/hono"
+import auth from "#api/auth"
+import getAlbum from "#api/get.album"
+import getPhoto from "#api/get.photo"
+import postAlbum from "#api/post.album"
+import postPhoto from "#api/post.photo"
+import hono from "#utils/hono"
 
 export default hono()
+  .onError((err) => {
+    if (err instanceof HTTPException) {
+      return err.getResponse()
+    }
+    if (err instanceof Error) {
+      throw err
+    }
+    throw new Error(err)
+  })
   .use("/api/*", async (c, next) => {
     const ip = c.req.header("cf-connecting-ip")
     if (!ip) {
-      return c.text("Unauthorized", 400)
+      throw new HTTPException(400, {message: "Unauthorized"})
     }
     const {success} = await c.env.RATELIMIT.limit({key: ip})
     if (!success) {
-      return c.text("Rate limit exceeded", 429)
+      throw new HTTPException(429, {message: "Rate limit exceeded"})
     }
     await next()
   })
   .route("/api", auth)
-  .route("/api", album)
-  .route("/api", photo)
+  .route("/api", getAlbum)
+  .route("/api", postAlbum)
+  .route("/api", getPhoto)
+  .route("/api", postPhoto)

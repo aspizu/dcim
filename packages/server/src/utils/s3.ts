@@ -1,5 +1,7 @@
 import S3mini from "s3mini"
 
+import type {Context} from "./hono"
+
 export const CT_EXTENSIONS: Record<string, string[]> = {
   "image/png": [".png"],
   "image/jpeg": [".jpg", ".jpeg"],
@@ -27,10 +29,10 @@ export function makeS3(env: {
   })
 }
 
-export function generateRandomID() {
-  const bytes = crypto.getRandomValues(new Uint8Array(8))
-  return btoa(String.fromCharCode(...bytes))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "")
+export function getImageKey(c: Context, photo: {image_url: string}): string {
+  return photo.image_url.slice(c.env.R2_URL.length).replace(/^\//, "")
+}
+
+export function getThumbnailKey(c: Context, photo: {thumbnail_url: string}): string {
+  return photo.thumbnail_url.slice(c.env.R2_URL.length).replace(/^\//, "")
 }

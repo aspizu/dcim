@@ -34,14 +34,14 @@ export default hono()
           secure: true,
         },
       )
-      return c.json({})
+      return c.json(null)
     },
   )
   .get("/auth/whoami", async (c) => {
     await ensureLoggedIn(c)
-    return c.json({})
+    return c.json(null)
   })
   .post("/auth/logout", async (c) => {
     deleteCookie(c, "session", {path: "/"})
-    return c.json({})
+    return c.json(null)
   })
