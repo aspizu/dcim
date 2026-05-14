@@ -37,7 +37,8 @@ export async function completeFileUpload(
   onUploadProgress: (id: string, progress: number) => void,
 ) {
   const uploaded = await api.createPhoto(prepared.upload)
-  const res1 = await axios.put(uploaded.imagePresignedURL, prepared.handle, {
+  const file = await prepared.handle.getFile()
+  const res1 = await axios.put(uploaded.imagePresignedURL, file, {
     headers: {
       "Content-Type": prepared.upload.image.contentType,
       "x-amz-checksum-sha256": prepared.upload.image.contentSHA256,
@@ -54,7 +55,7 @@ export async function completeFileUpload(
   }
   const res2 = await axios.put(uploaded.thumbnailPresignedURL, prepared.thumbnail, {
     headers: {
-      "Content-Type": "image/webp",
+      "Content-Type": prepared.upload.thumbnail.contentType,
       "x-amz-checksum-sha256": prepared.upload.thumbnail.contentSHA256,
       "Cache-Control": "public, max-age=31536000, immutable, no-transform",
       "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.handle.name.replace(/\.[^.]+$/, ".webp"))}`,
