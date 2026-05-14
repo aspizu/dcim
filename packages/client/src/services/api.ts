@@ -1,8 +1,6 @@
 export type * from "./fetch"
 import {call} from "./fetch"
 
-export type ContentType = "image/png" | "image/jpeg" | "image/webp" | "image/avif"
-
 export interface Photo {
   id: string
   image_url: string
@@ -77,8 +75,8 @@ export async function getAlbumPhoto(opts: {
 
 export async function createPhoto(body: {
   fileName: string
-  image: {contentType: ContentType; contentSHA256: string; contentLength: number}
-  thumbnail: {contentType: ContentType; contentSHA256: string; contentLength: number}
+  image: {contentType: string; contentSHA256: string; contentLength: number}
+  thumbnail: {contentType: string; contentSHA256: string; contentLength: number}
   thumbhash: string
   width: number
   height: number

@@ -1,14 +1,11 @@
 import {Ellipsis} from "lucide-react"
 import prettyBytes from "pretty-bytes"
 
-import {useObjectURL} from "#hooks/files"
 import {useAsync} from "#hooks/promises"
 import {cn} from "#lib/utils"
-import {transform} from "#lib/workers/transformations-client"
 import type {UploadItem} from "#stores/upload"
 import {$uploadDialogOpen, $uploadState} from "#stores/upload"
 
-import {ImgFaded} from "../img-faded"
 import {Button} from "../ui/button"
 import {
   DropdownMenu,
@@ -48,27 +45,9 @@ export function UploadDialogItem(props: UploadItem & {progress: number | null}) 
   const params = useAsync(async () => {
     const file = await props.handle.getFile()
     return {
-      thumbnail: new Blob(
-        [
-          await transform(file, {
-            resize: {
-              width: 250,
-              height: 250,
-              fit: "scale-down",
-              letterbox: false,
-            },
-            convert: {
-              format: "image/avif",
-              quality: 0.3,
-            },
-          }),
-        ],
-        {type: "image/avif"},
-      ),
       original_size: file.size,
     }
   }, [props.handle])
-  const objectURL = useObjectURL(params.value?.thumbnail)
   return (
     <div
       className={cn(
@@ -77,15 +56,7 @@ export function UploadDialogItem(props: UploadItem & {progress: number | null}) 
       )}
       id={`upload-item-${props.id}`}
     >
-      {objectURL ? (
-        <ImgFaded
-          src={objectURL}
-          alt={props.handle.name}
-          className="aspect-square h-16 w-16 shrink-0 rounded-md object-cover"
-        />
-      ) : (
-        <div className="h-16 w-16 shrink-0 rounded-md bg-neutral-500" />
-      )}
+      <div className="h-16 w-16 shrink-0 rounded-md bg-neutral-500" />
 
       <div className="flex min-w-0 grow flex-col gap-2">
         <div className="flex items-center gap-2">

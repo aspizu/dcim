@@ -1,67 +1,31 @@
 import axios from "axios"
-import exifr from "exifr"
 
 import * as api from "#services/api"
 
-import {sha256} from "./hash"
-import {loadImage} from "./transformations/core/images"
-import type {PipelineOptions} from "./transformations/types"
 import {transform} from "./workers/transformations-client"
 
-const _thumbnailOptions: PipelineOptions = {
-  resize: {width: 720, height: 720, fit: "scale-down", letterbox: false},
-  convert: {format: "image/webp", quality: 0.3},
-}
-const _thumbhashOptions: PipelineOptions = {
-  resize: {width: 8, height: 8, fit: "fill", letterbox: false},
-  convert: {format: "image/webp", quality: 0.0},
-}
-
-async function _blobToDataURL(blob: Blob) {
-  const buffer = await blob.arrayBuffer()
-  const bytes = new Uint8Array(buffer)
-  const binary = bytes.reduce((acc, byte) => acc + String.fromCharCode(byte), "")
-  const base64 = btoa(binary)
-  return `data:${blob.type};base64,${base64}`
-}
-
 export async function prepareFileUpload(handle: FileSystemFileHandle) {
-  const file = await handle.getFile()
-  const [{thumbnail, thumbnailContentSHA256}, contentSHA256, thumbhashBlob, {width, height}] =
-    await Promise.all([
-      transform(file, _thumbnailOptions).then(async (arrayBuffer) => {
-        const thumbnail = new Blob([arrayBuffer], {type: "image/webp"})
-        const thumbnailContentSHA256 = await sha256(thumbnail)
-        return {thumbnail, thumbnailContentSHA256}
-      }),
-      sha256(file),
-      transform(file, _thumbhashOptions).then(
-        (arrayBuffer) => new Blob([arrayBuffer], {type: "image/webp"}),
-      ),
-      loadImage(file).then((image) => ({width: image.width, height: image.height})),
-    ])
-  const metadata = await exifr.parse(file)
-  const thumbhash = await _blobToDataURL(thumbhashBlob)
+  const {input, output} = await transform(handle)
   return {
     upload: {
       fileName: handle.name,
       image: {
-        contentType: file.type as api.ContentType,
-        contentSHA256,
-        contentLength: file.size,
+        contentType: input.type,
+        contentSHA256: input.hash,
+        contentLength: input.size,
       },
       thumbnail: {
-        contentType: "image/webp" as api.ContentType,
-        contentSHA256: thumbnailContentSHA256,
-        contentLength: thumbnail.size,
+        contentType: output.type,
+        contentSHA256: output.hash,
+        contentLength: output.arrayBuffer.byteLength,
       },
-      thumbhash,
-      width,
-      height,
-      metadata,
+      thumbhash: output.thumbhash,
+      width: input.width,
+      height: input.height,
+      metadata: input.metadata,
     },
-    file,
-    thumbnail,
+    thumbnail: new Blob([output.arrayBuffer], {type: output.type}),
+    handle,
   }
 }
 
@@ -73,12 +37,12 @@ export async function completeFileUpload(
   onUploadProgress: (id: string, progress: number) => void,
 ) {
   const uploaded = await api.createPhoto(prepared.upload)
-  const res1 = await axios.put(uploaded.imagePresignedURL, prepared.file, {
+  const res1 = await axios.put(uploaded.imagePresignedURL, prepared.handle, {
     headers: {
-      "Content-Type": prepared.file.type,
+      "Content-Type": prepared.upload.image.contentType,
       "x-amz-checksum-sha256": prepared.upload.image.contentSHA256,
       "Cache-Control": "public, max-age=31536000, immutable, no-transform",
-      "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.file.name)}`,
+      "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.handle.name)}`,
     },
     onUploadProgress(e) {
       onUploadProgress(clientId, (e.loaded / e.total!) * 75)
@@ -93,7 +57,7 @@ export async function completeFileUpload(
       "Content-Type": "image/webp",
       "x-amz-checksum-sha256": prepared.upload.thumbnail.contentSHA256,
       "Cache-Control": "public, max-age=31536000, immutable, no-transform",
-      "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.file.name.replace(/\.[^.]+$/, ".webp"))}`,
+      "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.handle.name.replace(/\.[^.]+$/, ".webp"))}`,
     },
     onUploadProgress(e) {
       onUploadProgress(clientId, 75 + (e.loaded / e.total!) * 25)

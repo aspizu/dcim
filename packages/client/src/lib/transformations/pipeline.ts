@@ -1,11 +1,11 @@
 import {drawImage} from "./core/canvas"
-import {loadImage} from "./core/images"
 import {validateFormat, validateQuality} from "./operations/convert"
 import {calculateResize} from "./operations/resize"
 import type {PipelineOptions} from "./types"
 
-export function transform(
-  input: Blob | FileSystemFileHandle,
+export async function transform(
+  image: ImageBitmap,
+  type: string,
   options: PipelineOptions,
 ): Promise<ArrayBuffer> {
   if (!options.resize && !options.convert) {
@@ -15,15 +15,6 @@ export function transform(
     validateFormat(options.convert.format ?? "image/avif")
     validateQuality(options.convert.quality ?? 1)
   }
-  return _run(input, options)
-}
-
-async function _run(
-  input: Blob | FileSystemFileHandle,
-  options: PipelineOptions,
-): Promise<ArrayBuffer> {
-  const blob = input instanceof FileSystemFileHandle ? await input.getFile() : input
-  const image = await loadImage(blob)
   const originalSize = {width: image.width, height: image.height}
   const resizeResult = calculateResize(
     originalSize,
@@ -35,7 +26,7 @@ async function _run(
     options.resize?.letterbox ?? true,
   )
   const canvas = drawImage(image, resizeResult, "black")
-  const format = options.convert?.format ?? blob.type
+  const format = options.convert?.format ?? type
   const quality = options.convert?.quality ?? 1
   const result = await canvas.convertToBlob({type: format, quality})
   return result.arrayBuffer()
