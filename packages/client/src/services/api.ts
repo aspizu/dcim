@@ -51,7 +51,7 @@ export async function updateAlbum({id, ...body}: {id: string; name: string}): Pr
 }
 
 export async function addPhotoToAlbum(opts: {id: string; photoID: string}): Promise<void> {
-  return call("POST", `/album/${opts.id}`, {photoID: opts.photoID})
+  return call("POST", `/album/${opts.id}/${opts.photoID}`)
 }
 
 export async function listPhotos(opts: {
@@ -86,7 +86,7 @@ export async function createPhoto(body: {
 }
 
 export async function confirmPhotoUploaded(opts: {id: string}): Promise<void> {
-  return call("PATCH", `/photo/${opts.id}/mark-as-uploaded`)
+  return call("POST", `/photo/${opts.id}/mark-as-uploaded`)
 }
 
 export async function removePhotoFromAlbum(opts: {id: string; photoID: string}): Promise<void> {

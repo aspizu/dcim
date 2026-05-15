@@ -105,7 +105,7 @@ export default hono()
       })
     },
   )
-  .patch("/photo/:id/mark-as-uploaded", async (c) => {
+  .post("/photo/:id/mark-as-uploaded", async (c) => {
     await ensureLoggedIn(c)
     const {id} = c.req.param()
     const row = await sql(c)`SELECT * FROM photo WHERE id = ${id}`.first()

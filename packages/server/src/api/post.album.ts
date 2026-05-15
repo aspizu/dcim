@@ -24,26 +24,25 @@ export default hono()
       )`.run()
     return c.json({id})
   })
-  .put("/album/:id", zValidator("json", z.object({name: z.string().min(1)})), async (c) => {
+  .patch("/album/:id", zValidator("json", z.object({name: z.string().min(1)})), async (c) => {
     await ensureLoggedIn(c)
     const {id} = c.req.param()
     const {name} = c.req.valid("json")
     await sql(c)`UPDATE album SET name = ${name} WHERE id = ${id}`.run()
     return c.json(null)
   })
-  .post("/album/:id", zValidator("json", z.object({photoID: z.string()})), async (c) => {
+  .post("/album/:album/:photo", async (c) => {
     await ensureLoggedIn(c)
-    const {id} = c.req.param()
-    const {photoID} = c.req.valid("json")
-    await sql(c)`INSERT INTO photo_album (album_id, photo_id) VALUES (${id}, ${photoID})`.run()
+    const {album, photo} = c.req.param()
+    await sql(c)`INSERT INTO photo_album (album_id, photo_id) VALUES (${album}, ${photo})`.run()
     await sql(c)`
       UPDATE album
       SET
-        count      = (SELECT COUNT(*) FROM photo_album WHERE album_id = ${id}),
+        count      = (SELECT COUNT(*) FROM photo_album WHERE album_id = ${album}),
         updated_at = ${new Date()},
-        oldest     = CASE WHEN oldest IS NULL OR oldest > ${photoID} THEN ${photoID} ELSE oldest END,
-        newest     = CASE WHEN newest IS NULL OR newest < ${photoID} THEN ${photoID} ELSE newest END
-      WHERE id = ${id}
+        oldest     = CASE WHEN oldest IS NULL OR oldest > ${photo} THEN ${photo} ELSE oldest END,
+        newest     = CASE WHEN newest IS NULL OR newest < ${photo} THEN ${photo} ELSE newest END
+      WHERE id = ${album}
       `.run()
     return c.json(null)
   })
@@ -54,7 +53,7 @@ export default hono()
     await sql(c)`
       UPDATE album
       SET
-        count      = (SELECT COUNT(*)    FROM photo_album WHERE album_id = ${id}),
+        count      = (SELECT COUNT(*)      FROM photo_album WHERE album_id = ${id}),
         oldest     = (SELECT MIN(photo_id) FROM photo_album WHERE album_id = ${id}),
         newest     = (SELECT MAX(photo_id) FROM photo_album WHERE album_id = ${id}),
         updated_at = ${new Date()}
