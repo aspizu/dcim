@@ -46,26 +46,33 @@ export default hono()
       if (!CT_EXTENSIONS[image.contentType]?.includes(Path.extname(fileName).toLowerCase())) {
         throw new HTTPException(400, {message: "File extension does not match content type."})
       }
-      const [imagePresignedURL, thumbnailPresignedURL] = await Promise.all(
-        [
-          {...image, key: imageKey},
-          {...thumbnail, key: thumbnailKey},
-        ].map((image) =>
-          s3.getPresignedUrl(
-            "PUT",
-            image.key,
-            60 * 10,
-            {},
-            {
-              "Cache-Control": "public, max-age=31536000, immutable, no-transform",
-              "Content-Disposition": `attachment; filename=${JSON.stringify(fileName)}`,
-              "Content-Type": image.contentType,
-              "Content-Length": image.contentLength.toString(),
-              "x-amz-checksum-sha256": image.contentSHA256,
-            },
-          ),
+      const [imagePresignedURL, thumbnailPresignedURL] = await Promise.all([
+        s3.getPresignedUrl(
+          "PUT",
+          imageKey,
+          60 * 10,
+          {},
+          {
+            "Cache-Control": "public, max-age=31536000, immutable, no-transform",
+            "Content-Disposition": `attachment; filename=${JSON.stringify(fileName)}`,
+            "Content-Type": image.contentType,
+            "Content-Length": image.contentLength.toString(),
+            "x-amz-checksum-sha256": image.contentSHA256,
+          },
         ),
-      )
+        s3.getPresignedUrl(
+          "PUT",
+          thumbnailKey,
+          60 * 10,
+          {},
+          {
+            "Cache-Control": "public, max-age=31536000, immutable, no-transform",
+            "Content-Type": thumbnail.contentType,
+            "Content-Length": thumbnail.contentLength.toString(),
+            "x-amz-checksum-sha256": thumbnail.contentSHA256,
+          },
+        ),
+      ])
       await sql(c)`
         INSERT INTO photo (
           id,

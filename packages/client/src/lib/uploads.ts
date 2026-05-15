@@ -58,7 +58,6 @@ export async function completeFileUpload(
       "Content-Type": prepared.upload.thumbnail.contentType,
       "x-amz-checksum-sha256": prepared.upload.thumbnail.contentSHA256,
       "Cache-Control": "public, max-age=31536000, immutable, no-transform",
-      "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.handle.name.replace(/\.[^.]+$/, ".webp"))}`,
     },
     onUploadProgress(e) {
       onUploadProgress(clientId, 75 + (e.loaded / e.total!) * 25)
