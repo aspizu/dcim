@@ -56,7 +56,7 @@ export class TransformationsWorker extends Server {
       exifr.parse(blob),
     ])
     return {
-      input: {hash, type: blob.type, metadata, height, width, size: blob.size},
+      input: {hash, type: blob.type, metadata: metadata ?? {}, height, width, size: blob.size},
       output: {
         arrayBuffer: outimage,
         hash: outhash,
