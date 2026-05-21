@@ -2,6 +2,7 @@ import {useQueryClient} from "@tanstack/react-query"
 import {createFileRoute} from "@tanstack/react-router"
 import {useRef} from "react"
 
+import {PhotoPicker} from "#components/dialogs/photo-picker"
 import {UploadDialog} from "#components/dialogs/upload-dialog"
 import {Header} from "#components/header"
 import {UserHeaderMenu} from "#components/menus/user-header-menu"
@@ -13,6 +14,7 @@ import {
   useQueryAlbum,
   useQueryAlbumPhotos,
 } from "#hooks/queries"
+import {useOnScrollEnd} from "#hooks/use-on-scroll-end"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
 
@@ -68,6 +70,7 @@ function RouteComponent() {
   const {album: id} = Route.useParams()
   const album = useQueryAlbum(id)
   const albumPhotos = useQueryAlbumPhotos(id)
+  useOnScrollEnd(albumPhotos.fetchNextPage)
   const allPhotos = albumPhotos.data.pages.reduce(
     (prev: api.Photo[], cur) => [...prev, ...cur.photos],
     [],
@@ -82,6 +85,7 @@ function RouteComponent() {
       <AlbumTitle album={album.data} />
       <PhotoGrid photos={allPhotos} album={album.data} />
       <UploadDialog album={album.data} />
+      <PhotoPicker />
     </>
   )
 }

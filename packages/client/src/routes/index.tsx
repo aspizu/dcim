@@ -7,12 +7,14 @@ import {NewMenu} from "#components/new-menu"
 import {PhotoGrid} from "#components/photo-grid"
 import Sidebar from "#components/sidebar"
 import {queryAlbumsOptions, queryPhotosOptions, useQueryPhotos} from "#hooks/queries"
+import {useOnScrollEnd} from "#hooks/use-on-scroll-end"
 import type {Photo} from "#services/api"
 
 import {queryClient} from "../main"
 
 function RouteComponent() {
   const photos = useQueryPhotos()
+  useOnScrollEnd(photos.fetchNextPage)
   const allPhotos = photos.data.pages.reduce(
     (prev: Photo[], cur) => [...prev, ...cur.photos],
     [],
