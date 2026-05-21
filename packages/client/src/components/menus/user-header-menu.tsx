@@ -1,5 +1,5 @@
 import {Link, useNavigate} from "@tanstack/react-router"
-import {Ellipsis, LogOut, Settings} from "lucide-react"
+import {Ellipsis, LogIn, LogOut, Settings} from "lucide-react"
 import {useState} from "react"
 
 import {Button} from "#components/ui/button"
@@ -31,22 +31,33 @@ export function UserHeaderMenu() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link to="/settings">
-              <Settings />
-              Settings
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            variant="destructive"
-            onClick={() => void _onSignOutClick()}
-            disabled={isLoggingOut}
-          >
-            {isLoggingOut ? <Spinner /> : <LogOut />}
-            Sign out
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
+        {$authState.value === AuthState.AUTHENTICATED ? (
+          <DropdownMenuGroup>
+            <DropdownMenuItem asChild>
+              <Link to="/settings">
+                <Settings />
+                Settings
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => void _onSignOutClick()}
+              disabled={isLoggingOut}
+            >
+              {isLoggingOut ? <Spinner /> : <LogOut />}
+              Sign out
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        ) : (
+          <DropdownMenuGroup>
+            <DropdownMenuItem asChild>
+              <Link to="/login" search={{redirect: window.location.pathname}}>
+                <LogIn />
+                Login
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

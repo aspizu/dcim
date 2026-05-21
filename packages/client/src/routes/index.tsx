@@ -2,10 +2,10 @@ import {createFileRoute} from "@tanstack/react-router"
 
 import {UploadDialog} from "#components/dialogs/upload-dialog"
 import {Header} from "#components/header"
+import {UserHeaderMenu} from "#components/menus/user-header-menu"
 import {NewMenu} from "#components/new-menu"
 import {PhotoGrid} from "#components/photo-grid"
 import Sidebar from "#components/sidebar"
-import {UserHeaderMenu} from "#components/user-header-menu"
 import {queryAlbumsOptions, queryPhotosOptions, useQueryPhotos} from "#hooks/queries"
 import type {Photo} from "#services/api"
 

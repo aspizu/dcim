@@ -4,9 +4,9 @@ import {useRef} from "react"
 
 import {UploadDialog} from "#components/dialogs/upload-dialog"
 import {Header} from "#components/header"
+import {UserHeaderMenu} from "#components/menus/user-header-menu"
 import {NewMenu} from "#components/new-menu"
 import {PhotoGrid} from "#components/photo-grid"
-import {UserHeaderMenu} from "#components/user-header-menu"
 import {
   queryAlbumOptions,
   queryAlbumPhotosOptions,
@@ -77,7 +77,7 @@ function RouteComponent() {
       <Header
         title="Album"
         before={$authState.value === AuthState.AUTHENTICATED && <NewMenu isAlbumType />}
-        after={$authState.value === AuthState.AUTHENTICATED && <UserHeaderMenu />}
+        after={<UserHeaderMenu />}
       />
       <AlbumTitle album={album.data} />
       <PhotoGrid photos={allPhotos} album={album.data} />

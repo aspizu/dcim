@@ -1,7 +1,5 @@
 {
   "name": "@dcim/client",
-  "version": "0.0.0",
-  "private": true,
   "type": "module",
   "imports": {
     "#components/*": "./src/components/*.tsx",
@@ -24,6 +22,7 @@
     "@tailwindcss/vite": "^4.3.0",
     "@tanstack/react-query": "^5.100.9",
     "@tanstack/react-router": "^1.169.2",
+    "@uidotdev/usehooks": "^2.4.1",
     "axios": "^1.16.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

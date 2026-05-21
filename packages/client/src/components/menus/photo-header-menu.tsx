@@ -1,4 +1,5 @@
-import {Download, Ellipsis, Link, Trash, X} from "lucide-react"
+import {Link} from "@tanstack/react-router"
+import {Download, Ellipsis, LinkIcon, LogIn, Trash, X} from "lucide-react"
 import {toast} from "sonner"
 
 import {Button} from "#components/ui/button"
@@ -17,7 +18,7 @@ import {
   $removePhotoFromAlbumDialogOpen,
   DeletePhotoDialog,
   RemovePhotoFromAlbumDialog,
-} from "./dialogs"
+} from "../dialogs"
 
 export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
   return (
@@ -36,7 +37,7 @@ export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
                 toast("Copied link to clipboard")
               }}
             >
-              <Link />
+              <LinkIcon />
               Copy raw link
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
@@ -55,7 +56,7 @@ export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
                 Remove from album
               </DropdownMenuItem>
             )}
-            {$authState.value === AuthState.AUTHENTICATED && (
+            {$authState.value === AuthState.AUTHENTICATED ? (
               <DropdownMenuItem
                 variant="destructive"
                 onClick={() => {
@@ -64,6 +65,13 @@ export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
               >
                 <Trash />
                 Delete
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem asChild>
+                <Link to="/login" search={{redirect: window.location.pathname}}>
+                  <LogIn />
+                  Login
+                </Link>
               </DropdownMenuItem>
             )}
           </DropdownMenuGroup>

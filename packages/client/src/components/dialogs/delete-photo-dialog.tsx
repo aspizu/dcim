@@ -38,12 +38,13 @@ export function DeletePhotoDialog(props: {photo: Photo; album?: Album}) {
             variant="destructive"
             disabled={deletePhoto.isPending}
             onClick={() =>
-              void deletePhoto.mutateAsync(props.photo.id).then(() =>
-                navigate({
+              void deletePhoto.mutateAsync(props.photo.id).then(() => {
+                $deletePhotoDialogOpen.value = false
+                return navigate({
                   to: props.album ? "/a/$album" : "/",
                   params: props.album ? {album: props.album.id} : {},
-                }),
-              )
+                })
+              })
             }
           >
             {deletePhoto.isPending && <Spinner />}
