@@ -22,8 +22,10 @@ function RouteComponent() {
 
   const [isLoading, setIsLoading] = useState(false)
   function _redirect() {
+    const redirectParam = new URL(window.location.href).searchParams.get("redirect")
+    const redirectURL = redirectParam ? new URL(redirectParam, window.location.origin) : null
     void navigate({
-      to: new URL(window.location.href).searchParams.get("redirect") ?? "/",
+      to: redirectURL ? `${redirectURL.pathname}${redirectURL.search}${redirectURL.hash}` : "/",
       replace: true,
     })
   }
