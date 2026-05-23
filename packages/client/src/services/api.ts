@@ -13,6 +13,7 @@ export interface Photo {
   width: number
   height: number
   uploaded_at: string
+  in_album?: boolean
 }
 
 export interface Album {
@@ -56,8 +57,17 @@ export async function addPhotoToAlbum(opts: {id: string; photoID: string}): Prom
 
 export async function listPhotos(opts: {
   next?: string
+  albumId?: string
 }): Promise<{next: string | null; photos: Photo[]}> {
-  return call("GET", opts.next ? `/photo?next=${opts.next}` : "/photo")
+  const params = new URLSearchParams()
+  if (opts.next) {
+    params.set("next", opts.next)
+  }
+  if (opts.albumId) {
+    params.set("albumId", opts.albumId)
+  }
+  const qs = params.toString()
+  return call("GET", qs ? `/photo?${qs}` : "/photo")
 }
 
 export async function getPhoto(opts: {
