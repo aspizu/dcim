@@ -1,6 +1,5 @@
-# dcim
+![](docs/assets/screenshot.webp)
 
-dcim is a self-hostable public photo album application. Think Instagram for the Indie Web.
+DCIM is a self-hostable photos app that runs on Cloudflare infra. Fork your own copy to host an instance. My instance is at [**dcim.aspiz.uk**](dcim.aspiz.uk)
 
-Host your instance public at `https://dcim.yourdomain.com/`, upload images from any device.
-Albums are publicly visible to everyone on the internet.
+DCIM is NOT encrypted at-rest, all photos and albums are publicly accessible if you know the UUID of them.
