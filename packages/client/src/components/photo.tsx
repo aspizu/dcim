@@ -50,12 +50,12 @@ export function Photo(props: {
         <ImgFaded
           src={props.photo.thumbnail_url}
           alt={props.photo.file_name}
-          className="absolute inset-0"
+          className="absolute inset-0 h-full w-full"
         />
         <ImgFaded
           src={props.photo.image_url}
           alt={props.photo.file_name}
-          className="absolute inset-0"
+          className="absolute inset-0 h-full w-full"
         />
       </div>
       {props.photo.prev && (
