@@ -7,6 +7,7 @@ import {Button} from "#components/ui/button"
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -14,6 +15,7 @@ import {
 import {Spinner} from "#components/ui/spinner"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
+import {$themePreference, setThemePreference} from "#stores/themes"
 
 const qualityOptions = ["low", "medium", "high", "original"] as const
 
@@ -59,6 +61,24 @@ function RouteComponent() {
                   {q}
                 </SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+        </label>
+        <label className="flex items-center gap-2">
+          <span className="text-sm">Theme</span>
+          <Select
+            value={$themePreference.value}
+            onValueChange={(v) => setThemePreference(v as "light" | "dark" | "system")}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="light">Light</SelectItem>
+                <SelectItem value="dark">Dark</SelectItem>
+                <SelectItem value="system">System</SelectItem>
+              </SelectGroup>
             </SelectContent>
           </Select>
         </label>

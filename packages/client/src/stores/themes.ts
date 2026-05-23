@@ -5,10 +5,29 @@ export enum Theme {
   DARK = "dark",
 }
 
+export type ThemePreference = "light" | "dark" | "system"
+
 const media = window.matchMedia("(prefers-color-scheme: dark)")
 
-export const $theme = signal<Theme>(media.matches ? Theme.DARK : Theme.LIGHT)
+function _resolveTheme(pref: ThemePreference): Theme {
+  return pref === "system" ? (media.matches ? Theme.DARK : Theme.LIGHT) : (pref as Theme)
+}
 
-media.addEventListener("change", (event) => {
-  $theme.value = event.matches ? Theme.DARK : Theme.LIGHT
+function _loadPreference(): ThemePreference {
+  return (localStorage.getItem("theme") as ThemePreference) || "system"
+}
+
+export const $themePreference = signal<ThemePreference>(_loadPreference())
+export const $theme = signal<Theme>(_resolveTheme($themePreference.value))
+
+export function setThemePreference(pref: ThemePreference) {
+  $themePreference.value = pref
+  $theme.value = _resolveTheme(pref)
+  localStorage.setItem("theme", pref)
+}
+
+media.addEventListener("change", () => {
+  if ($themePreference.value === "system") {
+    $theme.value = _resolveTheme("system")
+  }
 })
