@@ -1,5 +1,6 @@
 import {useQueryClient} from "@tanstack/react-query"
 import {createFileRoute} from "@tanstack/react-router"
+import {isSameDay, format} from "date-fns"
 import {useRef} from "react"
 
 import {Header} from "#components/header"
@@ -13,6 +14,7 @@ import {
   useQueryAlbumPhotos,
 } from "#hooks/queries"
 import {useOnScrollEnd} from "#hooks/use-on-scroll-end"
+import {extractTimestampFromUUIDv7} from "#lib/utils"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
 
@@ -53,13 +55,27 @@ function EditableAlbumTitle(props: {album: api.Album}) {
 }
 
 function AlbumTitle(props: {album: api.Album}) {
+  const newestTime = props.album.newest ? extractTimestampFromUUIDv7(props.album.newest) : null
+  const oldestTime = props.album.oldest ? extractTimestampFromUUIDv7(props.album.oldest) : null
+
+  const dateLabel = (() => {
+    if (!newestTime || !oldestTime) {
+      return null
+    }
+    if (isSameDay(oldestTime, newestTime)) {
+      return format(newestTime, "EEEE, MMMM d, yyyy")
+    }
+    return `${format(oldestTime, "MMM d, yyyy")} – ${format(newestTime, "MMM d, yyyy")}`
+  })()
+
   return (
-    <div className="px-2 pt-8 pb-4">
+    <div className="flex flex-col px-2 pt-8 pb-4">
       {$authState.value === AuthState.AUTHENTICATED ? (
         <EditableAlbumTitle album={props.album} />
       ) : (
         <h1 className="border-b border-b-transparent text-4xl">{props.album.name}</h1>
       )}
+      <span className="mt-1 text-sm text-muted-foreground">{dateLabel}</span>
     </div>
   )
 }
@@ -81,7 +97,9 @@ function RouteComponent() {
         after={<UserHeaderMenu />}
       />
       <AlbumTitle album={album.data} />
-      <PhotoGrid photos={allPhotos} album={album.data} />
+      <div className="p-2 pt-0">
+        <PhotoGrid photos={allPhotos} album={album.data} />
+      </div>
     </>
   )
 }
