@@ -13,18 +13,16 @@ import {Spinner} from "#components/ui/spinner"
 import {useDeletePhoto} from "#hooks/mutations"
 import type {Album, Photo} from "#services/api"
 
-import {$deletePhotoDialogOpen} from "."
-
-export function DeletePhotoDialog(props: {photo: Photo; album?: Album}) {
+export function DeletePhotoDialog(props: {
+  photo: Photo
+  album?: Album
+  open: boolean
+  onOpenChange: (value: boolean) => void
+}) {
   const navigate = useNavigate()
   const deletePhoto = useDeletePhoto()
   return (
-    <Dialog
-      open={$deletePhotoDialogOpen.value}
-      onOpenChange={(value) => {
-        $deletePhotoDialogOpen.value = value
-      }}
-    >
+    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Delete {props.photo.file_name}</DialogTitle>
@@ -39,7 +37,7 @@ export function DeletePhotoDialog(props: {photo: Photo; album?: Album}) {
             disabled={deletePhoto.isPending}
             onClick={() =>
               void deletePhoto.mutateAsync(props.photo.id).then(() => {
-                $deletePhotoDialogOpen.value = false
+                props.onOpenChange(false)
                 return navigate({
                   to: props.album ? "/a/$album" : "/",
                   params: props.album ? {album: props.album.id} : {},

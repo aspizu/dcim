@@ -1,9 +1,8 @@
 import {useQueryClient} from "@tanstack/react-query"
-import {useState} from "react"
+import {useEffect, useState} from "react"
 
 import {completeFileUpload, prepareFileUpload} from "#lib/uploads"
 import * as api from "#services/api"
-import {$uploadDialogOpen, $uploadState} from "#stores/upload"
 
 import {Button} from "../ui/button"
 import {
@@ -27,12 +26,23 @@ function UploadStatus(props: {progress: Record<string, number>; total: number}) 
   )
 }
 
-export function UploadDialog(props: {album?: api.Album}) {
-  const items = [...$uploadState.value]
+export function UploadDialog(props: {
+  fileHandles: {id: string; handle: FileSystemFileHandle}[]
+  open: boolean
+  onOpenChange: (value: boolean) => void
+  onRemoveFileHandle: (id: string) => void
+  album?: api.Album
+}) {
+  const items = [...props.fileHandles]
   const len = items.length
   items.sort((a, b) => a.handle.name.localeCompare(b.handle.name))
   const [progress, setProgress] = useState<Record<string, number> | null>(null)
   const queryClient = useQueryClient()
+  useEffect(() => {
+    if (props.open) {
+      setProgress(null)
+    }
+  }, [props.fileHandles, props.open])
   async function _onUploadClick() {
     const preparedPhotos = []
     for (const item of items) {
@@ -53,16 +63,10 @@ export function UploadDialog(props: {album?: api.Album}) {
     if (props.album) {
       void queryClient.invalidateQueries({queryKey: ["album", props.album.id]})
     }
-    $uploadDialogOpen.value = false
+    props.onOpenChange(false)
   }
   return (
-    <Dialog
-      open={$uploadDialogOpen.value}
-      onOpenChange={(value) => {
-        if (progress !== null) return
-        $uploadDialogOpen.value = value
-      }}
-    >
+    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
       <DialogContent showCloseButton={progress === null}>
         <DialogHeader>
           <DialogTitle>Upload photos</DialogTitle>
@@ -79,6 +83,7 @@ export function UploadDialog(props: {album?: api.Album}) {
               key={item.id}
               {...item}
               progress={progress === null ? null : progress[item.id]}
+              onRemove={props.onRemoveFileHandle}
             />
           ))}
         </div>

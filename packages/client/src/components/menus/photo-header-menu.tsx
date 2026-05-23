@@ -1,5 +1,6 @@
 import {Link} from "@tanstack/react-router"
 import {Download, Ellipsis, LinkIcon, LogIn, Trash, X} from "lucide-react"
+import {useState} from "react"
 import {toast} from "sonner"
 
 import {Button} from "#components/ui/button"
@@ -13,14 +14,11 @@ import {
 import type {Album, Photo} from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
 
-import {
-  $deletePhotoDialogOpen,
-  $removePhotoFromAlbumDialogOpen,
-  DeletePhotoDialog,
-  RemovePhotoFromAlbumDialog,
-} from "../dialogs"
+import {DeletePhotoDialog, RemovePhotoFromAlbumDialog} from "../dialogs"
 
 export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+  const [isRemoveOpen, setIsRemoveOpen] = useState(false)
   return (
     <>
       <DropdownMenu>
@@ -49,7 +47,7 @@ export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
             {$authState.value === AuthState.AUTHENTICATED && props.album && (
               <DropdownMenuItem
                 onClick={() => {
-                  $removePhotoFromAlbumDialogOpen.value = true
+                  setIsRemoveOpen(true)
                 }}
               >
                 <X />
@@ -60,7 +58,7 @@ export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
               <DropdownMenuItem
                 variant="destructive"
                 onClick={() => {
-                  $deletePhotoDialogOpen.value = true
+                  setIsDeleteOpen(true)
                 }}
               >
                 <Trash />
@@ -77,8 +75,20 @@ export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-      <DeletePhotoDialog photo={props.photo} album={props.album} />
-      {props.album && <RemovePhotoFromAlbumDialog photo={props.photo} album={props.album} />}
+      <DeletePhotoDialog
+        photo={props.photo}
+        album={props.album}
+        open={isDeleteOpen}
+        onOpenChange={setIsDeleteOpen}
+      />
+      {props.album && (
+        <RemovePhotoFromAlbumDialog
+          photo={props.photo}
+          album={props.album}
+          open={isRemoveOpen}
+          onOpenChange={setIsRemoveOpen}
+        />
+      )}
     </>
   )
 }

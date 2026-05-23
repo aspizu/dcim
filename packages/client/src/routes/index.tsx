@@ -1,9 +1,8 @@
 import {createFileRoute} from "@tanstack/react-router"
 
-import {UploadDialog} from "#components/dialogs/upload-dialog"
 import {Header} from "#components/header"
+import {NewMenu} from "#components/menus/new-menu"
 import {UserHeaderMenu} from "#components/menus/user-header-menu"
-import {NewMenu} from "#components/new-menu"
 import {PhotoGrid} from "#components/photo-grid"
 import Sidebar from "#components/sidebar"
 import {queryAlbumsOptions, queryPhotosOptions, useQueryPhotos} from "#hooks/queries"
@@ -26,7 +25,6 @@ function RouteComponent() {
         <Sidebar />
         <PhotoGrid photos={allPhotos} />
       </div>
-      <UploadDialog />
     </>
   )
 }

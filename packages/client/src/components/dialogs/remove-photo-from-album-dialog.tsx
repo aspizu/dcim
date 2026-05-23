@@ -13,18 +13,16 @@ import {Spinner} from "#components/ui/spinner"
 import {useRemovePhotoFromAlbum} from "#hooks/mutations"
 import type {Album, Photo} from "#services/api"
 
-import {$removePhotoFromAlbumDialogOpen} from "."
-
-export function RemovePhotoFromAlbumDialog(props: {photo: Photo; album: Album}) {
+export function RemovePhotoFromAlbumDialog(props: {
+  photo: Photo
+  album: Album
+  open: boolean
+  onOpenChange: (value: boolean) => void
+}) {
   const navigate = useNavigate()
   const removePhotoFromAlbum = useRemovePhotoFromAlbum(props.album.id)
   return (
-    <Dialog
-      open={$removePhotoFromAlbumDialogOpen.value}
-      onOpenChange={(value) => {
-        $removePhotoFromAlbumDialogOpen.value = value
-      }}
-    >
+    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Remove from {props.album.name}</DialogTitle>
@@ -37,9 +35,10 @@ export function RemovePhotoFromAlbumDialog(props: {photo: Photo; album: Album}) 
           <Button
             variant="destructive"
             onClick={() =>
-              void removePhotoFromAlbum
-                .mutateAsync(props.photo.id)
-                .then(() => navigate({to: "/"}))
+              void removePhotoFromAlbum.mutateAsync(props.photo.id).then(() => {
+                props.onOpenChange(false)
+                return navigate({to: "/"})
+              })
             }
             disabled={removePhotoFromAlbum.isPending}
           >

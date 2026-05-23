@@ -2,11 +2,9 @@ import {useQueryClient} from "@tanstack/react-query"
 import {createFileRoute} from "@tanstack/react-router"
 import {useRef} from "react"
 
-import {PhotoPicker} from "#components/dialogs/photo-picker"
-import {UploadDialog} from "#components/dialogs/upload-dialog"
 import {Header} from "#components/header"
+import {NewMenu} from "#components/menus/new-menu"
 import {UserHeaderMenu} from "#components/menus/user-header-menu"
-import {NewMenu} from "#components/new-menu"
 import {PhotoGrid} from "#components/photo-grid"
 import {
   queryAlbumOptions,
@@ -79,13 +77,11 @@ function RouteComponent() {
     <>
       <Header
         title="Album"
-        before={$authState.value === AuthState.AUTHENTICATED && <NewMenu isAlbumType />}
+        before={$authState.value === AuthState.AUTHENTICATED && <NewMenu album={album.data} />}
         after={<UserHeaderMenu />}
       />
       <AlbumTitle album={album.data} />
       <PhotoGrid photos={allPhotos} album={album.data} />
-      <UploadDialog album={album.data} />
-      <PhotoPicker />
     </>
   )
 }

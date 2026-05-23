@@ -3,8 +3,6 @@ import prettyBytes from "pretty-bytes"
 
 import {useAsync} from "#hooks/promises"
 import {cn} from "#lib/utils"
-import type {UploadItem} from "#stores/upload"
-import {$uploadDialogOpen, $uploadState} from "#stores/upload"
 
 import {Button} from "../ui/button"
 import {
@@ -16,12 +14,14 @@ import {
 } from "../ui/dropdown-menu"
 import {Progress} from "../ui/progress"
 
-function UploadItemDropDown(props: {id: string}) {
+interface UploadItem {
+  id: string
+  handle: FileSystemFileHandle
+}
+
+function UploadItemDropDown(props: {id: string; onRemove: (id: string) => void}) {
   function _onRemoveClick() {
-    $uploadState.value = $uploadState.value.filter((item) => item.id !== props.id)
-    if ($uploadState.value.length === 0) {
-      $uploadDialogOpen.value = false
-    }
+    props.onRemove(props.id)
   }
   return (
     <DropdownMenu>
@@ -41,7 +41,9 @@ function UploadItemDropDown(props: {id: string}) {
   )
 }
 
-export function UploadDialogItem(props: UploadItem & {progress: number | null}) {
+export function UploadDialogItem(
+  props: UploadItem & {progress: number | null; onRemove: (id: string) => void},
+) {
   const params = useAsync(async () => {
     const file = await props.handle.getFile()
     return {
@@ -70,7 +72,9 @@ export function UploadDialogItem(props: UploadItem & {progress: number | null}) 
             </span>
           )}
 
-          {props.progress === null && <UploadItemDropDown id={props.id} />}
+          {props.progress === null && (
+            <UploadItemDropDown id={props.id} onRemove={props.onRemove} />
+          )}
         </div>
         {props.progress !== null && <Progress value={props.progress} />}
       </div>

@@ -34,7 +34,7 @@ export function Photo(props: {
   return (
     <div className="relative mb-11 grid grow place-items-center">
       <div
-        className="relative overflow-hidden"
+        className="relative overflow-hidden bg-neutral-500"
         style={{
           aspectRatio: `${props.photo.width / props.photo.height}`,
           viewTransitionName: `photo-${props.photo.id}`,
@@ -46,6 +46,11 @@ export function Photo(props: {
           src={props.photo.thumbhash}
           alt={props.photo.file_name}
           className="absolute inset-0 scale-[1.05] blur-md"
+        />
+        <ImgFaded
+          src={props.photo.thumbnail_url}
+          alt={props.photo.file_name}
+          className="absolute inset-0"
         />
         <ImgFaded
           src={props.photo.image_url}
