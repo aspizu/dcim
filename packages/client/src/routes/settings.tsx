@@ -4,6 +4,13 @@ import {useState} from "react"
 
 import {Header} from "#components/header"
 import {Button} from "#components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "#components/ui/select"
 import {Spinner} from "#components/ui/spinner"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
@@ -27,31 +34,33 @@ function RouteComponent() {
       <div className="flex flex-col items-start gap-6 p-4">
         <label className="flex items-center gap-2">
           <span className="text-sm">Thumbnail quality</span>
-          <select
-            className="rounded-md border px-2 py-1 text-sm"
-            value={thumbnailQuality}
-            onChange={(e) => setThumbnailQuality(e.target.value)}
-          >
-            {qualityOptions.map((q) => (
-              <option key={q} value={q}>
-                {q}
-              </option>
-            ))}
-          </select>
+          <Select value={thumbnailQuality} onValueChange={setThumbnailQuality}>
+            <SelectTrigger className="w-28">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {qualityOptions.map((q) => (
+                <SelectItem key={q} value={q}>
+                  {q}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </label>
         <label className="flex items-center gap-2">
           <span className="text-sm">Backup quality</span>
-          <select
-            className="rounded-md border px-2 py-1 text-sm"
-            value={backupQuality}
-            onChange={(e) => setBackupQuality(e.target.value)}
-          >
-            {qualityOptions.map((q) => (
-              <option key={q} value={q}>
-                {q}
-              </option>
-            ))}
-          </select>
+          <Select value={backupQuality} onValueChange={setBackupQuality}>
+            <SelectTrigger className="w-28">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {qualityOptions.map((q) => (
+                <SelectItem key={q} value={q}>
+                  {q}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </label>
         <Button
           variant="destructive"
