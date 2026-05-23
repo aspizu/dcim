@@ -52,7 +52,7 @@ export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
                 }}
               >
                 <X />
-                Remove from album
+                Remove
               </DropdownMenuItem>
             )}
             {$authState.value === AuthState.AUTHENTICATED && (
