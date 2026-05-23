@@ -1,5 +1,5 @@
 import {Check} from "lucide-react"
-import {Suspense, useRef, useState} from "react"
+import {Suspense, useRef} from "react"
 
 import {ImgFaded} from "#components/img-faded"
 import {Button} from "#components/ui/button"
@@ -11,25 +11,28 @@ import {
   DialogTitle,
 } from "#components/ui/dialog"
 import {Spinner} from "#components/ui/spinner"
-import {useAddPhotoToAlbum} from "#hooks/mutations"
+import {useAddPhotoToAlbum, useRemovePhotoFromAlbum} from "#hooks/mutations"
 import {useQueryPhotosByAlbum} from "#hooks/queries"
 import {useOnScrollEnd} from "#hooks/use-on-scroll-end"
 import {cn} from "#lib/utils"
 import type {Photo} from "#services/api"
 import type * as api from "#services/api"
+import {$editAlbumAdditions, $editAlbumDeletions, resetEditAlbumStore} from "#stores/album"
 
 function Photo(props: {
-  photo: api.Photo
-  selected: boolean
+  photo: api.Photo & {in_album: boolean}
   setSelected: (value: boolean) => void
 }) {
+  const selected =
+    $editAlbumAdditions.value.includes(props.photo.id) ||
+    (props.photo.in_album && !$editAlbumDeletions.value.includes(props.photo.id))
   return (
     <div
       className="relative aspect-square overflow-hidden rounded-md"
       role="button"
-      aria-selected={props.selected ? "true" : "false"}
+      aria-selected={selected ? "true" : "false"}
       onClick={() => {
-        props.setSelected(!props.selected)
+        props.setSelected(!selected)
       }}
     >
       <img
@@ -45,13 +48,13 @@ function Photo(props: {
         alt={props.photo.file_name}
         className={cn(
           "absolute inset-0 h-full w-full object-cover transition-all",
-          props.selected && "brightness-50",
+          selected && "brightness-50",
         )}
       />
       <div
         className={cn(
           "absolute right-1 bottom-1 grid size-6 place-items-center rounded-md bg-primary transition-opacity",
-          props.selected ? "opacity-100" : "opacity-0",
+          selected ? "opacity-100" : "opacity-0",
         )}
       >
         <Check className="size-4 text-primary-foreground" />
@@ -60,11 +63,7 @@ function Photo(props: {
   )
 }
 
-export function PhotoGrid(props: {
-  album: string
-  selected: string[]
-  setSelected: (value: string[]) => void
-}) {
+export function PhotoGrid(props: {album: string}) {
   const ref = useRef<HTMLDivElement>(null)
   const photos = useQueryPhotosByAlbum(props.album)
   useOnScrollEnd(photos.fetchNextPage, ref)
@@ -79,15 +78,26 @@ export function PhotoGrid(props: {
           <Photo
             key={photo.id}
             photo={photo}
-            selected={props.selected.includes(photo.id) || photo.in_album}
             setSelected={(value) => {
-              const selected = new Set(props.selected)
-              if (value) {
-                selected.add(photo.id)
+              if (photo.in_album) {
+                if (value === false && !$editAlbumDeletions.value.includes(photo.id)) {
+                  $editAlbumDeletions.value = [...$editAlbumDeletions.value, photo.id]
+                }
+                if (value === true && $editAlbumDeletions.value.includes(photo.id)) {
+                  $editAlbumDeletions.value = $editAlbumDeletions.value.filter(
+                    (p) => p !== photo.id,
+                  )
+                }
               } else {
-                selected.delete(photo.id)
+                if (value === true && !$editAlbumAdditions.value.includes(photo.id)) {
+                  $editAlbumAdditions.value = [...$editAlbumAdditions.value, photo.id]
+                }
+                if (value === false && $editAlbumAdditions.value.includes(photo.id)) {
+                  $editAlbumAdditions.value = $editAlbumAdditions.value.filter(
+                    (p) => p !== photo.id,
+                  )
+                }
               }
-              props.setSelected([...selected])
             }}
           />
         ))}
@@ -101,11 +111,14 @@ export function AddPhotoToAlbumDialog(props: {
   open: boolean
   onOpenChange: (value: boolean) => void
 }) {
-  const [selected, setSelected] = useState<string[]>([])
   const addPhotoToAlbum = useAddPhotoToAlbum(props.album.id)
-  async function _onAddClick() {
-    await Promise.all(selected.map((photo) => addPhotoToAlbum.mutateAsync(photo)))
-    setSelected([])
+  const removePhotoFromAlbum = useRemovePhotoFromAlbum(props.album.id)
+  async function _onSaveClick() {
+    await Promise.all([
+      ...$editAlbumAdditions.value.map((photo) => addPhotoToAlbum.mutateAsync(photo)),
+      ...$editAlbumDeletions.value.map((photo) => removePhotoFromAlbum.mutateAsync(photo)),
+    ])
+    resetEditAlbumStore()
     props.onOpenChange(false)
   }
   return (
@@ -114,7 +127,7 @@ export function AddPhotoToAlbumDialog(props: {
       onOpenChange={(value) => {
         props.onOpenChange(value)
         if (!value) {
-          setSelected([])
+          resetEditAlbumStore()
         }
       }}
     >
@@ -123,15 +136,15 @@ export function AddPhotoToAlbumDialog(props: {
           <DialogTitle>Add photos</DialogTitle>
         </DialogHeader>
         <Suspense fallback={<Spinner />}>
-          <PhotoGrid album={props.album.id} selected={selected} setSelected={setSelected} />
+          <PhotoGrid album={props.album.id} />
         </Suspense>
         <DialogFooter>
           <Button
-            disabled={selected.length === 0 || addPhotoToAlbum.isPending}
-            onClick={() => void _onAddClick()}
+            disabled={addPhotoToAlbum.isPending || removePhotoFromAlbum.isPending}
+            onClick={() => void _onSaveClick()}
           >
-            {addPhotoToAlbum.isPending && <Spinner />}
-            Add
+            {(addPhotoToAlbum.isPending || removePhotoFromAlbum.isPending) && <Spinner />}
+            Save
           </Button>
         </DialogFooter>
       </DialogContent>

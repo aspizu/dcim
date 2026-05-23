@@ -13,7 +13,6 @@ export interface Photo {
   width: number
   height: number
   uploaded_at: string
-  in_album?: boolean
 }
 
 export interface Album {
@@ -112,6 +111,10 @@ export async function removePhotoFromAlbum(opts: {id: string; photoID: string}):
 
 export async function deletePhoto({id}: {id: string}): Promise<void> {
   return call("DELETE", `/photo/${id}`)
+}
+
+export async function deleteAlbum({id}: {id: string}): Promise<void> {
+  return call("DELETE", `/album/${id}`)
 }
 
 export async function login({totp}: {totp: string}): Promise<void> {

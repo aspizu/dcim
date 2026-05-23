@@ -1,4 +1,5 @@
 import {zValidator} from "@hono/zod-validator"
+import {HTTPException} from "hono/http-exception"
 import * as uuid from "uuid"
 import z from "zod"
 
@@ -44,6 +45,16 @@ export default hono()
         newest     = CASE WHEN newest IS NULL OR newest < ${photo} THEN ${photo} ELSE newest END
       WHERE id = ${album}
       `.run()
+    return c.json(null)
+  })
+  .delete("/album/:id", async (c) => {
+    await ensureLoggedIn(c)
+    const {id} = c.req.param()
+    const row = await sql(c)`SELECT id FROM album WHERE id = ${id}`.first()
+    if (row === null) {
+      throw new HTTPException(404, {message: "Album not found."})
+    }
+    await sql(c)`DELETE FROM album WHERE id = ${id}`.run()
     return c.json(null)
   })
   .delete("/album/:id/:photoID", async (c) => {

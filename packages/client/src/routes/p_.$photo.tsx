@@ -1,7 +1,7 @@
 import {createFileRoute} from "@tanstack/react-router"
 
 import {Header} from "#components/header"
-import {PhotoHeaderMenu} from "#components/menus/photo-header-menu"
+import {PhotoHeaderMenu} from "#components/menus"
 import {Photo} from "#components/photo"
 import {queryPhotoOptions, useQueryPhoto} from "#hooks/queries"
 

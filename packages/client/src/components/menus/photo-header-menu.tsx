@@ -1,5 +1,4 @@
-import {Link} from "@tanstack/react-router"
-import {Download, Ellipsis, LinkIcon, LogIn, Trash, X} from "lucide-react"
+import {Download, Ellipsis, LinkIcon, Trash, X} from "lucide-react"
 import {useState} from "react"
 import {toast} from "sonner"
 
@@ -9,12 +8,14 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "#components/ui/dropdown-menu"
 import type {Album, Photo} from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
 
 import {DeletePhotoDialog, RemovePhotoFromAlbumDialog} from "../dialogs"
+import {UserMenuItems} from "./user-menu-items"
 
 export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
@@ -54,7 +55,7 @@ export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
                 Remove from album
               </DropdownMenuItem>
             )}
-            {$authState.value === AuthState.AUTHENTICATED ? (
+            {$authState.value === AuthState.AUTHENTICATED && (
               <DropdownMenuItem
                 variant="destructive"
                 onClick={() => {
@@ -64,15 +65,10 @@ export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
                 <Trash />
                 Delete
               </DropdownMenuItem>
-            ) : (
-              <DropdownMenuItem asChild>
-                <Link to="/login" search={{redirect: window.location.pathname}}>
-                  <LogIn />
-                  Login
-                </Link>
-              </DropdownMenuItem>
             )}
           </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <UserMenuItems />
         </DropdownMenuContent>
       </DropdownMenu>
       <DeletePhotoDialog

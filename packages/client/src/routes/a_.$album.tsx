@@ -1,11 +1,9 @@
 import {useQueryClient} from "@tanstack/react-query"
 import {createFileRoute} from "@tanstack/react-router"
-import {isSameDay, format} from "date-fns"
 import {useRef} from "react"
 
 import {Header} from "#components/header"
-import {NewMenu} from "#components/menus/new-menu"
-import {UserHeaderMenu} from "#components/menus/user-header-menu"
+import {AlbumHeaderMenu, NewMenu} from "#components/menus"
 import {PhotoGrid} from "#components/photo-grid"
 import {
   queryAlbumOptions,
@@ -14,7 +12,7 @@ import {
   useQueryAlbumPhotos,
 } from "#hooks/queries"
 import {useOnScrollEnd} from "#hooks/use-on-scroll-end"
-import {extractTimestampFromUUIDv7} from "#lib/utils"
+import {extractTimestampFromUUIDv7, formatDateRange} from "#lib/dates"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
 
@@ -43,11 +41,13 @@ function EditableAlbumTitle(props: {album: api.Album}) {
         }
       }}
       onChange={(event) => {
-        setTimeout(() => void _save(event.target.value), 500)
+        clearTimeout(timeout.current)
+        timeout.current = setTimeout(() => void _save(event.target.value), 500)
       }}
       onKeyUp={(event: any) => {
         if (event.key === "Enter") {
           void _save(event.target.value)
+          event.target.blur()
         }
       }}
     />
@@ -58,16 +58,6 @@ function AlbumTitle(props: {album: api.Album}) {
   const newestTime = props.album.newest ? extractTimestampFromUUIDv7(props.album.newest) : null
   const oldestTime = props.album.oldest ? extractTimestampFromUUIDv7(props.album.oldest) : null
 
-  const dateLabel = (() => {
-    if (!newestTime || !oldestTime) {
-      return null
-    }
-    if (isSameDay(oldestTime, newestTime)) {
-      return format(newestTime, "EEEE, MMMM d, yyyy")
-    }
-    return `${format(oldestTime, "MMM d, yyyy")} – ${format(newestTime, "MMM d, yyyy")}`
-  })()
-
   return (
     <div className="flex flex-col px-2 pt-8 pb-4">
       {$authState.value === AuthState.AUTHENTICATED ? (
@@ -75,7 +65,11 @@ function AlbumTitle(props: {album: api.Album}) {
       ) : (
         <h1 className="border-b border-b-transparent text-4xl">{props.album.name}</h1>
       )}
-      <span className="mt-1 text-sm text-muted-foreground">{dateLabel}</span>
+      {newestTime !== null && oldestTime !== null && (
+        <span className="mt-1 text-sm text-muted-foreground">
+          {formatDateRange(oldestTime, newestTime)}
+        </span>
+      )}
     </div>
   )
 }
@@ -94,7 +88,7 @@ function RouteComponent() {
       <Header
         title="Album"
         before={$authState.value === AuthState.AUTHENTICATED && <NewMenu album={album.data} />}
-        after={<UserHeaderMenu />}
+        after={<AlbumHeaderMenu album={album.data} />}
       />
       <AlbumTitle album={album.data} />
       <div className="p-2 pt-0">

@@ -1,8 +1,7 @@
 import {createFileRoute} from "@tanstack/react-router"
 
 import {Header} from "#components/header"
-import {NewMenu} from "#components/menus/new-menu"
-import {UserHeaderMenu} from "#components/menus/user-header-menu"
+import {IndexHeaderMenu, NewMenu} from "#components/menus"
 import {PhotoGrid} from "#components/photo-grid"
 import Sidebar from "#components/sidebar"
 import {queryAlbumsOptions, queryPhotosOptions, useQueryPhotos} from "#hooks/queries"
@@ -20,7 +19,7 @@ function RouteComponent() {
   )
   return (
     <>
-      <Header title="Photos" before={<NewMenu />} after={<UserHeaderMenu />} />
+      <Header title="Photos" before={<NewMenu />} after={<IndexHeaderMenu />} />
       <div className="grid grid-cols-[200px_auto] gap-2 px-2 pb-2">
         <Sidebar />
         <PhotoGrid photos={allPhotos} />

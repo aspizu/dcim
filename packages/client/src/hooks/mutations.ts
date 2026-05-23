@@ -43,6 +43,16 @@ export function useUpdateAlbum(album: string) {
   })
 }
 
+export function useDeleteAlbum() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => api.deleteAlbum({id}),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({queryKey: ["album"]})
+    },
+  })
+}
+
 export function useCreateAlbum() {
   const queryClient = useQueryClient()
   return useMutation({
