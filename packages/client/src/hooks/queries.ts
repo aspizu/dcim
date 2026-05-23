@@ -46,8 +46,25 @@ export const queryPhotosOptions = infiniteQueryOptions({
   getPreviousPageParam: (firstPage) => firstPage.photos[0]?.id,
 })
 
+export function queryPhotosByAlbumOptions(album: string) {
+  return infiniteQueryOptions({
+    queryKey: ["photo-by-album", album],
+    queryFn: async ({pageParam}) => {
+      const res = await api.listPhotosByAlbum({next: pageParam, album})
+      return res
+    },
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.next,
+    getPreviousPageParam: (firstPage) => firstPage.photos[0]?.id,
+  })
+}
+
 export function useQueryPhotos() {
   return useSuspenseInfiniteQuery(queryPhotosOptions)
+}
+
+export function useQueryPhotosByAlbum(album: string) {
+  return useSuspenseInfiniteQuery(queryPhotosByAlbumOptions(album))
 }
 
 export function queryAlbumPhotosOptions(id: string) {

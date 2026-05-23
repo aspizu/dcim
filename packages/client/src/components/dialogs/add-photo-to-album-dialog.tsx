@@ -1,5 +1,5 @@
 import {Check} from "lucide-react"
-import {useRef, useState} from "react"
+import {Suspense, useRef, useState} from "react"
 
 import {ImgFaded} from "#components/img-faded"
 import {Button} from "#components/ui/button"
@@ -12,7 +12,7 @@ import {
 } from "#components/ui/dialog"
 import {Spinner} from "#components/ui/spinner"
 import {useAddPhotoToAlbum} from "#hooks/mutations"
-import {useQueryPhotos} from "#hooks/queries"
+import {useQueryPhotosByAlbum} from "#hooks/queries"
 import {useOnScrollEnd} from "#hooks/use-on-scroll-end"
 import {cn} from "#lib/utils"
 import type {Photo} from "#services/api"
@@ -60,12 +60,16 @@ function Photo(props: {
   )
 }
 
-export function PhotoGrid(props: {selected: string[]; setSelected: (value: string[]) => void}) {
+export function PhotoGrid(props: {
+  album: string
+  selected: string[]
+  setSelected: (value: string[]) => void
+}) {
   const ref = useRef<HTMLDivElement>(null)
-  const photos = useQueryPhotos()
+  const photos = useQueryPhotosByAlbum(props.album)
   useOnScrollEnd(photos.fetchNextPage, ref)
   const allPhotos = photos.data.pages.reduce(
-    (prev: Photo[], cur) => [...prev, ...cur.photos],
+    (prev: (Photo & {in_album: boolean})[], cur) => [...prev, ...cur.photos],
     [],
   )
   return (
@@ -75,7 +79,7 @@ export function PhotoGrid(props: {selected: string[]; setSelected: (value: strin
           <Photo
             key={photo.id}
             photo={photo}
-            selected={props.selected.includes(photo.id)}
+            selected={props.selected.includes(photo.id) || photo.in_album}
             setSelected={(value) => {
               const selected = new Set(props.selected)
               if (value) {
@@ -114,11 +118,13 @@ export function AddPhotoToAlbumDialog(props: {
         }
       }}
     >
-      <DialogContent className="max-h-[80%]">
+      <DialogContent className="h-[80%]">
         <DialogHeader>
           <DialogTitle>Add photos</DialogTitle>
         </DialogHeader>
-        <PhotoGrid selected={selected} setSelected={setSelected} />
+        <Suspense fallback={<Spinner />}>
+          <PhotoGrid album={props.album.id} selected={selected} setSelected={setSelected} />
+        </Suspense>
         <DialogFooter>
           <Button
             disabled={selected.length === 0 || addPhotoToAlbum.isPending}

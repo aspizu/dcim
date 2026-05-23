@@ -48,7 +48,7 @@ export async function createAlbum(body: {name: string}): Promise<{id: string}> {
 }
 
 export async function updateAlbum({id, ...body}: {id: string; name: string}): Promise<void> {
-  return call("PUT", `/album/${id}`, body)
+  return call("PATCH", `/album/${id}`, body)
 }
 
 export async function addPhotoToAlbum(opts: {id: string; photoID: string}): Promise<void> {
@@ -57,17 +57,24 @@ export async function addPhotoToAlbum(opts: {id: string; photoID: string}): Prom
 
 export async function listPhotos(opts: {
   next?: string
-  albumId?: string
 }): Promise<{next: string | null; photos: Photo[]}> {
+  const qs = opts.next ? `?next=${encodeURIComponent(opts.next)}` : ""
+  return call("GET", `/photo${qs}`)
+}
+
+export async function listPhotosByAlbum(opts: {
+  album: string
+  next?: string
+}): Promise<{next: string | null; photos: (Photo & {in_album: boolean})[]}> {
   const params = new URLSearchParams()
   if (opts.next) {
     params.set("next", opts.next)
   }
-  if (opts.albumId) {
-    params.set("albumId", opts.albumId)
-  }
   const qs = params.toString()
-  return call("GET", qs ? `/photo?${qs}` : "/photo")
+  return call(
+    "GET",
+    qs ? `/photo/by-album/${opts.album}?${qs}` : `/photo/by-album/${opts.album}`,
+  )
 }
 
 export async function getPhoto(opts: {
