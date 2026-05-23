@@ -20,21 +20,15 @@ function RouteComponent() {
   return (
     <>
       <Header title="Settings" />
-      <div className="mx-auto flex max-w-lg flex-col gap-4 p-4">
-        <div className="rounded-lg border p-4">
-          <h2 className="mb-2 text-lg font-medium">Session</h2>
-          <p className="mb-4 text-sm text-muted-foreground">
-            You are logged in. Sign out to end your session.
-          </p>
-          <Button
-            variant="destructive"
-            onClick={() => void _onSignOutClick()}
-            disabled={isLoggingOut}
-          >
-            {isLoggingOut ? <Spinner /> : <LogOut />}
-            Sign out
-          </Button>
-        </div>
+      <div className="flex flex-col items-start gap-4 p-4">
+        <Button
+          variant="destructive"
+          onClick={() => void _onSignOutClick()}
+          disabled={isLoggingOut}
+        >
+          {isLoggingOut ? <Spinner /> : <LogOut />}
+          Sign out
+        </Button>
       </div>
     </>
   )
