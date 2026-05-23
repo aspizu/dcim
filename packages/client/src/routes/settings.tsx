@@ -33,59 +33,72 @@ function RouteComponent() {
   return (
     <>
       <Header title="Settings" />
-      <div className="flex flex-col items-start gap-6 p-4">
-        <label className="flex items-center gap-2">
-          <span className="text-sm">Thumbnail quality</span>
-          <Select value={thumbnailQuality} onValueChange={setThumbnailQuality}>
-            <SelectTrigger className="w-28">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {qualityOptions.map((q) => (
-                <SelectItem key={q} value={q}>
-                  {q}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </label>
-        <label className="flex items-center gap-2">
-          <span className="text-sm">Backup quality</span>
-          <Select value={backupQuality} onValueChange={setBackupQuality}>
-            <SelectTrigger className="w-28">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {qualityOptions.map((q) => (
-                <SelectItem key={q} value={q}>
-                  {q}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </label>
-        <label className="flex items-center gap-2">
-          <span className="text-sm">Theme</span>
-          <Select
-            value={$themePreference.value}
-            onValueChange={(v) => setThemePreference(v as "light" | "dark" | "system")}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Theme" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="system">System</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </label>
+      <div className="mx-auto flex w-full max-w-lg flex-col gap-8 p-4">
+        <section className="flex flex-col gap-4">
+          <h2 className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
+            Quality
+          </h2>
+          <div className="flex items-center justify-between">
+            <span className="text-sm">Thumbnail quality</span>
+            <Select value={thumbnailQuality} onValueChange={setThumbnailQuality}>
+              <SelectTrigger className="w-28">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {qualityOptions.map((q) => (
+                  <SelectItem key={q} value={q}>
+                    {q}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm">Backup quality</span>
+            <Select value={backupQuality} onValueChange={setBackupQuality}>
+              <SelectTrigger className="w-28">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {qualityOptions.map((q) => (
+                  <SelectItem key={q} value={q}>
+                    {q}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </section>
+        <div className="h-px bg-border" />
+        <section className="flex flex-col gap-4">
+          <h2 className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
+            Appearance
+          </h2>
+          <div className="flex items-center justify-between">
+            <span className="text-sm">Theme</span>
+            <Select
+              value={$themePreference.value}
+              onValueChange={(v) => setThemePreference(v as "light" | "dark" | "system")}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Theme" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="light">Light</SelectItem>
+                  <SelectItem value="dark">Dark</SelectItem>
+                  <SelectItem value="system">System</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        </section>
+        <div className="h-px bg-border" />
         <Button
           variant="destructive"
           onClick={() => void _onSignOutClick()}
           disabled={isLoggingOut}
+          className="self-start"
         >
           {isLoggingOut ? <Spinner /> : <LogOut />}
           Sign out
