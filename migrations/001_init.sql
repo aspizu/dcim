@@ -22,8 +22,8 @@ create table album (
 ) strict, without rowid;
 
 create table photo_album (
-    album_id integer not null,
-    photo_id integer not null,
+    album_id text not null,
+    photo_id text not null,
     foreign key (album_id) references album (id) on delete cascade,
     foreign key (photo_id) references photo (id) on delete cascade,
     primary key (album_id, photo_id)
