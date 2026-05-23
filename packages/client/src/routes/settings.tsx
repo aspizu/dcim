@@ -45,11 +45,13 @@ function RouteComponent() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {qualityOptions.map((q) => (
-                  <SelectItem key={q} value={q}>
-                    {q}
-                  </SelectItem>
-                ))}
+                <SelectGroup>
+                  {qualityOptions.map((q) => (
+                    <SelectItem key={q} value={q}>
+                      {q}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
               </SelectContent>
             </Select>
           </div>
@@ -60,11 +62,13 @@ function RouteComponent() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {qualityOptions.map((q) => (
-                  <SelectItem key={q} value={q}>
-                    {q}
-                  </SelectItem>
-                ))}
+                <SelectGroup>
+                  {qualityOptions.map((q) => (
+                    <SelectItem key={q} value={q}>
+                      {q}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
               </SelectContent>
             </Select>
           </div>
