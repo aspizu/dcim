@@ -56,7 +56,7 @@ export type Output = {
   thumbnail: ThumbnailEntry
 }
 
-function compressionRatio(
+function _compressionRatio(
   width: number,
   height: number,
   fileSizeBytes: number,
@@ -65,7 +65,7 @@ function compressionRatio(
   return (width * height * (bitDepth / 8)) / fileSizeBytes
 }
 
-function arrayBufferToDataURL(buffer: ArrayBuffer, mimeType: string): string {
+function _arrayBufferToDataURL(buffer: ArrayBuffer, mimeType: string): string {
   const bytes = new Uint8Array(buffer)
   const binary = bytes.reduce((acc, byte) => acc + String.fromCharCode(byte), "")
   return `data:${mimeType};base64,${btoa(binary)}`
@@ -85,7 +85,7 @@ export class TransformationsWorker extends Server {
       transform(image, blob.type, THUMBHASH_PIPELINE),
     ])
     const thumbnailHash = await sha256(thumbnailBuffer)
-    const thumbhashDataURL = arrayBufferToDataURL(
+    const thumbhashDataURL = _arrayBufferToDataURL(
       thumbhashBuffer,
       THUMBHASH_PIPELINE.convert?.format ?? blob.type,
     )
@@ -106,7 +106,7 @@ export class TransformationsWorker extends Server {
       imageType = blob.type
       imageSize = blob.size
     } else if (backupQuality === "smart") {
-      const ratio = compressionRatio(image.width, image.height, blob.size)
+      const ratio = _compressionRatio(image.width, image.height, blob.size)
       if (ratio < 0.15) {
         imageBuffer = await blob.arrayBuffer()
         imageType = blob.type
