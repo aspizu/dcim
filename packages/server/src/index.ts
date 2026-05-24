@@ -18,11 +18,12 @@ export default hono()
     throw new Error(err)
   })
   .use("/api/*", async (c, next) => {
-    const ip = c.req.header("cf-connecting-ip")
-    if (!ip) {
-      throw new HTTPException(400, {message: "Unauthorized"})
-    }
-    const {success} = await c.env.RATELIMIT.limit({key: ip})
+    const {success} = await c.env.RATELIMIT.limit({
+      key: JSON.stringify({
+        ip: c.req.path.startsWith("/api/auth") ? "global" : c.req.header("cf-connecting-ip"),
+        pathname: c.req.path,
+      }),
+    })
     if (!success) {
       throw new HTTPException(429, {message: "Rate limit exceeded"})
     }
