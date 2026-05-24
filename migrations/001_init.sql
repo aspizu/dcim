@@ -29,3 +29,8 @@ create table photo_album (
     foreign key (photo_id) references photo (id) on delete cascade,
     primary key (album_id, photo_id)
 ) strict, without rowid;
+
+create table config (
+    key text primary key,
+    value text default null
+) strict, without rowid;

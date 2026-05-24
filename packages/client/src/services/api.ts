@@ -129,6 +129,14 @@ export async function whoami(): Promise<void> {
   return call("GET", "/auth/whoami")
 }
 
-export async function storage(): Promise<{photos_count: number; total_used: number}> {
+export async function storage(): Promise<{photo_count: number; total_used: number}> {
   return call("GET", "/storage")
+}
+
+export async function getConfig(): Promise<Record<string, string>> {
+  return call("GET", "/config")
+}
+
+export async function setConfig(key: string, value: string): Promise<void> {
+  call("PUT", `/config/${key}`, {value})
 }
