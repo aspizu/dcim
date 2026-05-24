@@ -9,6 +9,7 @@ export function useDeletePhoto() {
     onSuccess: () => {
       void queryClient.invalidateQueries({queryKey: ["photo"]})
       void queryClient.invalidateQueries({queryKey: ["album"]})
+      void queryClient.invalidateQueries({queryKey: ["storage"]})
     },
   })
 }

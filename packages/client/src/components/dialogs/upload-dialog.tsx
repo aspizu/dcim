@@ -60,6 +60,7 @@ export function UploadDialog(props: {
       }
     }
     void queryClient.invalidateQueries({queryKey: ["photo"]})
+    void queryClient.invalidateQueries({queryKey: ["storage"]})
     if (props.album) {
       void queryClient.invalidateQueries({queryKey: ["album", props.album.id]})
     }

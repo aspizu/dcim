@@ -119,3 +119,15 @@ export function useQueryAlbum(id: string) {
 }
 
 export type QueryData<T extends (...args: any[]) => {data: unknown}> = ReturnType<T>["data"]
+
+export const queryStorageOptions = queryOptions({
+  queryKey: ["storage"],
+  queryFn: async () => {
+    const res = await api.storage()
+    return res
+  },
+})
+
+export function useQueryStorage() {
+  return useSuspenseQuery(queryStorageOptions)
+}

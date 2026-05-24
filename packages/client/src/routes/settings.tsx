@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "#components/ui/select"
 import {Spinner} from "#components/ui/spinner"
+import {useQueryStorage} from "#hooks/queries"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
 import {$themePreference, setThemePreference} from "#stores/themes"
@@ -30,6 +31,7 @@ const qualityOptions: {value: Quality; description: string}[] = [
 
 function RouteComponent() {
   const navigate = useNavigate()
+  const _storage = useQueryStorage()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [thumbnailQuality, setThumbnailQuality] = useState("medium")
   const [backupQuality, setBackupQuality] = useState("original")
