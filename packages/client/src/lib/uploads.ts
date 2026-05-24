@@ -5,27 +5,27 @@ import * as api from "#services/api"
 import {transform} from "./workers/transformations-client"
 
 export async function prepareFileUpload(handle: FileSystemFileHandle) {
-  const {input, output} = await transform(handle)
+  const {image, thumbnail} = await transform(handle)
   return {
     upload: {
       fileName: handle.name,
       image: {
-        contentType: input.type,
-        contentSHA256: input.hash,
-        contentLength: input.size,
+        contentType: image.type,
+        contentSHA256: image.hash,
+        contentLength: image.size,
       },
       thumbnail: {
-        contentType: output.type,
-        contentSHA256: output.hash,
-        contentLength: output.arrayBuffer.byteLength,
+        contentType: thumbnail.type,
+        contentSHA256: thumbnail.hash,
+        contentLength: thumbnail.arrayBuffer.byteLength,
       },
-      thumbhash: output.thumbhash,
-      width: input.width,
-      height: input.height,
-      metadata: input.metadata,
+      thumbhash: thumbnail.thumbhash,
+      width: image.width,
+      height: image.height,
+      metadata: image.metadata,
     },
-    thumbnail: new Blob([output.arrayBuffer], {type: output.type}),
-    handle,
+    image: new Blob([image.arrayBuffer], {type: image.type}),
+    thumbnail: new Blob([thumbnail.arrayBuffer], {type: thumbnail.type}),
   }
 }
 
@@ -37,13 +37,12 @@ export async function completeFileUpload(
   onUploadProgress: (id: string, progress: number) => void,
 ) {
   const uploaded = await api.createPhoto(prepared.upload)
-  const file = await prepared.handle.getFile()
-  const res1 = await axios.put(uploaded.imagePresignedURL, file, {
+  const res1 = await axios.put(uploaded.imagePresignedURL, prepared.image, {
     headers: {
       "Content-Type": prepared.upload.image.contentType,
       "x-amz-checksum-sha256": prepared.upload.image.contentSHA256,
       "Cache-Control": "public, max-age=31536000, immutable, no-transform",
-      "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.handle.name)}`,
+      "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.upload.fileName)}`,
     },
     onUploadProgress(e) {
       onUploadProgress(clientId, (e.loaded / e.total!) * 75)

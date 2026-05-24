@@ -138,5 +138,5 @@ export async function getConfig(): Promise<Record<string, string>> {
 }
 
 export async function setConfig(key: string, value: string): Promise<void> {
-  call("PUT", `/config/${key}`, {value})
+  return call("PUT", `/config/${key}`, {value})
 }

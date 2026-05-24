@@ -5,11 +5,13 @@ import {createRoot} from "react-dom/client"
 
 import {Toaster} from "#components/ui/sonner"
 import {Spinner} from "#components/ui/spinner"
+import {pullConfig} from "#lib/config"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
-import {$theme, Theme} from "#stores/themes"
 
 import "#styles/global.css"
+
+import {$theme, Theme} from "#stores/themes"
 
 import {routeTree} from "./routeTree.gen"
 
@@ -39,7 +41,8 @@ function App() {
     if ($authState.value !== AuthState.LOADING) return
     api
       .whoami()
-      .then(() => {
+      .then(async () => {
+        await pullConfig()
         $authState.value = AuthState.AUTHENTICATED
       })
       .catch(() => {

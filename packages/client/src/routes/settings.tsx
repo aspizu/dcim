@@ -8,36 +8,21 @@ import {
   Field,
   FieldContent,
   FieldDescription,
-  FieldLabel,
   FieldLegend,
   FieldSet,
   FieldTitle,
 } from "#components/ui/field"
-import {Label} from "#components/ui/label.tsx"
-import {Progress} from "#components/ui/progress.tsx"
 import {RadioGroup, RadioGroupItem} from "#components/ui/radio-group"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "#components/ui/select"
 import {Spinner} from "#components/ui/spinner"
 import {useQueryStorage} from "#hooks/queries"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
-import {$themePreference, setThemePreference} from "#stores/themes"
-
-type Quality = "low" | "medium" | "high" | "original"
+import {$backupQuality, $thumbnailQuality} from "#stores/settings"
 
 function RouteComponent() {
   const navigate = useNavigate()
   const storage = useQueryStorage()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
-  const [thumbnailQuality, setThumbnailQuality] = useState<Quality>("medium")
-  const [backupQuality, setBackupQuality] = useState<Quality>("original")
 
   async function _onSignOutClick() {
     setIsLoggingOut(true)
@@ -60,8 +45,10 @@ function RouteComponent() {
             </FieldLegend>
 
             <RadioGroup
-              value={thumbnailQuality}
-              onValueChange={(val) => setThumbnailQuality(val as Quality)}
+              value={$thumbnailQuality.value}
+              onValueChange={(val) => {
+                $thumbnailQuality.value = val
+              }}
             >
               <Field orientation="horizontal">
                 <RadioGroupItem value="low" />
@@ -96,8 +83,10 @@ function RouteComponent() {
             </FieldLegend>
 
             <RadioGroup
-              value={backupQuality}
-              onValueChange={(val) => setBackupQuality(val as Quality)}
+              value={$backupQuality.value}
+              onValueChange={(val) => {
+                $backupQuality.value = val
+              }}
             >
               <Field orientation="horizontal">
                 <RadioGroupItem value="low" />
@@ -127,11 +116,11 @@ function RouteComponent() {
           <h1 className="mt-12 mb-4 text-2xl font-medium">Account</h1>
           <Button
             variant="destructive"
-            onClick={_onSignOutClick}
+            onClick={() => void _onSignOutClick()}
             disabled={isLoggingOut}
             className="mr-auto"
           >
-            {isLoggingOut ? <Spinner className="h-4 w-4" /> : <LogOut className="h-4 w-4" />}
+            {isLoggingOut ? <Spinner /> : <LogOut />}
             Sign Out
           </Button>
         </div>

@@ -7,7 +7,7 @@ export async function pullConfig() {
 
 export async function setConfig(key: string, value: string) {
   const config = JSON.parse(localStorage.getItem("config") ?? "{}")
-  localStorage.setItem("config", JSON.stringify({...config, key: value}))
+  localStorage.setItem("config", JSON.stringify({...config, [key]: value}))
   await api.setConfig(key, value)
 }
 
