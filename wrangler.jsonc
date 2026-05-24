@@ -13,12 +13,6 @@
       "remote": true,
     },
   ],
-  "r2_buckets": [
-    {
-      "binding": "R2",
-      "bucket_name": "dcim",
-    },
-  ],
   "assets": {
     "not_found_handling": "single-page-application",
     "directory": "packages/client/dist",

@@ -17,22 +17,23 @@ export const CT_EXT: Record<string, string> = {
 }
 
 export function makeS3(env: {
-  R2_ACCESS_KEY_ID: string
-  R2_SECRET_ACCESS_KEY: string
-  ACCOUNT_ID: string
+  S3_ACCESS_KEY_ID: string
+  S3_SECRET_ACCESS_KEY: string
+  S3_ENDPOINT: string
+  S3_REGION: string
 }) {
   return new S3mini({
-    accessKeyId: env.R2_ACCESS_KEY_ID,
-    secretAccessKey: env.R2_SECRET_ACCESS_KEY,
-    endpoint: `https://${env.ACCOUNT_ID}.r2.cloudflarestorage.com/dcim`,
-    region: "auto",
+    accessKeyId: env.S3_ACCESS_KEY_ID,
+    secretAccessKey: env.S3_SECRET_ACCESS_KEY,
+    endpoint: env.S3_ENDPOINT,
+    region: env.S3_REGION,
   })
 }
 
 export function getImageKey(c: Context, photo: {image_url: string}): string {
-  return photo.image_url.slice(c.env.R2_URL.length).replace(/^\//, "")
+  return photo.image_url.slice(c.env.S3_PUBLIC_URL.length).replace(/^\//, "")
 }
 
 export function getThumbnailKey(c: Context, photo: {thumbnail_url: string}): string {
-  return photo.thumbnail_url.slice(c.env.R2_URL.length).replace(/^\//, "")
+  return photo.thumbnail_url.slice(c.env.S3_PUBLIC_URL.length).replace(/^\//, "")
 }

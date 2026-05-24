@@ -1,12 +1,12 @@
 import {Hono, type Context as HonoContext} from "hono"
 
 export interface Bindings {
-  R2: R2Bucket
   D1: D1Database
-  ACCOUNT_ID: string
-  R2_ACCESS_KEY_ID: string
-  R2_SECRET_ACCESS_KEY: string
-  R2_URL: string
+  S3_ACCESS_KEY_ID: string
+  S3_SECRET_ACCESS_KEY: string
+  S3_ENDPOINT: string
+  S3_REGION: string
+  S3_PUBLIC_URL: string
   TOTP_SECRET: string
   JWT_SECRET: string
   RATELIMIT: RateLimit

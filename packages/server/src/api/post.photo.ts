@@ -46,7 +46,7 @@ export default hono()
         .replace(/\+/g, "-")
         .replace(/\//g, "_")
         .replace(/=+$/, "")}${CT_EXT[thumbnail.contentType]}`
-      const publicURL = c.env.R2_URL.replace(/\/$/, "")
+      const publicURL = c.env.S3_PUBLIC_URL.replace(/\/$/, "")
       const imageURL = `${publicURL}/${imageKey}`
       const thumbnailURL = `${publicURL}/${thumbnailKey}`
       if (!CT_EXTENSIONS[image.contentType]?.includes(Path.extname(fileName).toLowerCase())) {
@@ -118,16 +118,17 @@ export default hono()
     if (row === null) {
       throw new HTTPException(404, {message: "Photo row not found."})
     }
+    const s3 = makeS3(c.env)
     const imageKey = getImageKey(c, row as any)
     const thumbnailKey = getThumbnailKey(c, row as any)
-    const [imageObj, thumbnailObj] = await Promise.all([
-      c.env.R2.head(imageKey),
-      c.env.R2.head(thumbnailKey),
+    const [imageExists, thumbnailExists] = await Promise.all([
+      s3.objectExists(imageKey).then(Boolean),
+      s3.objectExists(thumbnailKey).then(Boolean),
     ])
-    if (imageObj === null) {
+    if (!imageExists) {
       throw new HTTPException(404, {message: "Image was not uploaded."})
     }
-    if (thumbnailObj === null) {
+    if (!thumbnailExists) {
       throw new HTTPException(404, {message: "Thumbnail was not uploaded."})
     }
     await sql(c)`UPDATE photo SET status = 'uploaded' WHERE id = ${id}`.run()
@@ -140,9 +141,10 @@ export default hono()
     if (row === null) {
       throw new HTTPException(404, {message: "Photo not found."})
     }
+    const s3 = makeS3(c.env)
     const imageKey = getImageKey(c, row as any)
     const thumbnailKey = getThumbnailKey(c, row as any)
-    await Promise.all([c.env.R2.delete(imageKey), c.env.R2.delete(thumbnailKey)])
+    await Promise.all([s3.deleteObject(imageKey), s3.deleteObject(thumbnailKey)])
     await sql(c)`DELETE FROM photo WHERE id = ${id}`.run()
     return c.json(null)
   })
