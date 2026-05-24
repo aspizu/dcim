@@ -4,6 +4,8 @@ import {useState} from "react"
 
 import {Header} from "#components/header"
 import {Button} from "#components/ui/button"
+import {Field, FieldContent, FieldDescription, FieldLabel} from "#components/ui/field"
+import {RadioGroup, RadioGroupItem} from "#components/ui/radio-group"
 import {
   Select,
   SelectContent,
@@ -17,7 +19,14 @@ import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
 import {$themePreference, setThemePreference} from "#stores/themes"
 
-const qualityOptions = ["low", "medium", "high", "original"] as const
+type Quality = "low" | "medium" | "high" | "original"
+
+const qualityOptions: {value: Quality; description: string}[] = [
+  {value: "low", description: "Smallest file size, lowest quality"},
+  {value: "medium", description: "Balanced quality and file size"},
+  {value: "high", description: "High quality, larger file size"},
+  {value: "original", description: "Full quality, largest file size"},
+]
 
 function RouteComponent() {
   const navigate = useNavigate()
@@ -38,39 +47,45 @@ function RouteComponent() {
           <h2 className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
             Quality
           </h2>
-          <div className="flex items-center justify-between">
-            <span className="text-sm">Thumbnail quality</span>
-            <Select value={thumbnailQuality} onValueChange={setThumbnailQuality}>
-              <SelectTrigger className="w-28">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {qualityOptions.map((q) => (
-                    <SelectItem key={q} value={q}>
-                      {q}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+          <div className="flex flex-col gap-3">
+            <span className="text-sm font-medium">Thumbnail quality</span>
+            <RadioGroup
+              value={thumbnailQuality}
+              onValueChange={setThumbnailQuality}
+              className="w-fit"
+            >
+              {qualityOptions.map((q) => (
+                <Field key={q.value} orientation="horizontal">
+                  <RadioGroupItem value={q.value} id={`thumb-${q.value}`} />
+                  <FieldContent>
+                    <FieldLabel htmlFor={`thumb-${q.value}`} className="capitalize">
+                      {q.value}
+                    </FieldLabel>
+                    <FieldDescription>{q.description}</FieldDescription>
+                  </FieldContent>
+                </Field>
+              ))}
+            </RadioGroup>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm">Backup quality</span>
-            <Select value={backupQuality} onValueChange={setBackupQuality}>
-              <SelectTrigger className="w-28">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {qualityOptions.map((q) => (
-                    <SelectItem key={q} value={q}>
-                      {q}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+          <div className="flex flex-col gap-3">
+            <span className="text-sm font-medium">Backup quality</span>
+            <RadioGroup
+              value={backupQuality}
+              onValueChange={setBackupQuality}
+              className="w-fit"
+            >
+              {qualityOptions.map((q) => (
+                <Field key={q.value} orientation="horizontal">
+                  <RadioGroupItem value={q.value} id={`backup-${q.value}`} />
+                  <FieldContent>
+                    <FieldLabel htmlFor={`backup-${q.value}`} className="capitalize">
+                      {q.value}
+                    </FieldLabel>
+                    <FieldDescription>{q.description}</FieldDescription>
+                  </FieldContent>
+                </Field>
+              ))}
+            </RadioGroup>
           </div>
         </section>
         <div className="h-px bg-border" />
