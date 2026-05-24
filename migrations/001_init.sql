@@ -9,7 +9,8 @@ create table photo (
     metadata text not null default '{}',
     width integer not null,
     height integer not null,
-    uploaded_at text not null
+    uploaded_at text not null,
+    file_size integer not null
 ) strict, without rowid;
 
 create table album (

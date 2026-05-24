@@ -7,9 +7,9 @@
   "upload_source_maps": true,
   "d1_databases": [
     {
-      "binding": "D1",
+      "binding": "dcim",
       "database_name": "dcim",
-      "database_id": "2a686b38-fc0f-48d4-b133-f0f9445bb069",
+      "database_id": "d71843ff-8293-4276-b91c-984e64bf4460",
       "remote": true,
     },
   ],
