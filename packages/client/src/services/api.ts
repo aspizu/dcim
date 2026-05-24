@@ -128,3 +128,7 @@ export async function logout(): Promise<void> {
 export async function whoami(): Promise<void> {
   return call("GET", "/auth/whoami")
 }
+
+export async function storage(): Promise<{photos_count: number; total_used: number}> {
+  return call("GET", "/storage")
+}

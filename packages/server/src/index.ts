@@ -3,6 +3,7 @@ import {HTTPException} from "hono/http-exception"
 import auth from "#api/auth"
 import getAlbum from "#api/get.album"
 import getPhoto from "#api/get.photo"
+import getStorage from "#api/get.storage"
 import postAlbum from "#api/post.album"
 import postPhoto from "#api/post.photo"
 import hono from "#utils/hono"
@@ -34,3 +35,4 @@ export default hono()
   .route("/api", postAlbum)
   .route("/api", getPhoto)
   .route("/api", postPhoto)
+  .route("/api", getStorage)
