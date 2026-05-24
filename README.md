@@ -10,8 +10,8 @@ DCIM can use any S3-compatible object storage, including self-hosted options (ex
 
 Note that all these options give you 10GB of free storage.
 
-| Service                                | Pricing Model             | Effective Cost for 2 TB / month |        Approx INR / month* | Notes                                                                       |
-| -------------------------------------- | ------------------------- | ------------------------------: | -------------------------: | --------------------------------------------------------------------------- |
-| Google                                 | Fixed consumer plan       |                               — |                   **₹650** | Includes ecosystem/apps, not raw object storage                             |
-| Cloudflare                             | $0.015 / GB-month         |       2048 × 0.015 = **$30.72** |                **~₹2,560** | No egress fees; API/object storage                                          |
-| Ente                                   | Fixed consumer plan       |                               — |                 **₹1,599** | Privacy-focused encrypted photos service                                    |
+| Service    | Pricing Model       | Effective Cost for 2 TB / month | Approx INR / month\* | Notes                                           |
+| ---------- | ------------------- | ------------------------------: | -------------------: | ----------------------------------------------- |
+| Google     | Fixed consumer plan |                               — |             **₹650** | Includes ecosystem/apps, not raw object storage |
+| Cloudflare | $0.015 / GB-month   |       2048 × 0.015 = **$30.72** |          **~₹2,560** | No egress fees; API/object storage              |
+| Ente       | Fixed consumer plan |                               — |           **₹1,599** | Privacy-focused encrypted photos service        |
