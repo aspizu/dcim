@@ -40,7 +40,7 @@ export function stopLoading() {
 export function LoadingBar() {
   return (
     <div
-      className="fixed top-0 right-0 left-0 z-99 h-0.5 bg-primary"
+      className="fixed top-0 right-0 left-0 z-99 h-1 bg-primary"
       style={{
         width: `${$progress.value * 100}%`,
         opacity: $visible.value ? 1 : 0,
