@@ -9,9 +9,9 @@
     "postinstall": "lefthook install"
   },
   "devDependencies": {
-    "lefthook": "^2.1.6",
+    "lefthook": "^2.1.8",
     "oxfmt": "latest",
-    "wrangler": "^4.90.0"
+    "wrangler": "^4.94.0"
   },
   "devEngines": {
     "packageManager": {
