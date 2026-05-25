@@ -78,6 +78,9 @@ export class TransformationsWorker extends Server {
     const image = await createImageBitmap(blob)
 
     const thumbnailQuality = getConfig("thumbnailQuality") ?? DEFAULT_THUMBNAIL_QUALITY
+    if (!(thumbnailQuality in THUMBNAIL_PRESETS)) {
+      throw new Error(`Invalid thumbnail quality: ${thumbnailQuality}`)
+    }
     const backupQuality = getConfig("backupQuality") ?? DEFAULT_BACKUP_QUALITY
 
     const [thumbnailBuffer, thumbhashBuffer] = await Promise.all([
@@ -115,11 +118,21 @@ export class TransformationsWorker extends Server {
         imageBuffer = await transform(image, blob.type, STORAGE_SAVER_PIPELINE)
         imageType = STORAGE_SAVER_PIPELINE.convert!.format!
         imageSize = imageBuffer.byteLength
+        if (imageSize > blob.size) {
+          imageBuffer = await blob.arrayBuffer()
+          imageType = blob.type
+          imageSize = blob.size
+        }
       }
     } else if (backupQuality === "storageSaver") {
       imageBuffer = await transform(image, blob.type, STORAGE_SAVER_PIPELINE)
       imageType = STORAGE_SAVER_PIPELINE.convert!.format!
       imageSize = imageBuffer.byteLength
+      if (imageSize > blob.size) {
+        imageBuffer = await blob.arrayBuffer()
+        imageType = blob.type
+        imageSize = blob.size
+      }
     } else {
       throw new Error(`backupQuality is invalid: ${backupQuality}`)
     }
