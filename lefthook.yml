@@ -1,6 +1,14 @@
 pre-commit:
   parallel: true
   jobs:
+    - name: typecheck-cli
+      glob: "cli/**/*.{py}"
+      run: cd cli && ty check
+
+    - name: lint-cli
+      glob: "cli/**/*.{py}"
+      run: cd cli && ruff check
+
     - name: typecheck-client
       glob: "packages/client/**/*.{ts,tsx}"
       run: pnpm --filter @dcim/client run check
@@ -22,5 +30,9 @@ pre-commit:
       run: pnpm wrangler types --check
 
     - name: format
-      glob: "**/*"
+      glob: "**/*.{ts,tsx,json,jsonc,yml,yaml,md,toml,css}"
       run: pnpm exec oxfmt --check {staged_files}
+
+    - name: format-python
+      glob: "**/*.{py}"
+      run: ruff format --check {staged_files}

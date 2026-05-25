@@ -7,29 +7,106 @@ on:
   pull_request:
 
 jobs:
-  checks:
+  formatting:
+    name: Formatting
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v6
-      - name: Install Node
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Set up Node
         uses: actions/setup-node@v6
         with:
           node-version-file: package.json
-      - name: Install Package Manager
-        uses: pnpm/action-setup@v6
-      - name: Install Dependencies
+          cache: pnpm
+
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Check Formatting
+
+      - name: Check code formatting
         run: pnpm oxfmt --check
-      - name: Check Wrangler Types
-        run: pnpm wrangler types --check
-      - name: Lint Client
+
+  client:
+    name: Client
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
         run: cd packages/client && pnpm run lint
-      - name: Type Check Client
+
+      - name: Type check
         run: cd packages/client && pnpm run check
-      - name: Lint Server
+
+  server:
+    name: Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
         run: cd packages/server && pnpm run lint
-      - name: Type Check Server
+
+      - name: Type check
         run: cd packages/server && pnpm run check
+
+      - name: Validate Wrangler types
+        run: pnpm wrangler types --check
+
+  cli:
+    name: CLI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version-file: cli/.python-version
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: cd cli && uv sync --locked --all-extras --dev
+
+      - name: Set up Ruff
+        uses: astral-sh/ruff-action@v4.0.0
+
+      - name: Lint
+        run: cd cli && ruff check
+
+      - name: Check code formatting
+        run: cd cli && ruff format --check
