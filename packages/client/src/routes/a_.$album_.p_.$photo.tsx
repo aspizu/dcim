@@ -22,7 +22,7 @@ function RouteComponent() {
         title={photo.data.file_name}
         after={<PhotoHeaderMenu album={album.data} photo={photo.data} />}
       />
-      <Photo photo={photo.data} />
+      <Photo photo={photo.data} album={album.data} />
     </div>
   )
 }
