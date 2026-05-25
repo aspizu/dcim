@@ -29,6 +29,20 @@ import {$authState, AuthState} from "#stores/auth"
 import {$backupQuality, $thumbnailQuality} from "#stores/settings"
 import {$themePreference, setThemePreference} from "#stores/themes"
 
+const FLOPPY_BYTES = 1474560
+const DVD_BYTES = 4700000000
+
+function StorageUsed(props: {bytes: number}) {
+  const floppies = Math.ceil(props.bytes / FLOPPY_BYTES)
+  const dvds = Math.ceil(props.bytes / DVD_BYTES)
+
+  return (
+    <>
+      {prettyBytes(props.bytes)} used 💾×{floppies} 📀×{dvds}
+    </>
+  )
+}
+
 function RouteComponent() {
   const navigate = useNavigate()
   const storage = useQueryStorage()
@@ -49,8 +63,8 @@ function RouteComponent() {
           <h1 className="mt-10 mb-1 text-xl font-semibold tracking-tight">Storage</h1>
           <p className="mb-6 text-sm text-muted-foreground">
             {storage.data.photo_count.toLocaleString()} photo
-            {storage.data.photo_count != 1 && "s"} &bull; {prettyBytes(storage.data.total_used)}{" "}
-            used
+            {storage.data.photo_count != 1 && "s"} &bull;{" "}
+            <StorageUsed bytes={storage.data.total_used} />
           </p>
 
           <FieldSet>
