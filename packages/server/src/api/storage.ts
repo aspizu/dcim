@@ -8,5 +8,8 @@ export default hono().get("/storage", async (c) => {
     SELECT COUNT(id) AS photo_count, SUM(file_size) as total_used FROM photo
   `.first()
 
-  return c.json(row)
+  return c.json({
+    photo_count: row?.photo_count ?? 0,
+    total_used: row?.total_used ?? 0,
+  })
 })
