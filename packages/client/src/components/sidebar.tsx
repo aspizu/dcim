@@ -34,24 +34,6 @@ export default function Sidebar() {
         Albums
       </h1>
 
-      {albums.isPending && (
-        <div className="flex flex-col gap-2">
-          {Array.from({length: 3}).map((_, i) => (
-            <div key={i} className="flex flex-col gap-2 rounded-md bg-card p-1">
-              <div className="aspect-square w-full animate-pulse rounded bg-muted" />
-              <div className="flex flex-col gap-1.5 p-1">
-                <div className="h-3 w-3/4 animate-pulse rounded bg-muted" />
-                <div className="h-2.5 w-1/3 animate-pulse rounded bg-muted" />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {albums.isError && (
-        <p className="px-1 text-xs text-destructive">Failed to load albums.</p>
-      )}
-
       {albums.data?.map((album) => (
         <Link
           key={album.id}
@@ -70,10 +52,6 @@ export default function Sidebar() {
           </div>
         </Link>
       ))}
-
-      {albums.data?.length === 0 && (
-        <p className="px-1 text-xs text-muted-foreground">No albums yet.</p>
-      )}
     </div>
   )
 }
