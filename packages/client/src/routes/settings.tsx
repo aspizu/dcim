@@ -152,16 +152,9 @@ function RouteComponent() {
           <h1 className="mt-10 mb-6 text-xl font-semibold tracking-tight">Appearance</h1>
 
           <FieldSet>
-            <FieldLegend
-              className="data-[variant=label]:text-sm data-[variant=label]:font-medium"
-              variant="label"
-            >
-              Theme
-            </FieldLegend>
-
             <Field orientation="horizontal">
               <FieldContent>
-                <FieldTitle>Theme preference</FieldTitle>
+                <FieldTitle>Theme</FieldTitle>
                 <FieldDescription>Choose your preferred appearance</FieldDescription>
               </FieldContent>
               <Select

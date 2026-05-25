@@ -37,7 +37,7 @@ export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
               }}
             >
               <LinkIcon />
-              Copy raw link
+              Copy link
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <a href={props.photo.image_url} download>

@@ -72,7 +72,7 @@ export function PhotoGrid(props: {album: string}) {
     [],
   )
   return (
-    <div ref={ref} className="grid overflow-y-scroll">
+    <div ref={ref} className="grow overflow-y-scroll">
       <div className="grid grid-cols-3 gap-2">
         {allPhotos.map((photo) => (
           <Photo
@@ -131,11 +131,17 @@ export function AddPhotoToAlbumDialog(props: {
         }
       }}
     >
-      <DialogContent className="h-[80%]">
+      <DialogContent className="flex h-[80%] flex-col">
         <DialogHeader>
           <DialogTitle>Add photos</DialogTitle>
         </DialogHeader>
-        <Suspense fallback={<Spinner />}>
+        <Suspense
+          fallback={
+            <div className="grid grow place-items-center">
+              <Spinner />
+            </div>
+          }
+        >
           <PhotoGrid album={props.album.id} />
         </Suspense>
         <DialogFooter>
