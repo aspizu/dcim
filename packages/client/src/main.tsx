@@ -3,14 +3,15 @@ import {createRouter, RouterProvider} from "@tanstack/react-router"
 import {StrictMode, useEffect} from "react"
 import {createRoot} from "react-dom/client"
 
+import {LoadingBar, startLoading, stopLoading} from "#components/loadingbar.tsx"
 import {Toaster} from "#components/ui/sonner"
 import {Spinner} from "#components/ui/spinner"
 import {pullConfig} from "#lib/config"
 import * as api from "#services/api"
-import {$authState, AuthState} from "#stores/auth"
 
 import "#styles/global.css"
 
+import {$authState, AuthState} from "#stores/auth"
 import {$theme, Theme} from "#stores/themes"
 
 import {routeTree} from "./routeTree.gen"
@@ -26,6 +27,16 @@ const router = createRouter({
   routeTree,
   defaultViewTransition: true,
   scrollRestoration: true,
+})
+
+router.subscribe("onBeforeNavigate", ({pathChanged}) => {
+  if (pathChanged) {
+    startLoading()
+  }
+})
+
+router.subscribe("onResolved", () => {
+  stopLoading()
 })
 
 $theme.subscribe((theme) => {
@@ -73,6 +84,7 @@ function App() {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <LoadingBar />
     <App />
     <Toaster position="bottom-center" />
   </StrictMode>,

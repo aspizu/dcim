@@ -11,6 +11,12 @@ export default hono()
     const rows = await sql(c)`SELECT * FROM config`.all()
     return c.json(Object.fromEntries(rows.results.map((row) => [row.key, row.value])))
   })
+  .get("/config/:key", async (c) => {
+    await ensureLoggedIn(c)
+    const {key} = c.req.param()
+    const row = await sql(c)`SELECT * FROM config WHERE key = ${key}`.first()
+    return c.json(row ? row.value : null)
+  })
   .post(
     "/config/:key",
     zValidator(
