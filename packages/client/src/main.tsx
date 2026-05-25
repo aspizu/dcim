@@ -5,7 +5,6 @@ import {createRoot} from "react-dom/client"
 
 import {LoadingBar, startLoading, stopLoading} from "#components/loadingbar.tsx"
 import {Toaster} from "#components/ui/sonner"
-import {Spinner} from "#components/ui/spinner"
 import {pullConfig} from "#lib/config"
 import * as api from "#services/api"
 
@@ -31,12 +30,12 @@ const router = createRouter({
 
 router.subscribe("onBeforeNavigate", ({pathChanged}) => {
   if (pathChanged) {
-    startLoading()
+    startLoading("router")
   }
 })
 
 router.subscribe("onResolved", () => {
-  stopLoading()
+  stopLoading("router")
 })
 
 $theme.subscribe((theme) => {
@@ -50,11 +49,13 @@ $theme.subscribe((theme) => {
 function App() {
   useEffect(() => {
     if ($authState.value !== AuthState.LOADING) return
+    startLoading("whoami")
     api
       .whoami()
       .then(async () => {
         await pullConfig()
         $authState.value = AuthState.AUTHENTICATED
+        stopLoading("whoami")
       })
       .catch(() => {
         $authState.value = AuthState.UNAUTHENTICATED
@@ -69,11 +70,7 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [$authState.value])
   if ($authState.value === AuthState.LOADING) {
-    return (
-      <div className="grid h-dvh place-items-center">
-        <Spinner />
-      </div>
-    )
+    return null
   }
   return (
     <QueryClientProvider client={queryClient}>

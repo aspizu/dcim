@@ -3,6 +3,7 @@ import {
   queryOptions,
   useSuspenseInfiniteQuery,
   useSuspenseQuery,
+  type InfiniteData,
 } from "@tanstack/react-query"
 
 import * as api from "#services/api"
@@ -33,8 +34,15 @@ export const queryPhotosOptions = infiniteQueryOptions({
   queryKey: ["photo"],
   queryFn: async ({pageParam, client}) => {
     const res = await api.listPhotos({next: pageParam})
+
+    const existing = client.getQueryData(queryPhotosOptions.queryKey) as
+      | InfiniteData<typeof res>
+      | undefined
+    const prevPage = existing?.pages.find((p) => p.next === pageParam)
+    const firstItemPrev = prevPage?.photos.at(-1)?.id ?? null
+
     for (let i = 0; i < res.photos.length; i++) {
-      const prev = res.photos[i - 1]?.id ?? null
+      const prev = i === 0 ? firstItemPrev : res.photos[i - 1].id
       const next = res.photos[i + 1]?.id ?? res.next ?? null
       const photo = {...res.photos[i], prev, next}
       client.setQueryData(["photo", photo.id], photo)
@@ -72,7 +80,17 @@ export function queryAlbumPhotosOptions(id: string) {
     queryKey: ["album", id, "photo"],
     queryFn: async ({pageParam, client}) => {
       const res = await api.listAlbumPhotos({id, next: pageParam})
-      for (const photo of res.photos) {
+
+      const existing = client.getQueryData(queryAlbumPhotosOptions(id).queryKey) as
+        | InfiniteData<typeof res>
+        | undefined
+      const prevPage = existing?.pages.find((p) => p.next === pageParam)
+      const firstItemPrev = prevPage?.photos.at(-1)?.id ?? null
+
+      for (let i = 0; i < res.photos.length; i++) {
+        const prev = i === 0 ? firstItemPrev : res.photos[i - 1].id
+        const next = res.photos[i + 1]?.id ?? res.next ?? null
+        const photo = {...res.photos[i], prev, next}
         client.setQueryData(["album", id, "photo", photo.id], photo)
       }
       return res
