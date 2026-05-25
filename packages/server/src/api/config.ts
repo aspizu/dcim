@@ -17,7 +17,7 @@ export default hono()
     const row = await sql(c)`SELECT * FROM config WHERE key = ${key}`.first()
     return c.json(row ? row.value : null)
   })
-  .post(
+  .put(
     "/config/:key",
     zValidator(
       "json",
@@ -30,11 +30,11 @@ export default hono()
       const {key} = c.req.param()
       const {value} = c.req.valid("json")
       await sql(c)`
-      INSERT INTO config(key, value)
-      VALUES (${key}, ${value})
-      ON CONFLICT(key)
-      DO UPDATE SET value = excluded.value
-    `.run()
+        INSERT INTO config(key, value)
+        VALUES (${key}, ${value})
+        ON CONFLICT(key)
+        DO UPDATE SET value = excluded.value
+      `.run()
       return c.json(null)
     },
   )

@@ -1,14 +1,16 @@
 import * as exifr from "exifr"
 
-import {getConfig} from "#lib/config"
 import {sha256} from "#lib/hash"
 import {transform} from "#lib/transformations/pipeline"
 import type {PipelineOptions} from "#lib/transformations/types"
 
 import {Server} from "./scheduler"
 
-const DEFAULT_THUMBNAIL_QUALITY = "balanced"
-const DEFAULT_BACKUP_QUALITY = "original"
+export type HandleRequestInput = {
+  fileHandle: FileSystemFileHandle
+  thumbnailQuality: string
+  backupQuality: string
+}
 
 const THUMBNAIL_PRESETS: Record<string, PipelineOptions> = {
   low: {
@@ -72,16 +74,15 @@ function _arrayBufferToDataURL(buffer: ArrayBuffer, mimeType: string): string {
 }
 
 export class TransformationsWorker extends Server {
-  async handleRequest(fileHandle: FileSystemFileHandle): Promise<Output> {
+  async handleRequest(input: HandleRequestInput): Promise<Output> {
+    const {fileHandle, thumbnailQuality, backupQuality} = input
     const blob = await fileHandle.getFile()
     const metadata = await exifr.parse(blob)
     const image = await createImageBitmap(blob)
 
-    const thumbnailQuality = getConfig("thumbnailQuality") ?? DEFAULT_THUMBNAIL_QUALITY
     if (!(thumbnailQuality in THUMBNAIL_PRESETS)) {
       throw new Error(`Invalid thumbnail quality: ${thumbnailQuality}`)
     }
-    const backupQuality = getConfig("backupQuality") ?? DEFAULT_BACKUP_QUALITY
 
     const [thumbnailBuffer, thumbhashBuffer] = await Promise.all([
       transform(image, blob.type, THUMBNAIL_PRESETS[thumbnailQuality]),

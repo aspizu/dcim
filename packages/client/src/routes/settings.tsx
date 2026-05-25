@@ -1,5 +1,6 @@
 import {createFileRoute, useNavigate} from "@tanstack/react-router"
-import {LogOut} from "lucide-react"
+import {LogOut, Moon, Sun, Monitor} from "lucide-react"
+import prettyBytes from "pretty-bytes"
 import {useState} from "react"
 
 import {Header} from "#components/header"
@@ -13,11 +14,20 @@ import {
   FieldTitle,
 } from "#components/ui/field"
 import {RadioGroup, RadioGroupItem} from "#components/ui/radio-group"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "#components/ui/select"
 import {Spinner} from "#components/ui/spinner"
 import {useQueryStorage} from "#hooks/queries"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
 import {$backupQuality, $thumbnailQuality} from "#stores/settings"
+import {$themePreference, setThemePreference} from "#stores/themes"
 
 function RouteComponent() {
   const navigate = useNavigate()
@@ -34,13 +44,20 @@ function RouteComponent() {
   return (
     <>
       <Header title="Settings" />
-      <div className="mx-auto max-w-3xl px-4">
+      <div className="mx-auto mb-16 max-w-3xl px-4">
         <div className="flex max-w-lg flex-col">
-          <h1 className="mt-8 mb-4 text-2xl font-medium">Storage</h1>
-          {storage.data.photo_count} photos <br />
-          {storage.data.total_used}b
+          <h1 className="mt-10 mb-1 text-xl font-semibold tracking-tight">Storage</h1>
+          <p className="mb-6 text-sm text-muted-foreground">
+            {storage.data.photo_count.toLocaleString()} photo
+            {storage.data.photo_count != 1 && "s"} &bull; {prettyBytes(storage.data.total_used)}{" "}
+            used
+          </p>
+
           <FieldSet>
-            <FieldLegend className="data-[variant=label]:text-md/relaxed" variant="label">
+            <FieldLegend
+              className="data-[variant=label]:text-sm data-[variant=label]:font-medium"
+              variant="label"
+            >
               Thumbnail Quality
             </FieldLegend>
 
@@ -61,7 +78,7 @@ function RouteComponent() {
               </Field>
 
               <Field orientation="horizontal">
-                <RadioGroupItem value="medium" />
+                <RadioGroupItem value="balanced" />
                 <FieldContent>
                   <FieldTitle>Balanced</FieldTitle>
                   <FieldDescription>Standard-resolution compressed thumbnails</FieldDescription>
@@ -77,8 +94,12 @@ function RouteComponent() {
               </Field>
             </RadioGroup>
           </FieldSet>
-          <FieldSet className="mt-8">
-            <FieldLegend className="data-[variant=label]:text-md/relaxed" variant="label">
+
+          <FieldSet className="mt-6">
+            <FieldLegend
+              className="data-[variant=label]:text-sm data-[variant=label]:font-medium"
+              variant="label"
+            >
               Backup Quality
             </FieldLegend>
 
@@ -89,7 +110,7 @@ function RouteComponent() {
               }}
             >
               <Field orientation="horizontal">
-                <RadioGroupItem value="low" />
+                <RadioGroupItem value="storageSaver" />
                 <FieldContent>
                   <FieldTitle>Storage Saver</FieldTitle>
                   <FieldDescription>Always compress files to save space</FieldDescription>
@@ -97,7 +118,7 @@ function RouteComponent() {
               </Field>
 
               <Field orientation="horizontal">
-                <RadioGroupItem value="medium" />
+                <RadioGroupItem value="smart" />
                 <FieldContent>
                   <FieldTitle>Smart</FieldTitle>
                   <FieldDescription>Compress files when ideal</FieldDescription>
@@ -113,7 +134,53 @@ function RouteComponent() {
               </Field>
             </RadioGroup>
           </FieldSet>
-          <h1 className="mt-12 mb-4 text-2xl font-medium">Account</h1>
+
+          <h1 className="mt-10 mb-6 text-xl font-semibold tracking-tight">Appearance</h1>
+
+          <FieldSet>
+            <FieldLegend
+              className="data-[variant=label]:text-sm data-[variant=label]:font-medium"
+              variant="label"
+            >
+              Theme
+            </FieldLegend>
+
+            <Field orientation="horizontal">
+              <FieldContent>
+                <FieldTitle>Theme preference</FieldTitle>
+                <FieldDescription>Choose your preferred appearance</FieldDescription>
+              </FieldContent>
+              <Select
+                value={$themePreference.value}
+                onValueChange={(val) => {
+                  setThemePreference(val as "light" | "dark" | "system")
+                }}
+              >
+                <SelectTrigger className="w-36">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="system">
+                      <Monitor className="size-3.5" />
+                      System
+                    </SelectItem>
+                    <SelectItem value="light">
+                      <Sun className="size-3.5" />
+                      Light
+                    </SelectItem>
+                    <SelectItem value="dark">
+                      <Moon className="size-3.5" />
+                      Dark
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </Field>
+          </FieldSet>
+
+          <h1 className="mt-10 mb-6 text-xl font-semibold tracking-tight">Account</h1>
+
           <Button
             variant="destructive"
             onClick={() => void _onSignOutClick()}
