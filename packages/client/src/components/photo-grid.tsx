@@ -1,50 +1,8 @@
 import {Link} from "@tanstack/react-router"
-import * as datefns from "date-fns"
 
 import {ImgFaded} from "#components/img-faded"
-import {extractTimestampFromUUIDv7} from "#lib/dates"
+import {groupPhotosByDate} from "#lib/dates"
 import type * as api from "#services/api"
-
-function _groupPhotosByDate(photos: api.Photo[]) {
-  const now = new Date()
-  const currentYear = now.getFullYear()
-
-  const startOfToday = new Date(now)
-  startOfToday.setHours(0, 0, 0, 0)
-
-  const startOfYesterday = new Date(startOfToday)
-  startOfYesterday.setDate(startOfToday.getDate() - 1)
-
-  const sevenDaysAgo = new Date(now)
-  sevenDaysAgo.setDate(now.getDate() - 7)
-
-  return Object.entries(
-    Object.groupBy(photos, (photo) => {
-      const date = extractTimestampFromUUIDv7(photo.id)
-
-      let label: string
-
-      const isToday = date >= startOfToday
-      const isYesterday = date >= startOfYesterday && date < startOfToday
-      const isLast7Days = date >= sevenDaysAgo && !isToday && !isYesterday
-      const isCurrentYear = date.getFullYear() === currentYear
-
-      if (isToday) {
-        label = "Today"
-      } else if (isYesterday) {
-        label = "Yesterday"
-      } else if (isLast7Days) {
-        label = datefns.formatDate(date, "eeee")
-      } else if (isCurrentYear) {
-        label = datefns.formatDate(date, "eee, MMM d")
-      } else {
-        label = datefns.formatDate(date, "eee, MMM d, yyyy")
-      }
-
-      return label
-    }),
-  )
-}
 
 function Photo(props: {photo: api.Photo; album?: api.Album}) {
   return (
@@ -77,7 +35,7 @@ function Photo(props: {photo: api.Photo; album?: api.Album}) {
 }
 
 export function PhotoGrid(props: {photos: api.Photo[]; album?: api.Album}) {
-  const groups = _groupPhotosByDate(props.photos)
+  const groups = groupPhotosByDate(props.photos)
   return (
     <div className="flex flex-col">
       {groups.map(([key, photos]) => (
