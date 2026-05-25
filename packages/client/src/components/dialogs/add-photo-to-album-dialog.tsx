@@ -15,7 +15,6 @@ import {useAddPhotoToAlbum, useRemovePhotoFromAlbum} from "#hooks/mutations"
 import {useQueryPhotosByAlbum} from "#hooks/queries"
 import {useOnScrollEnd} from "#hooks/use-on-scroll-end"
 import {cn} from "#lib/utils"
-import type {Photo} from "#services/api"
 import type * as api from "#services/api"
 import {$editAlbumAdditions, $editAlbumDeletions, resetEditAlbumStore} from "#stores/album"
 
@@ -68,7 +67,7 @@ export function PhotoGrid(props: {album: string}) {
   const photos = useQueryPhotosByAlbum(props.album)
   useOnScrollEnd(photos.fetchNextPage, ref)
   const allPhotos = photos.data.pages.reduce(
-    (prev: (Photo & {in_album: boolean})[], cur) => [...prev, ...cur.photos],
+    (prev: (api.Photo & {in_album: boolean})[], cur) => [...prev, ...cur.photos],
     [],
   )
   return (
