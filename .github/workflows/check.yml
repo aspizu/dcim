@@ -104,6 +104,8 @@ jobs:
 
       - name: Set up Ruff
         uses: astral-sh/ruff-action@v4.0.0
+        with:
+          version: "latest"
 
       - name: Lint
         run: cd cli && ruff check

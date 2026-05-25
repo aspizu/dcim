@@ -4,3 +4,4 @@ node_modules/
 dist/
 *.env
 .dev.vars*
+.ruff_cache/
