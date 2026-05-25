@@ -5,6 +5,12 @@
   "main": "packages/server/src/index.ts",
   "compatibility_flags": ["nodejs_compat"],
   "upload_source_maps": true,
+  "vars": {
+    "S3_ACCESS_KEY_ID": "61f2c357a8910deccfe8ca7ef8f83176",
+    "S3_ENDPOINT": "https://61f2c357a8910deccfe8ca7ef8f83176.r2.cloudflarestorage.com/dcim",
+    "S3_PUBLIC_URL": "https://files.dcim.aspiz.uk",
+    "S3_REGION": "apac",
+  },
   "d1_databases": [
     {
       "binding": "D1",
