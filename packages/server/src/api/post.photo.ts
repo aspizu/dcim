@@ -136,6 +136,17 @@ export default hono()
     await sql(c)`UPDATE photo SET status = 'uploaded' WHERE id = ${id}`.run()
     return c.json(null)
   })
+  .patch(
+    "/photo/:id/caption",
+    zValidator("json", z.object({caption: z.string().transform((v) => v.trim() || null)})),
+    async (c) => {
+      await ensureLoggedIn(c)
+      const {id} = c.req.param()
+      const {caption} = c.req.valid("json")
+      await sql(c)`UPDATE photo SET caption = ${caption} WHERE id = ${id}`.run()
+      return c.json(null)
+    },
+  )
   .delete("/photo/:id", async (c) => {
     await ensureLoggedIn(c)
     const {id} = c.req.param()
