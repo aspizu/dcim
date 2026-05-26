@@ -34,7 +34,7 @@ export function Photo(props: {
   return (
     <div className="relative mb-11 grid grow place-items-center">
       <div
-        className="relative overflow-hidden bg-neutral-500"
+        className="relative overflow-hidden"
         style={{
           aspectRatio: `${props.photo.width / props.photo.height}`,
           viewTransitionName: `photo-${props.photo.id}`,
