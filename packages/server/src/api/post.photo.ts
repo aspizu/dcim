@@ -138,7 +138,15 @@ export default hono()
   })
   .patch(
     "/photo/:id/caption",
-    zValidator("json", z.object({caption: z.string().transform((v) => v.trim() || null)})),
+    zValidator(
+      "json",
+      z.object({
+        caption: z
+          .string()
+          .nullable()
+          .transform((v) => v?.trim() || null),
+      }),
+    ),
     async (c) => {
       await ensureLoggedIn(c)
       const {id} = c.req.param()

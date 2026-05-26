@@ -1,4 +1,4 @@
-import {Download, Ellipsis, LinkIcon, Trash, X} from "lucide-react"
+import {Download, Ellipsis, LinkIcon, Pencil, Trash, X} from "lucide-react"
 import {useState} from "react"
 import {toast} from "sonner"
 
@@ -17,7 +17,11 @@ import {$authState, AuthState} from "#stores/auth"
 import {DeletePhotoDialog, RemovePhotoFromAlbumDialog} from "../dialogs"
 import {UserMenuItems} from "./user-menu-items"
 
-export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
+export function PhotoHeaderMenu(props: {
+  photo: Photo
+  album?: Album
+  setCaptionEditable: (value: boolean) => void
+}) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [isRemoveOpen, setIsRemoveOpen] = useState(false)
   return (
@@ -45,6 +49,17 @@ export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
                 Download
               </a>
             </DropdownMenuItem>
+            {$authState.value === AuthState.AUTHENTICATED && (
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => {
+                  props.setCaptionEditable(true)
+                }}
+              >
+                <Pencil />
+                Edit Caption
+              </DropdownMenuItem>
+            )}
             {$authState.value === AuthState.AUTHENTICATED && props.album && (
               <DropdownMenuItem
                 onClick={() => {

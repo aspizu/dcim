@@ -1,6 +1,32 @@
-import {useMutation, useQueryClient} from "@tanstack/react-query"
+import {useMutation, useQueryClient, type Query} from "@tanstack/react-query"
 
 import * as api from "#services/api"
+
+export function useUpdatePhotoCaption() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({id, caption}: {id: string; caption: string | null}) =>
+      api.updatePhotoCaption({id, caption}),
+    onMutate: async ({id, caption}) => {
+      await queryClient.cancelQueries({queryKey: ["photo", id]})
+      queryClient.setQueriesData<api.Photo>({queryKey: ["photo", id]}, (old) =>
+        old ? {...old, caption} : old,
+      )
+
+      function _isAlbumPhotoId(query: Query) {
+        const key = query.queryKey
+        return key.length === 4 && key[0] === "album" && key[2] === "photo" && key[3] === id
+      }
+      await queryClient.cancelQueries({predicate: _isAlbumPhotoId})
+      queryClient.setQueriesData<api.Photo>({predicate: _isAlbumPhotoId}, (old) =>
+        old ? {...old, caption} : old,
+      )
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({queryKey: ["photo"]})
+    },
+  })
+}
 
 export function useDeletePhoto() {
   const queryClient = useQueryClient()

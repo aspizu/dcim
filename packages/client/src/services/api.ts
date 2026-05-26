@@ -115,7 +115,7 @@ export async function updatePhotoCaption({
   caption,
 }: {
   id: string
-  caption: string
+  caption: string | null
 }): Promise<void> {
   return call("PATCH", `/photo/${id}/caption`, {caption})
 }

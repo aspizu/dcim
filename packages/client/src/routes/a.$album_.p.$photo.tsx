@@ -1,4 +1,5 @@
 import {createFileRoute} from "@tanstack/react-router"
+import {useState} from "react"
 
 import {Header} from "#components/header"
 import {PhotoHeaderMenu} from "#components/menus"
@@ -16,16 +17,26 @@ function RouteComponent() {
   const params = Route.useParams()
   const album = useQueryAlbum(params.album)
   const photo = useQueryAlbumPhoto(params.album, params.photo)
+  const [captionEditable, setCaptionEditable] = useState(false)
   return (
     <div className="flex h-dvh w-dvw flex-col">
       <Header>
         <Header.Before />
         <Header.Title>{photo.data.file_name}</Header.Title>
         <Header.After>
-          <PhotoHeaderMenu album={album.data} photo={photo.data} />
+          <PhotoHeaderMenu
+            album={album.data}
+            photo={photo.data}
+            setCaptionEditable={setCaptionEditable}
+          />
         </Header.After>
       </Header>
-      <Photo photo={photo.data} album={album.data} />
+      <Photo
+        photo={photo.data}
+        album={album.data}
+        captionEditable={captionEditable}
+        setCaptionEditable={setCaptionEditable}
+      />
     </div>
   )
 }
