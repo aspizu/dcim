@@ -85,11 +85,15 @@ function RouteComponent() {
   )
   return (
     <>
-      <Header
-        title="Album"
-        before={$authState.value === AuthState.AUTHENTICATED && <NewMenu album={album.data} />}
-        after={<AlbumHeaderMenu album={album.data} />}
-      />
+      <Header>
+        <Header.Before>
+          {$authState.value === AuthState.AUTHENTICATED && <NewMenu album={album.data} />}
+        </Header.Before>
+        <Header.Title>Album</Header.Title>
+        <Header.After>
+          <AlbumHeaderMenu album={album.data} />
+        </Header.After>
+      </Header>
       <AlbumTitle album={album.data} />
       <div className="p-2 pt-0">
         <PhotoGrid photos={allPhotos} album={album.data} />
@@ -98,7 +102,7 @@ function RouteComponent() {
   )
 }
 
-export const Route = createFileRoute("/a_/$album")({
+export const Route = createFileRoute("/a_/$album_")({
   component: RouteComponent,
   loader: ({params}) =>
     Promise.all([

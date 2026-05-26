@@ -18,16 +18,19 @@ function RouteComponent() {
   const photo = useQueryAlbumPhoto(params.album, params.photo)
   return (
     <div className="flex h-dvh w-dvw flex-col">
-      <Header
-        title={photo.data.file_name}
-        after={<PhotoHeaderMenu album={album.data} photo={photo.data} />}
-      />
+      <Header>
+        <Header.Before />
+        <Header.Title>{photo.data.file_name}</Header.Title>
+        <Header.After>
+          <PhotoHeaderMenu album={album.data} photo={photo.data} />
+        </Header.After>
+      </Header>
       <Photo photo={photo.data} album={album.data} />
     </div>
   )
 }
 
-export const Route = createFileRoute("/a_/$album_/p_/$photo")({
+export const Route = createFileRoute("/a/$album_/p/$photo")({
   component: RouteComponent,
   loader: ({params}) =>
     Promise.all([

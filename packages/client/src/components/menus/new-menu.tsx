@@ -84,9 +84,12 @@ export function NewMenu(props: {album?: Album}) {
                 Add existing...
               </DropdownMenuItem>
             ) : (
-              <DropdownMenuItem onClick={() => void _onCreateAlbumClick()}>
-                <AlbumIcon />
-                Create album...
+              <DropdownMenuItem
+                onClick={() => void _onCreateAlbumClick()}
+                disabled={createAlbum.isPending}
+              >
+                {createAlbum.isPending ? <Spinner /> : <AlbumIcon />}
+                Create album
               </DropdownMenuItem>
             )}
           </DropdownMenuGroup>

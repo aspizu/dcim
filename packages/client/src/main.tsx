@@ -59,7 +59,8 @@ function App() {
       })
       .catch(() => {
         $authState.value = AuthState.UNAUTHENTICATED
-        if (["/", "/settings"].includes(window.location.pathname)) {
+        stopLoading("whoami")
+        if (["/", "/settings", "/albums"].includes(window.location.pathname)) {
           void router.navigate({
             to: "/login",
             replace: true,

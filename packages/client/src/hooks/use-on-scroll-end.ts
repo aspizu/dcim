@@ -5,6 +5,7 @@ export function useOnScrollEnd(
   element?: HTMLElement | {current: HTMLElement | null},
 ) {
   const isFetching = useRef(false)
+  const el = element ? ("current" in element ? element.current : element) : window
   useEffect(() => {
     async function _onScrollEnd() {
       if (isFetching.current) return
@@ -15,7 +16,6 @@ export function useOnScrollEnd(
     function _eventListener() {
       void _onScrollEnd()
     }
-    const el = element ? ("current" in element ? element.current : element) : window
     if (!el) {
       return undefined
     }
@@ -23,5 +23,5 @@ export function useOnScrollEnd(
     return () => {
       el.removeEventListener("scrollend", _eventListener)
     }
-  }, [callback, element])
+  }, [callback, el])
 }

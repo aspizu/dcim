@@ -1,10 +1,10 @@
-import {createFileRoute} from "@tanstack/react-router"
+import {createFileRoute, Link} from "@tanstack/react-router"
 
 import {Header} from "#components/header"
 import {IndexHeaderMenu, NewMenu} from "#components/menus"
 import {PhotoGrid} from "#components/photo-grid"
-import Sidebar from "#components/sidebar"
-import {queryAlbumsOptions, queryPhotosOptions, useQueryPhotos} from "#hooks/queries"
+import {Tabs, TabsList, TabsTrigger} from "#components/ui/tabs.tsx"
+import {queryPhotosOptions, useQueryPhotos} from "#hooks/queries"
 import {useOnScrollEnd} from "#hooks/use-on-scroll-end"
 import type {Photo} from "#services/api"
 
@@ -19,9 +19,27 @@ function RouteComponent() {
   )
   return (
     <>
-      <Header title="Photos" before={<NewMenu />} after={<IndexHeaderMenu />} />
-      <div className="grid grid-cols-[200px_auto] gap-2 px-2 pb-2">
-        <Sidebar />
+      <Header>
+        <Header.Before>
+          <NewMenu />
+        </Header.Before>
+        <Header.Title>
+          <Tabs value="photos">
+            <TabsList>
+              <TabsTrigger value="photos" asChild>
+                <Link to="/">Photos</Link>
+              </TabsTrigger>
+              <TabsTrigger value="albums">
+                <Link to="/albums">Albums</Link>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </Header.Title>
+        <Header.After>
+          <IndexHeaderMenu />
+        </Header.After>
+      </Header>
+      <div className="p-2">
         <PhotoGrid photos={allPhotos} />
       </div>
     </>
@@ -30,9 +48,5 @@ function RouteComponent() {
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
-  loader: () =>
-    Promise.all([
-      queryClient.ensureQueryData(queryAlbumsOptions),
-      queryClient.ensureInfiniteQueryData(queryPhotosOptions),
-    ]),
+  loader: () => queryClient.ensureInfiniteQueryData(queryPhotosOptions),
 })

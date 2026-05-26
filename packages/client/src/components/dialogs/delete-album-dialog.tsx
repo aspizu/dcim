@@ -37,10 +37,7 @@ export function DeleteAlbumDialog(props: {
             onClick={() =>
               void deleteAlbum.mutateAsync(props.album.id).then(() => {
                 props.onOpenChange(false)
-                return navigate({
-                  to: "/",
-                  params: props.album ? {album: props.album.id} : {},
-                })
+                return navigate({to: "/albums"})
               })
             }
           >

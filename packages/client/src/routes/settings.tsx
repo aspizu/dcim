@@ -57,7 +57,11 @@ function RouteComponent() {
 
   return (
     <>
-      <Header title="Settings" />
+      <Header>
+        <Header.Before />
+        <Header.Title>Settings</Header.Title>
+        <Header.After />
+      </Header>
       <div className="mx-auto mb-16 max-w-3xl px-4">
         <div className="flex max-w-lg flex-col">
           <h1 className="mt-10 mb-1 text-xl font-semibold tracking-tight">Storage</h1>

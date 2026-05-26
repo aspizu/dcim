@@ -9,60 +9,19 @@ export default hono()
     await ensureLoggedIn(c)
     const rows = await sql(c)`
       SELECT
-        a.*,
-
-        p.id AS photo_id,
-        p.image_url,
-        p.thumbnail_url,
-        p.thumbhash,
-        p.content_length,
-        p.file_name,
-        p.status,
-        p.metadata,
-        p.width,
-        p.height,
-        p.uploaded_at
-
+        a.*
       FROM album a
-
-      LEFT JOIN photo p ON p.id = (
-        SELECT p2.id
-        FROM photo_album pa2
-        JOIN photo p2 ON p2.id = pa2.photo_id
-        WHERE pa2.album_id = a.id
-        ORDER BY id DESC
-        LIMIT 1
-      )
-
       ORDER BY a.id DESC;
     `.all()
     return c.json(
-      rows.results.map((row) => {
-        const metadata = JSON.parse(row.metadata as string)
-        return {
-          id: row.id,
-          name: row.name,
-          count: row.count,
-          oldest: row.oldest,
-          newest: row.newest,
-          updated_at: row.updated_at,
-          cover: row.photo_id
-            ? {
-                id: row.photo_id,
-                image_url: row.image_url,
-                thumbnail_url: row.thumbnail_url,
-                thumbhash: row.thumbhash,
-                content_length: row.content_length,
-                file_name: row.file_name,
-                status: row.status,
-                metadata,
-                width: row.width,
-                height: row.height,
-                uploaded_at: row.uploaded_at,
-              }
-            : null,
-        }
-      }),
+      rows.results.map((row) => ({
+        id: row.id,
+        name: row.name,
+        count: row.count,
+        oldest: row.oldest,
+        newest: row.newest,
+        updated_at: row.updated_at,
+      })),
     )
   })
   .get("/album/:id", async (c) => {
