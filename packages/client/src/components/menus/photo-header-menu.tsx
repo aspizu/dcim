@@ -28,7 +28,7 @@ export function PhotoHeaderMenu(props: {photo: Photo; album?: Album}) {
             <Ellipsis />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
+        <DropdownMenuContent align="end">
           <DropdownMenuGroup>
             <DropdownMenuItem
               onClick={() => {

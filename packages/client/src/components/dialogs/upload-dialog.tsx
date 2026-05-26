@@ -14,14 +14,18 @@ import {
   DialogTitle,
 } from "../ui/dialog"
 import {Spinner} from "../ui/spinner"
-import {UploadDialogItem} from "./upload-dialog-item"
+import {UploadDialogItem, type UploadItemProgress} from "./upload-dialog-item"
 
-function UploadStatus(props: {progress: Record<string, number>; total: number}) {
-  const done = Object.values(props.progress).filter((v) => v >= 100).length
-  const left = props.total - done
+function UploadStatus(props: {progress: Record<string, UploadItemProgress>; total: number}) {
+  const values = Object.values(props.progress)
+  const done = values.filter((v) => v.percent >= 100).length
+  const failedCount = values.filter((v) => v.failed).length
+  const left = props.total - done - failedCount
   return (
     <span className="mr-auto font-medium text-muted-foreground">
-      {done} of {props.total} done{left > 0 && `, ${left} left`}
+      {done} of {props.total} done
+      {failedCount > 0 && `, ${failedCount} failed`}
+      {left > 0 && `, ${left} left`}
     </span>
   )
 }
@@ -36,7 +40,7 @@ export function UploadDialog(props: {
   const items = [...props.fileHandles]
   const len = items.length
   items.sort((a, b) => a.handle.name.localeCompare(b.handle.name))
-  const [progress, setProgress] = useState<Record<string, number> | null>(null)
+  const [progress, setProgress] = useState<Record<string, UploadItemProgress> | null>(null)
   const queryClient = useQueryClient()
   useEffect(() => {
     if (props.open) {
@@ -49,11 +53,14 @@ export function UploadDialog(props: {
       const prepared = await prepareFileUpload(item.handle)
       preparedPhotos.push({id: item.id, prepared})
     }
-    setProgress(Object.fromEntries(items.map((item) => [item.id, 0])))
+    setProgress(Object.fromEntries(items.map((item) => [item.id, {percent: 0, failed: false}])))
     for (const {id, prepared} of preparedPhotos) {
       document.getElementById(`upload-item-${id}`)?.scrollIntoView({behavior: "smooth"})
-      const photoID = await completeFileUpload(prepared, id, (id, value) => {
-        setProgress((progress) => ({...progress, [id]: value}))
+      const photoID = await completeFileUpload(prepared, id, (id, state) => {
+        setProgress((progress) => ({
+          ...progress,
+          [id]: {percent: state.percent, failed: state.failed},
+        }))
       })
       if (props.album && photoID) {
         await api.addPhotoToAlbum({id: props.album.id, photoID})
@@ -82,7 +89,8 @@ export function UploadDialog(props: {
           {items.map((item) => (
             <UploadDialogItem
               key={item.id}
-              {...item}
+              id={item.id}
+              handle={item.handle}
               progress={progress === null ? null : progress[item.id]}
               onRemove={props.onRemoveFileHandle}
             />

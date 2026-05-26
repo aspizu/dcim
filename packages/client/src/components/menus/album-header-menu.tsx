@@ -26,7 +26,7 @@ export function AlbumHeaderMenu(props: {album: Album}) {
             <Ellipsis />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
+        <DropdownMenuContent align="end">
           {$authState.value === AuthState.AUTHENTICATED && (
             <>
               <DropdownMenuGroup>

@@ -17,7 +17,7 @@ export function IndexHeaderMenu() {
           <Ellipsis />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent align="end">
         <UserMenuItems />
       </DropdownMenuContent>
     </DropdownMenu>
