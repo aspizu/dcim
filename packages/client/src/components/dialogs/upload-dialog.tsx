@@ -1,4 +1,5 @@
 import {useQueryClient} from "@tanstack/react-query"
+import {useLocation, useNavigate} from "@tanstack/react-router"
 import {useEffect, useState} from "react"
 
 import {completeFileUpload, prepareFileUpload} from "#lib/uploads"
@@ -42,6 +43,8 @@ export function UploadDialog(props: {
   items.sort((a, b) => a.handle.name.localeCompare(b.handle.name))
   const [progress, setProgress] = useState<Record<string, UploadItemProgress> | null>(null)
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
+  const location = useLocation()
   useEffect(() => {
     if (props.open) {
       setProgress(null)
@@ -54,14 +57,19 @@ export function UploadDialog(props: {
       preparedPhotos.push({id: item.id, prepared})
     }
     setProgress(Object.fromEntries(items.map((item) => [item.id, {percent: 0, failed: false}])))
+    let hasFailed = false
+    let photoID: string | undefined
     for (const {id, prepared} of preparedPhotos) {
       document.getElementById(`upload-item-${id}`)?.scrollIntoView({behavior: "smooth"})
-      const photoID = await completeFileUpload(prepared, id, (id, state) => {
+      photoID = await completeFileUpload(prepared, id, (id, state) => {
         setProgress((progress) => ({
           ...progress,
           [id]: {percent: state.percent, failed: state.failed},
         }))
       })
+      if (!photoID) {
+        hasFailed = true
+      }
       if (props.album && photoID) {
         await api.addPhotoToAlbum({id: props.album.id, photoID})
       }
@@ -71,7 +79,13 @@ export function UploadDialog(props: {
     if (props.album) {
       void queryClient.invalidateQueries({queryKey: ["album", props.album.id]})
     }
+    if (hasFailed) return
     props.onOpenChange(false)
+    if (location.pathname === "/albums") {
+      await navigate({to: "/"})
+    } else if (len === 1 && !props.album) {
+      await navigate({to: "/p/$photo", params: {photo: photoID!}})
+    }
   }
   return (
     <Dialog open={props.open} onOpenChange={props.onOpenChange}>

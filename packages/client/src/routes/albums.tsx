@@ -1,13 +1,10 @@
-import {createFileRoute, Link, useNavigate} from "@tanstack/react-router"
-import {Plus} from "lucide-react"
+import {createFileRoute, Link} from "@tanstack/react-router"
 
 import {Header} from "#components/header.tsx"
 import {ImgFaded} from "#components/img-faded.tsx"
 import {IndexHeaderMenu} from "#components/menus/index-header-menu.tsx"
-import {Button} from "#components/ui/button.tsx"
-import {Spinner} from "#components/ui/spinner.tsx"
+import {NewMenu} from "#components/menus/new-menu.tsx"
 import {Tabs, TabsList, TabsTrigger} from "#components/ui/tabs.tsx"
-import {useCreateAlbum} from "#hooks/mutations"
 import {queryAlbumsOptions, useQueryAlbums, useQueryPhoto} from "#hooks/queries"
 import type {Album} from "#services/api"
 
@@ -49,21 +46,12 @@ function Album(props: {album: Album}) {
 }
 
 function RouteComponent() {
-  const navigate = useNavigate()
-  const createAlbum = useCreateAlbum()
   const albums = useQueryAlbums()
-  async function _onCreateAlbumClick() {
-    const res = await createAlbum.mutateAsync("Untitled")
-    await navigate({to: "/a/$album", params: {album: res.id}})
-  }
   return (
     <>
       <Header>
         <Header.Before>
-          <Button onClick={() => void _onCreateAlbumClick()} disabled={createAlbum.isPending}>
-            {createAlbum.isPending ? <Spinner /> : <Plus />}
-            New Album
-          </Button>
+          <NewMenu />
         </Header.Before>
         <Header.Title>
           <Tabs value="albums">
