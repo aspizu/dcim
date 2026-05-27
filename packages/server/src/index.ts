@@ -9,6 +9,7 @@ import postPhoto from "#api/post.photo"
 import storage from "#api/storage"
 import hono from "#utils/hono"
 
+import albums from "./html/albums"
 import photos from "./html/photos"
 
 export default hono()
@@ -40,4 +41,5 @@ export default hono()
   .route("/api", postPhoto)
   .route("/api", storage)
   .route("/api", config)
+  .route("/", albums)
   .route("/", photos)
