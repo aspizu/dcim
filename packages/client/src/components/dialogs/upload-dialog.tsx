@@ -81,14 +81,22 @@ export function UploadDialog(props: {
     }
     if (hasFailed) return
     props.onOpenChange(false)
-    if (location.pathname === "/albums") {
-      await navigate({to: "/"})
-    } else if (len === 1 && !props.album) {
+    if (len === 1 && !props.album) {
       await navigate({to: "/p/$photo", params: {photo: photoID!}})
+    } else if (location.pathname === "/albums") {
+      await navigate({to: "/"})
     }
   }
+  const uploading =
+    progress !== null && Object.values(progress).some((p) => p.percent < 100 && !p.failed)
   return (
-    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
+    <Dialog
+      open={props.open}
+      onOpenChange={(open) => {
+        if (!open && uploading) return
+        props.onOpenChange(open)
+      }}
+    >
       <DialogContent showCloseButton={progress === null}>
         <DialogHeader>
           <DialogTitle>Upload photos</DialogTitle>
