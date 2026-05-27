@@ -60,11 +60,11 @@ function App() {
       .catch(() => {
         $authState.value = AuthState.UNAUTHENTICATED
         stopLoading("whoami")
-        if (["/", "/settings", "/albums"].includes(window.location.pathname)) {
+        if (["/", "/settings", "/albums"].includes(router.state.location.pathname)) {
           void router.navigate({
             to: "/login",
             replace: true,
-            search: {redirect: window.location.pathname},
+            search: {redirect: router.state.location.pathname},
           })
         }
       })

@@ -1,4 +1,4 @@
-import {createFileRoute, useNavigate} from "@tanstack/react-router"
+import {createFileRoute, useLocation, useNavigate} from "@tanstack/react-router"
 import {motion, useAnimate} from "framer-motion"
 import {LockOpen} from "lucide-react"
 import {useState} from "react"
@@ -19,10 +19,11 @@ function RouteComponent() {
   const [totp, setTotp] = useState("")
   const [isIncorrect, setIsIncorrect] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
 
   const [isLoading, setIsLoading] = useState(false)
   function _redirect() {
-    const redirectParam = new URL(window.location.href).searchParams.get("redirect")
+    const redirectParam = new URLSearchParams(location.search).get("redirect")
     const redirectURL = redirectParam ? new URL(redirectParam, window.location.origin) : null
     void navigate({
       to: redirectURL ? `${redirectURL.pathname}${redirectURL.search}${redirectURL.hash}` : "/",

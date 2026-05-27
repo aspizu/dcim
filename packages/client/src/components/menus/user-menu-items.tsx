@@ -1,4 +1,4 @@
-import {Link, useNavigate} from "@tanstack/react-router"
+import {Link, useLocation, useNavigate} from "@tanstack/react-router"
 import {LogIn, LogOut, Settings} from "lucide-react"
 import {useState} from "react"
 
@@ -9,6 +9,7 @@ import {$authState, AuthState} from "#stores/auth"
 
 export function UserMenuItems() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   async function _onSignOutClick() {
     setIsLoggingOut(true)
@@ -36,7 +37,7 @@ export function UserMenuItems() {
   ) : (
     <DropdownMenuGroup>
       <DropdownMenuItem asChild>
-        <Link to="/login" search={{redirect: window.location.pathname}}>
+        <Link to="/login" search={{redirect: location.pathname}}>
           <LogIn />
           Login
         </Link>
