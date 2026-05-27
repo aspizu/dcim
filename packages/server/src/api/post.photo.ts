@@ -38,14 +38,8 @@ export default hono()
         c.req.valid("json")
       const s3 = makeS3(c.env)
       const id = generatePhotoID(metadata)
-      const imageKey = `${image.contentSHA256
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=+$/, "")}${CT_EXT[image.contentType]}`
-      const thumbnailKey = `${thumbnail.contentSHA256
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=+$/, "")}${CT_EXT[thumbnail.contentType]}`
+      const imageKey = `${id}/image${CT_EXT[image.contentType]}`
+      const thumbnailKey = `${id}/thumbnail${CT_EXT[thumbnail.contentType]}`
       const publicURL = c.env.S3_PUBLIC_URL.replace(/\/$/, "")
       const imageURL = `${publicURL}/${imageKey}`
       const thumbnailURL = `${publicURL}/${thumbnailKey}`
