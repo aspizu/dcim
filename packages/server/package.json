@@ -1,5 +1,6 @@
 {
   "name": "@dcim/server",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "lint": "oxlint",

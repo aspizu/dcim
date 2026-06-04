@@ -1,5 +1,6 @@
 {
   "name": "@dcim/client",
+  "license": "MIT",
   "type": "module",
   "imports": {
     "#components/*": "./src/components/*",
