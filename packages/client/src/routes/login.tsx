@@ -2,7 +2,7 @@ import {useSignalEffect} from "@preact/signals-react"
 import {createFileRoute, useLocation, useNavigate} from "@tanstack/react-router"
 import {motion, useAnimate} from "framer-motion"
 import {LockOpen} from "lucide-react"
-import {useState} from "react"
+import {useRef, useState} from "react"
 
 import {Button} from "#components/ui/button"
 import {
@@ -30,8 +30,11 @@ function RouteComponent() {
       {duration: 0.4, ease: "easeInOut"},
     )
   }
+  const redirecting = useRef(false)
   useSignalEffect(() => {
+    if (redirecting.current) return
     if ($authState.value === AuthState.AUTHENTICATED) {
+      redirecting.current = true
       const redirectParam = new URLSearchParams(location.search).get("redirect")
       const redirectURL = redirectParam ? new URL(redirectParam, window.location.origin) : null
       void navigate({
@@ -39,6 +42,8 @@ function RouteComponent() {
           ? `${redirectURL.pathname}${redirectURL.search}${redirectURL.hash}`
           : "/",
         replace: true,
+      }).then(() => {
+        redirecting.current = false
       })
     }
   })
