@@ -80,6 +80,7 @@ function _load100() {
 }
 
 export function startLoading(key: string) {
+  console.debug("startLoading", key)
   const s = $loading.value
 
   const nextKeys = {...s.keys}
@@ -107,6 +108,7 @@ export function startLoading(key: string) {
 }
 
 export function stopLoading(key: string) {
+  console.debug("stopLoading", key)
   const s = $loading.value
 
   const nextKeys = {...s.keys}

@@ -1,3 +1,4 @@
+import {useSignalEffect} from "@preact/signals-react"
 import {createFileRoute, useLocation, useNavigate} from "@tanstack/react-router"
 import {motion, useAnimate} from "framer-motion"
 import {LockOpen} from "lucide-react"
@@ -22,14 +23,6 @@ function RouteComponent() {
   const location = useLocation()
 
   const [isLoading, setIsLoading] = useState(false)
-  function _redirect() {
-    const redirectParam = new URLSearchParams(location.search).get("redirect")
-    const redirectURL = redirectParam ? new URL(redirectParam, window.location.origin) : null
-    void navigate({
-      to: redirectURL ? `${redirectURL.pathname}${redirectURL.search}${redirectURL.hash}` : "/",
-      replace: true,
-    })
-  }
   function _shake() {
     animate(
       scope.current,
@@ -37,9 +30,18 @@ function RouteComponent() {
       {duration: 0.4, ease: "easeInOut"},
     )
   }
-  if ($authState.value === AuthState.AUTHENTICATED) {
-    _redirect()
-  }
+  useSignalEffect(() => {
+    if ($authState.value === AuthState.AUTHENTICATED) {
+      const redirectParam = new URLSearchParams(location.search).get("redirect")
+      const redirectURL = redirectParam ? new URL(redirectParam, window.location.origin) : null
+      void navigate({
+        to: redirectURL
+          ? `${redirectURL.pathname}${redirectURL.search}${redirectURL.hash}`
+          : "/",
+        replace: true,
+      })
+    }
+  })
   async function _onLoginClick() {
     if (totp.length < 6) {
       _shake()
@@ -50,7 +52,6 @@ function RouteComponent() {
     try {
       await api.login({totp})
       $authState.value = AuthState.AUTHENTICATED
-      _redirect()
     } catch {
       $authState.value = AuthState.UNAUTHENTICATED
       setIsLoading(false)
