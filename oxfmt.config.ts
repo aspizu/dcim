@@ -14,5 +14,6 @@ export default defineConfig({
     "packages/client/src/routeTree.gen.ts",
     "worker-configuration.d.ts",
     "pnpm-lock.yaml",
+    "README.md",
   ],
 })
