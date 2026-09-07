@@ -5,11 +5,16 @@
   "main": "packages/server/src/index.ts",
   "compatibility_flags": ["nodejs_compat"],
   "upload_source_maps": true,
-  "vars": {
-    "S3_ACCESS_KEY_ID": "18f8ba869f059ef094ad56b5fdfe529d",
-    "S3_ENDPOINT": "https://61f2c357a8910deccfe8ca7ef8f83176.r2.cloudflarestorage.com/dcim",
-    "S3_PUBLIC_URL": "https://files.dcim.aspiz.uk",
-    "S3_REGION": "auto",
+  "secrets": {
+    "required": [
+      "S3_ACCESS_KEY_ID",
+      "S3_SECRET_ACCESS_KEY",
+      "S3_ENDPOINT",
+      "S3_REGION",
+      "S3_PUBLIC_URL",
+      "TOTP_SECRET",
+      "JWT_SECRET",
+    ],
   },
   "d1_databases": [
     {
