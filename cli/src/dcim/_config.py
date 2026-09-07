@@ -18,6 +18,7 @@ class Config(Struct):
             return Config()
 
     def save(self) -> None:
+        CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
         CONFIG_PATH.write_bytes(msgspec.toml.encode(self))
 
 
