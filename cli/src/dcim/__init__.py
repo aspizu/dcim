@@ -1,7 +1,7 @@
 import functools
 import logging
+from collections.abc import Callable
 from time import perf_counter_ns
-from typing import Callable
 
 from rich import print
 

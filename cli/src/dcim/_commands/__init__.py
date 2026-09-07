@@ -6,4 +6,4 @@ def cli() -> None:
     pass
 
 
-from . import _login, _upload  # noqa: E402, F401
+from . import _login, _upload  # noqa: F401
