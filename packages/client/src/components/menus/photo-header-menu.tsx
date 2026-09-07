@@ -1,4 +1,4 @@
-import {Download, Ellipsis, LinkIcon, Pencil, Trash, X} from "lucide-react"
+import {Copy, Download, Ellipsis, LinkIcon, Pencil, Trash, X} from "lucide-react"
 import {useState} from "react"
 import {toast} from "sonner"
 
@@ -24,6 +24,16 @@ export function PhotoHeaderMenu(props: {
 }) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [isRemoveOpen, setIsRemoveOpen] = useState(false)
+  async function _copyAsMarkdown() {
+    const alt = props.photo.file_name.replace(/[\\`*_[\]<>!&]/g, "\\$&").replace(/\s+/g, " ")
+    const url = props.photo.image_url.replace(/[<>\s\\]/g, encodeURIComponent)
+    try {
+      await navigator.clipboard.writeText(`![${alt}](<${url}>)`)
+      toast("Copied Markdown to clipboard")
+    } catch {
+      return
+    }
+  }
   return (
     <>
       <DropdownMenu>
@@ -42,6 +52,10 @@ export function PhotoHeaderMenu(props: {
             >
               <LinkIcon />
               Copy link
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void _copyAsMarkdown()}>
+              <Copy />
+              Copy as Markdown
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <a href={props.photo.image_url} download>
