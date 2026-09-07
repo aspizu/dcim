@@ -42,7 +42,7 @@ export function PhotoHeaderMenu(props: {
             <Ellipsis />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent align="end" className="min-w-38">
           <DropdownMenuGroup>
             <DropdownMenuItem
               onClick={() => {
@@ -55,7 +55,7 @@ export function PhotoHeaderMenu(props: {
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => void _copyAsMarkdown()}>
               <Copy />
-              Copy as Markdown
+              Copy Markdown
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <a href={props.photo.image_url} download>
