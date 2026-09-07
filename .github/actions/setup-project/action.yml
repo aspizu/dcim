@@ -1,0 +1,16 @@
+name: Set up project
+description: Install the project toolchain and restore cached pnpm dependencies.
+
+runs:
+  using: composite
+  steps:
+    - name: Set up pnpm and Node
+      uses: pnpm/setup@v1
+      with:
+        runtime: node@24
+        cache: true
+        install: false
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile --prefer-offline --no-runtime
