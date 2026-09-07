@@ -1,4 +1,5 @@
-import {Copy, Download, Ellipsis, LinkIcon, Pencil, Trash, X} from "lucide-react"
+import _ from "lodash"
+import {Code, Copy, Download, Ellipsis, LinkIcon, Pencil, Trash, X} from "lucide-react"
 import {useState} from "react"
 import {toast} from "sonner"
 
@@ -34,6 +35,18 @@ export function PhotoHeaderMenu(props: {
       return
     }
   }
+  async function _copyAsHtml() {
+    const src = _.escape(props.photo.image_url)
+    const alt = _.escape(props.photo.file_name)
+    try {
+      await navigator.clipboard.writeText(
+        `<img src="${src}" alt="${alt}" width="${props.photo.width}" height="${props.photo.height}" loading="lazy">`,
+      )
+      toast("Copied HTML to clipboard")
+    } catch {
+      return
+    }
+  }
   return (
     <>
       <DropdownMenu>
@@ -56,6 +69,10 @@ export function PhotoHeaderMenu(props: {
             <DropdownMenuItem onClick={() => void _copyAsMarkdown()}>
               <Copy />
               Copy Markdown
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void _copyAsHtml()}>
+              <Code />
+              Copy HTML
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <a href={props.photo.image_url} download>
