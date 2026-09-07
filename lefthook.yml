@@ -14,8 +14,12 @@ pre-commit:
       run: cd packages/client && node_modules/.bin/tsc -p tsconfig.app.json
 
     - name: typecheck-server
-      glob: "packages/server/**/*.{ts}"
+      glob: "{packages/server/**/*.ts,packages/server/tsconfig.json}"
       run: cd packages/server && node_modules/.bin/tsc -p tsconfig.json
+
+    - name: typecheck-scripts
+      glob: "{scripts/**/*.ts,scripts/tsconfig.json,packages/server/tsconfig.json}"
+      run: packages/server/node_modules/.bin/tsc -p scripts/tsconfig.json
 
     - name: lint-client
       glob: "packages/client/**/*.{ts,tsx}"

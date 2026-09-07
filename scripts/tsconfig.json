@@ -1,0 +1,10 @@
+{
+  "extends": "../packages/server/tsconfig.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": ["node"],
+    "typeRoots": ["../packages/server/node_modules/@types"]
+  },
+  "include": ["./**/*.ts"]
+}

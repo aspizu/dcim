@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "lint": "oxlint",
-    "check": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json && tsc -p ../../scripts/tsconfig.json",
     "fmt": "oxfmt ."
   },
   "dependencies": {
