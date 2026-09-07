@@ -1,6 +1,6 @@
 # dcim
 
-Self-hosted photo sharing app. Easy to setup, runs on Cloudflare.
+Self-hosted photo sharing app. Easy to setup, runs on Cloudflare. [**Install**](./docs/install.md)
 
 Upload photos to your dcim instance from a browser, add captions, organize into albums, and share them with a link, or even embed them on your website.
 
