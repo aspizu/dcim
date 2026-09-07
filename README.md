@@ -1,10 +1,12 @@
 # dcim
 
-Self-hostable photo sharing app running on Cloudflare infra.
+Self-hosted photo sharing app. Easy to setup, runs on Cloudflare.
 
-dcim lets you upload photos from the browser, add captions, organize them into albums, and share them with a simple link. Albums and photos include Open Graph previews for embeds in chat apps and social media.
+Upload photos to your dcim instance from a browser, add captions, organize into albums, and share them with a link, or even embed them on your website.
 
-Photos are stored unencrypted and access is link-based. Anyone with a photo or album UUID can view it, so only share links with people you want to give access to.
+Albums and photos include Open Graph previews for embeds in chat apps and social media.
+
+Photos are stored unencrypted and access is link-based. Anyone with a photo or album ID can view it, so only share links with people you want to give access to.
 
 Uploads can be compressed before storage to reduce space usage. Storage uses any S3-compatible backend, including self-hosted object storage and Cloudflare R2.
 
