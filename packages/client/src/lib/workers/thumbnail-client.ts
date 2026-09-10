@@ -6,7 +6,7 @@ const worker = new Worker()
 const client = new Client(worker)
 
 export async function createThumbnail(
-  fileHandle: FileSystemFileHandle,
+  fileHandle: FileSystemFileHandle | File,
   maxDimension = 300,
 ): Promise<Output> {
   return await client.request<Output, HandleRequestInput>({fileHandle, maxDimension}, 1000 * 5)
