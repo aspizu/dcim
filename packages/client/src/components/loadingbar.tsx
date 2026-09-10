@@ -1,155 +1,85 @@
 import {signal} from "@preact/signals-react"
 
-type LoadingState = {
-  progress: number
-  visible: boolean
-  phase: "idle" | "loading" | "finishing"
-  keys: Record<string, number>
-}
-
-const $loading = signal<LoadingState>({
-  progress: 0,
-  visible: false,
-  phase: "idle",
-  keys: {},
-})
-
-let interval: ReturnType<typeof setInterval>
-
-function _hasAnyActive(keys: Record<string, number>) {
-  return Object.values(keys).some((v) => v > 0)
-}
-
-function _load75() {
-  const s = $loading.value
-
-  const next = s.progress + (0.75 - s.progress) / 10
-
-  $loading.value = {
-    ...s,
-    progress: next,
-  }
-
-  if (Math.abs(0.75 - next) < 0.001) {
-    clearInterval(interval)
-    $loading.value = {
-      ...$loading.value,
-      progress: 0.75,
-    }
-  }
-}
-
-function _load100() {
-  const s = $loading.value
-
-  const next = s.progress + (1.0 - s.progress) / 2
-
-  $loading.value = {
-    ...s,
-    progress: next,
-  }
-
-  if (Math.abs(1.0 - next) < 0.001) {
-    clearInterval(interval)
-
-    const done = {
-      ...$loading.value,
-      progress: 1.0,
-    }
-
-    $loading.value = done
-
-    setTimeout(() => {
-      $loading.value = {
-        ...done,
-        visible: false,
-        phase: "idle",
-        keys: {},
-      }
-
-      setTimeout(() => {
-        $loading.value = {
-          progress: 0,
-          visible: false,
-          phase: "idle",
-          keys: {},
-        }
-      }, 200)
-    }, 200)
-  }
-}
+const $loading = signal({progress: 0, visible: false})
+const _activeLoads = new Map<string, number>()
+let _interval: ReturnType<typeof setInterval> | undefined
+let _showTimeout: ReturnType<typeof setTimeout> | undefined
+let _hideTimeout: ReturnType<typeof setTimeout> | undefined
 
 export function startLoading(key: string) {
-  console.debug("startLoading", key)
-  const s = $loading.value
-
-  const nextKeys = {...s.keys}
-  nextKeys[key] = (nextKeys[key] ?? 0) + 1
-
-  if (s.phase !== "idle") {
-    $loading.value = {
-      ...s,
-      keys: nextKeys,
-      visible: true,
-    }
-    return
-  }
-
-  clearInterval(interval)
-
+  const wasLoading = _activeLoads.size > 0
+  _activeLoads.set(key, (_activeLoads.get(key) ?? 0) + 1)
+  if (wasLoading) return
+  clearInterval(_interval)
+  clearTimeout(_showTimeout)
+  clearTimeout(_hideTimeout)
+  const {progress, visible} = $loading.value
   $loading.value = {
-    progress: 0,
-    visible: true,
-    phase: "loading",
-    keys: nextKeys,
+    progress: visible && progress < 1 ? progress : 0,
+    visible,
   }
+  if (visible) {
+    _animateLoading()
+  } else {
+    _showTimeout = setTimeout(() => {
+      $loading.value = {progress: 0.075, visible: true}
+      _animateLoading()
+    }, 150)
+  }
+}
 
-  interval = setInterval(_load75, 1000 / 15)
+function _animateLoading() {
+  _interval = setInterval(() => {
+    const state = $loading.value
+    const next = state.progress + Math.max(0, 0.75 - state.progress) / 10
+    if (next >= 0.749) {
+      clearInterval(_interval)
+      $loading.value = {...state, progress: Math.max(state.progress, 0.75)}
+    } else {
+      $loading.value = {...state, progress: next}
+    }
+  }, 1000 / 15)
 }
 
 export function stopLoading(key: string) {
-  console.debug("stopLoading", key)
-  const s = $loading.value
-
-  const nextKeys = {...s.keys}
-
-  if (!nextKeys[key]) return
-
-  nextKeys[key]--
-
-  if (nextKeys[key] <= 0) {
-    delete nextKeys[key]
-  }
-
-  if (_hasAnyActive(nextKeys)) {
-    $loading.value = {
-      ...s,
-      keys: nextKeys,
-    }
+  const count = _activeLoads.get(key)
+  if (count === undefined) return
+  if (count > 1) {
+    _activeLoads.set(key, count - 1)
     return
   }
-
-  clearInterval(interval)
-
-  $loading.value = {
-    ...s,
-    keys: nextKeys,
-    phase: "finishing",
-  }
-
-  interval = setInterval(_load100, 1000 / 15)
+  _activeLoads.delete(key)
+  if (_activeLoads.size > 0) return
+  clearTimeout(_showTimeout)
+  clearInterval(_interval)
+  if (!$loading.value.visible) return
+  _interval = setInterval(() => {
+    const state = $loading.value
+    const next = state.progress + (1 - state.progress) / 2
+    if (1 - next < 0.001) {
+      clearInterval(_interval)
+      $loading.value = {...state, progress: 1}
+      _hideTimeout = setTimeout(() => {
+        $loading.value = {...$loading.value, visible: false}
+      }, 200)
+    } else {
+      $loading.value = {...state, progress: next}
+    }
+  }, 1000 / 15)
 }
 
 export function LoadingBar() {
   const {progress, visible} = $loading.value
-
   return (
     <div
-      className="fixed top-0 right-0 left-0 z-99 h-1 bg-primary"
+      role="progressbar"
+      aria-label="Loading"
+      aria-hidden={!visible}
+      className="pointer-events-none fixed top-0 right-0 left-0 z-99 h-1 origin-left bg-primary transition-[transform,opacity] duration-200 ease-linear motion-reduce:transition-none"
       style={{
-        width: `${progress * 100}%`,
+        transform: `scaleX(${progress})`,
         opacity: visible ? 1 : 0,
-        transition: "width 40ms linear, opacity 200ms ease",
+        transitionProperty: progress === 0 ? "none" : undefined,
       }}
     />
   )
