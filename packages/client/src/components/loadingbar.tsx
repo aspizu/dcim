@@ -12,20 +12,36 @@ export function startLoading(key: string) {
   if (wasLoading) return
   clearInterval(_interval)
   clearTimeout(_showTimeout)
-  clearTimeout(_hideTimeout)
   const {progress, visible} = $loading.value
-  $loading.value = {
-    progress: visible && progress < 1 ? progress : 0,
-    visible,
+  if (progress === 1) {
+    if (visible) {
+      clearTimeout(_hideTimeout)
+      _hideLoading()
+    }
+    return
   }
   if (visible) {
     _animateLoading()
   } else {
-    _showTimeout = setTimeout(() => {
-      $loading.value = {progress: 0.075, visible: true}
-      _animateLoading()
-    }, 150)
+    _scheduleLoading()
   }
+}
+
+function _scheduleLoading() {
+  _showTimeout = setTimeout(() => {
+    $loading.value = {progress: 0.075, visible: true}
+    _animateLoading()
+  }, 150)
+}
+
+function _hideLoading() {
+  $loading.value = {...$loading.value, visible: false}
+  _hideTimeout = setTimeout(() => {
+    $loading.value = {progress: 0, visible: false}
+    if (_activeLoads.size > 0) {
+      _scheduleLoading()
+    }
+  }, 200)
 }
 
 function _animateLoading() {
@@ -59,9 +75,7 @@ export function stopLoading(key: string) {
     if (1 - next < 0.001) {
       clearInterval(_interval)
       $loading.value = {...state, progress: 1}
-      _hideTimeout = setTimeout(() => {
-        $loading.value = {...$loading.value, visible: false}
-      }, 200)
+      _hideTimeout = setTimeout(_hideLoading, 200)
     } else {
       $loading.value = {...state, progress: next}
     }
