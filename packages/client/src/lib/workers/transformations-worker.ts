@@ -7,7 +7,7 @@ import type {PipelineOptions} from "#lib/transformations/types"
 import {Server} from "./scheduler"
 
 export type HandleRequestInput = {
-  fileHandle: FileSystemFileHandle
+  fileHandle: FileSystemFileHandle | File
   thumbnailQuality: string
   backupQuality: string
 }
@@ -76,7 +76,7 @@ function _arrayBufferToDataURL(buffer: ArrayBuffer, mimeType: string): string {
 export class TransformationsWorker extends Server {
   async handleRequest(input: HandleRequestInput): Promise<Output> {
     const {fileHandle, thumbnailQuality, backupQuality} = input
-    const blob = await fileHandle.getFile()
+    const blob = fileHandle instanceof File ? fileHandle : await fileHandle.getFile()
     const metadata = await exifr.parse(blob)
     const image = await createImageBitmap(blob)
 

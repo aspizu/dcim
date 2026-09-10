@@ -2,6 +2,7 @@ import {createFileRoute, Link} from "@tanstack/react-router"
 
 import {Header} from "#components/header"
 import {IndexHeaderMenu, NewMenu} from "#components/menus"
+import {PhotoDropZone} from "#components/photo-drop-zone"
 import {PhotoGrid} from "#components/photo-grid"
 import {Tabs, TabsList, TabsTrigger} from "#components/ui/tabs.tsx"
 import {queryPhotosOptions, useQueryPhotos} from "#hooks/queries"
@@ -18,7 +19,7 @@ function RouteComponent() {
     [],
   )
   return (
-    <>
+    <PhotoDropZone>
       <Header>
         <Header.Before>
           <NewMenu />
@@ -42,7 +43,7 @@ function RouteComponent() {
       <div className="p-2">
         <PhotoGrid photos={allPhotos} />
       </div>
-    </>
+    </PhotoDropZone>
   )
 }
 

@@ -23,7 +23,7 @@ export interface UploadItemProgress {
 
 interface UploadItem {
   id: string
-  handle: FileSystemFileHandle
+  handle: FileSystemFileHandle | File
 }
 
 function UploadItemDropDown(props: {id: string; onRemove: (id: string) => void}) {
@@ -55,7 +55,7 @@ export function UploadDialogItem(
   },
 ) {
   const params = useAsync(async () => {
-    const file = await props.handle.getFile()
+    const file = props.handle instanceof File ? props.handle : await props.handle.getFile()
     return {
       original_size: file.size,
     }

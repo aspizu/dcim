@@ -1,6 +1,7 @@
+import {useSignal} from "@preact/signals-react"
 import {useQueryClient} from "@tanstack/react-query"
 import {useLocation, useNavigate} from "@tanstack/react-router"
-import {useEffect, useState} from "react"
+import {useEffect, useEffectEvent} from "react"
 
 import {completeFileUpload, prepareFileUpload} from "#lib/uploads"
 import * as api from "#services/api"
@@ -19,7 +20,7 @@ import {UploadDialogItem, type UploadItemProgress} from "./upload-dialog-item"
 
 function UploadStatus(props: {progress: Record<string, UploadItemProgress>; total: number}) {
   const values = Object.values(props.progress)
-  const done = values.filter((v) => v.percent >= 100).length
+  const done = values.filter((v) => v.percent >= 100 && !v.failed).length
   const failedCount = values.filter((v) => v.failed).length
   const left = props.total - done - failedCount
   return (
@@ -32,46 +33,52 @@ function UploadStatus(props: {progress: Record<string, UploadItemProgress>; tota
 }
 
 export function UploadDialog(props: {
-  fileHandles: {id: string; handle: FileSystemFileHandle}[]
+  fileHandles: {id: string; handle: FileSystemFileHandle | File}[]
   open: boolean
   onOpenChange: (value: boolean) => void
   onRemoveFileHandle: (id: string) => void
   album?: api.Album
+  autoUpload?: boolean
 }) {
   const items = [...props.fileHandles]
   const len = items.length
   items.sort((a, b) => a.handle.name.localeCompare(b.handle.name))
-  const [progress, setProgress] = useState<Record<string, UploadItemProgress> | null>(null)
+  const $progress = useSignal<Record<string, UploadItemProgress> | null>(null)
+  const $uploading = useSignal(false)
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const location = useLocation()
-  useEffect(() => {
-    if (props.open) {
-      setProgress(null)
-    }
-  }, [props.fileHandles, props.open])
   async function _onUploadClick() {
-    const preparedPhotos = []
-    for (const item of items) {
-      const prepared = await prepareFileUpload(item.handle)
-      preparedPhotos.push({id: item.id, prepared})
-    }
-    setProgress(Object.fromEntries(items.map((item) => [item.id, {percent: 0, failed: false}])))
+    if ($progress.value !== null || len === 0) return
+    $uploading.value = true
+    $progress.value = Object.fromEntries(
+      items.map((item) => [item.id, {percent: 0, failed: false}]),
+    )
     let hasFailed = false
     let photoID: string | undefined
-    for (const {id, prepared} of preparedPhotos) {
+    for (const {id, handle} of items) {
       document.getElementById(`upload-item-${id}`)?.scrollIntoView({behavior: "smooth"})
-      photoID = await completeFileUpload(prepared, id, (id, state) => {
-        setProgress((progress) => ({
-          ...progress,
-          [id]: {percent: state.percent, failed: state.failed},
-        }))
-      })
-      if (!photoID) {
+      try {
+        const prepared = await prepareFileUpload(handle)
+        photoID = await completeFileUpload(prepared, id, (id, state) => {
+          $progress.value = {
+            ...$progress.value,
+            [id]: {percent: Math.min(99, state.percent), failed: state.failed},
+          }
+        })
+        if (!photoID) {
+          throw new Error("Upload failed")
+        }
+        if (props.album) {
+          await api.addPhotoToAlbum({id: props.album.id, photoID})
+        }
+        $progress.value = {...$progress.value, [id]: {percent: 100, failed: false}}
+      } catch {
         hasFailed = true
-      }
-      if (props.album && photoID) {
-        await api.addPhotoToAlbum({id: props.album.id, photoID})
+        $progress.value = {
+          ...$progress.value,
+          [id]: {percent: $progress.value?.[id]?.percent ?? 0, failed: true},
+        }
       }
     }
     void queryClient.invalidateQueries({queryKey: ["photo"]})
@@ -79,16 +86,28 @@ export function UploadDialog(props: {
     if (props.album) {
       void queryClient.invalidateQueries({queryKey: ["album", props.album.id]})
     }
+    $uploading.value = false
     if (hasFailed) return
     props.onOpenChange(false)
+    if (props.autoUpload) return
     if (len === 1 && !props.album) {
       await navigate({to: "/p/$photo", params: {photo: photoID!}})
     } else if (location.pathname === "/albums") {
       await navigate({to: "/"})
     }
   }
-  const uploading =
-    progress !== null && Object.values(progress).some((p) => p.percent < 100 && !p.failed)
+  const _autoUpload = useEffectEvent(() => {
+    void _onUploadClick()
+  })
+  useEffect(() => {
+    if (!props.open) {
+      $progress.value = null
+    } else if (props.autoUpload) {
+      _autoUpload()
+    }
+  }, [$progress, props.open, props.autoUpload])
+  const progress = $progress.value
+  const uploading = $uploading.value
   return (
     <Dialog
       open={props.open}
@@ -97,7 +116,7 @@ export function UploadDialog(props: {
         props.onOpenChange(open)
       }}
     >
-      <DialogContent showCloseButton={progress === null}>
+      <DialogContent showCloseButton={!uploading}>
         <DialogHeader>
           <DialogTitle>Upload photos</DialogTitle>
           {props.album && (
@@ -106,7 +125,6 @@ export function UploadDialog(props: {
             </DialogDescription>
           )}
         </DialogHeader>
-
         <div className="flex max-h-[80dvh] flex-col gap-2 overflow-y-auto">
           {items.map((item) => (
             <UploadDialogItem
@@ -120,15 +138,26 @@ export function UploadDialog(props: {
         </div>
         <DialogFooter className="flex items-center">
           {progress !== null && <UploadStatus progress={progress} total={len} />}
-          <Button onClick={() => void _onUploadClick()} disabled={progress !== null}>
+          <Button
+            onClick={() => {
+              if (progress === null) {
+                void _onUploadClick()
+              } else {
+                props.onOpenChange(false)
+              }
+            }}
+            disabled={uploading || len === 0}
+          >
             {progress == null ? (
               <>
                 Upload {len > 1 && len} photo{len > 1 && "s"}
               </>
-            ) : (
+            ) : uploading ? (
               <>
                 <Spinner /> Uploading
               </>
+            ) : (
+              "Close"
             )}
           </Button>
         </DialogFooter>
