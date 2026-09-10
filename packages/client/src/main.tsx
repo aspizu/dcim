@@ -28,13 +28,17 @@ const router = createRouter({
   scrollRestoration: true,
 })
 
-router.subscribe("onBeforeNavigate", ({pathChanged}) => {
-  if (pathChanged) {
-    startLoading("router")
-  }
+let _routerLoading = false
+
+router.subscribe("onBeforeLoad", () => {
+  if (_routerLoading) return
+  _routerLoading = true
+  startLoading("router")
 })
 
 router.subscribe("onResolved", () => {
+  if (!_routerLoading) return
+  _routerLoading = false
   stopLoading("router")
 })
 
