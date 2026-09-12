@@ -61,30 +61,38 @@ export function ActionBar({
             >
               <X aria-hidden="true" />
             </Button>
-            {$authState.value === AuthState.AUTHENTICATED && (
+            <span
+              className="min-w-0 flex-1 truncate text-sm font-medium tabular-nums"
+              aria-live="polite"
+            >
+              {selected.length} selected
+            </span>
+            <div className="flex shrink-0 items-center gap-1">
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                aria-label="Delete"
+                aria-label="Download"
                 disabled={selected.length === 0}
-                onClick={() => {
-                  isDeleteOpen.value = true
-                }}
+                onClick={_download}
               >
-                <Trash aria-hidden="true" />
+                <Download aria-hidden="true" />
               </Button>
-            )}
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label="Download"
-              disabled={selected.length === 0}
-              onClick={_download}
-            >
-              <Download aria-hidden="true" />
-            </Button>
+              {$authState.value === AuthState.AUTHENTICATED && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Delete"
+                  disabled={selected.length === 0}
+                  onClick={() => {
+                    isDeleteOpen.value = true
+                  }}
+                >
+                  <Trash aria-hidden="true" />
+                </Button>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
