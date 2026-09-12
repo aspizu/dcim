@@ -173,6 +173,19 @@ export default hono()
     const imageKey = getImageKey(c, row as any)
     const thumbnailKey = getThumbnailKey(c, row as any)
     await Promise.all([s3.deleteObject(imageKey), s3.deleteObject(thumbnailKey)])
-    await sql(c)`DELETE FROM photo WHERE id = ${id}`.run()
+    await c.env.D1.batch([
+      sql(c)`
+        UPDATE album
+        SET
+          (count, oldest, newest) = (
+            SELECT COUNT(*), MIN(photo_id), MAX(photo_id)
+            FROM photo_album
+            WHERE album_id = album.id AND photo_id != ${id}
+          ),
+          updated_at = ${new Date()}
+        WHERE id IN (SELECT album_id FROM photo_album WHERE photo_id = ${id})
+      `,
+      sql(c)`DELETE FROM photo WHERE id = ${id}`,
+    ])
     return c.json(null)
   })
