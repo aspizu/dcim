@@ -5,9 +5,6 @@ import Worker from "./thumbnail-worker?worker"
 const worker = new Worker()
 const client = new Client(worker)
 
-export async function createThumbnail(
-  fileHandle: FileSystemFileHandle | File,
-  maxDimension = 300,
-): Promise<Output> {
+export async function createThumbnail(fileHandle: File, maxDimension = 300): Promise<Output> {
   return await client.request<Output, HandleRequestInput>({fileHandle, maxDimension}, 1000 * 5)
 }

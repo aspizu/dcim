@@ -4,7 +4,7 @@ import type {PipelineOptions} from "#lib/transformations/types"
 import {Server} from "./scheduler"
 
 export type HandleRequestInput = {
-  fileHandle: FileSystemFileHandle | File
+  fileHandle: File
   maxDimension: number
 }
 
@@ -16,7 +16,7 @@ export type Output = {
 export class ThumbnailWorker extends Server {
   async handleRequest(input: HandleRequestInput): Promise<Output> {
     const {fileHandle, maxDimension} = input
-    const file = fileHandle instanceof File ? fileHandle : await fileHandle.getFile()
+    const file = fileHandle
     const image = await createImageBitmap(file)
 
     const options: PipelineOptions = {

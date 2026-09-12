@@ -4,6 +4,7 @@ import {AlbumIcon, ImagePlus, Images, Plus} from "lucide-react"
 import {fromAsyncThrowable} from "neverthrow"
 import {useState} from "react"
 import {showOpenFilePicker} from "show-open-file-picker"
+import {toast} from "sonner"
 import * as uuid from "uuid"
 
 import {AddPhotoToAlbumDialog} from "#components/dialogs/add-photo-to-album-dialog"
@@ -30,7 +31,7 @@ export function NewMenu(props: {album?: Album}) {
   const [fileHandles, setFileHandles] = useState<
     {
       id: string
-      handle: FileSystemFileHandle
+      handle: File
     }[]
   >([])
   const navigate = useNavigate()
@@ -56,9 +57,31 @@ export function NewMenu(props: {album?: Album}) {
       setIsLoading(false)
       return
     }
-    setFileHandles(handles.value.map((handle) => ({id: uuid.v4(), handle})))
-    setIsUploadOpen(true)
+    const results = await Promise.allSettled(handles.value.map((handle) => handle.getFile()))
+    const files = results
+      .map((result) => {
+        if (result.status !== "fulfilled") return
+        const file = result.value
+        const type = file.type || constants.getImageMimeType(file.name)
+        if (!type || !constants.isImageMimeType(type)) return
+        return file.type
+          ? file
+          : new File([file], file.name, {type, lastModified: file.lastModified})
+      })
+      .filter((file) => file !== undefined)
     setIsLoading(false)
+    if (files.length === 0) {
+      toast.error("No supported image files could be opened")
+      return
+    }
+    const skipped = results.length - files.length
+    if (skipped > 0) {
+      toast.warning(
+        `Skipped ${skipped} unsupported or unreadable file${skipped === 1 ? "" : "s"}`,
+      )
+    }
+    setFileHandles(files.map((handle) => ({id: uuid.v4(), handle})))
+    setIsUploadOpen(true)
   }
   function _onAddExistingClick() {
     setIsAddExistingOpen(true)

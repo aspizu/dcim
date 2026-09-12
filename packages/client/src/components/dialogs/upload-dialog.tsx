@@ -33,7 +33,7 @@ function UploadStatus(props: {progress: Record<string, UploadItemProgress>; tota
 }
 
 export function UploadDialog(props: {
-  fileHandles: {id: string; handle: FileSystemFileHandle | File}[]
+  fileHandles: {id: string; handle: File}[]
   open: boolean
   onOpenChange: (value: boolean) => void
   onRemoveFileHandle: (id: string) => void

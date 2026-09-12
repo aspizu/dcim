@@ -7,7 +7,7 @@ import Worker from "./transformations-worker?worker"
 const worker = new Worker()
 const client = new Client(worker)
 
-export async function transform(input: FileSystemFileHandle | File) {
+export async function transform(input: File) {
   const thumbnailQuality = getConfig("thumbnailQuality") ?? "balanced"
   const backupQuality = getConfig("backupQuality") ?? "original"
   return await client.request<Output, HandleRequestInput>(
