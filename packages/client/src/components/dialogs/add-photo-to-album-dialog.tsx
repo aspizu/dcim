@@ -1,7 +1,7 @@
-import {Check} from "lucide-react"
 import {Suspense, useRef} from "react"
 
 import {ImgFaded} from "#components/img-faded"
+import {PhotoCheckbox} from "#components/photo-checkbox"
 import {Button} from "#components/ui/button"
 import {
   Dialog,
@@ -27,7 +27,7 @@ function Photo(props: {
     (props.photo.in_album && !$editAlbumDeletions.value.includes(props.photo.id))
   return (
     <div
-      className="relative aspect-square overflow-hidden rounded-md"
+      className="group/photo relative aspect-square overflow-hidden rounded-md"
       role="button"
       aria-selected={selected ? "true" : "false"}
       onClick={() => {
@@ -50,14 +50,11 @@ function Photo(props: {
           selected && "brightness-50",
         )}
       />
-      <div
-        className={cn(
-          "absolute right-1 bottom-1 grid size-6 place-items-center rounded-md bg-primary transition-opacity",
-          selected ? "opacity-100" : "opacity-0",
-        )}
-      >
-        <Check className="size-4 text-primary-foreground" />
-      </div>
+      <PhotoCheckbox
+        checked={selected}
+        onCheckedChange={props.setSelected}
+        label={`Select ${props.photo.file_name}`}
+      />
     </div>
   )
 }
