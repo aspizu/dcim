@@ -2,6 +2,7 @@ import {useQueryClient} from "@tanstack/react-query"
 import {createFileRoute} from "@tanstack/react-router"
 import {Fragment, useRef} from "react"
 
+import {ActionBar} from "#components/action-bar"
 import {Header} from "#components/header"
 import {AlbumHeaderMenu, NewMenu} from "#components/menus"
 import {PhotoDropZone} from "#components/photo-drop-zone"
@@ -16,6 +17,7 @@ import {useOnScrollEnd} from "#hooks/use-on-scroll-end"
 import {extractTimestampFromUUIDv7, formatDateRange} from "#lib/dates"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
+import {$isMultiSelectionMode} from "#stores/photo-grid"
 
 import {queryClient} from "../main"
 
@@ -90,7 +92,7 @@ function RouteComponent() {
       key={id}
       {...($authState.value === AuthState.AUTHENTICATED ? {album: album.data} : {})}
     >
-      <Header>
+      <Header collapsed={$isMultiSelectionMode.value}>
         <Header.Before>
           {$authState.value === AuthState.AUTHENTICATED && <NewMenu album={album.data} />}
         </Header.Before>
@@ -103,6 +105,7 @@ function RouteComponent() {
       <div className="p-2 pt-0">
         <PhotoGrid photos={allPhotos} album={album.data} />
       </div>
+      <ActionBar photos={allPhotos} />
     </Wrapper>
   )
 }

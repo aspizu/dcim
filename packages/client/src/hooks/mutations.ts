@@ -1,4 +1,5 @@
 import {useMutation, useQueryClient, type Query} from "@tanstack/react-query"
+import {toast} from "sonner"
 
 import * as api from "#services/api"
 
@@ -36,6 +37,35 @@ export function useDeletePhoto() {
       void queryClient.invalidateQueries({queryKey: ["photo"]})
       void queryClient.invalidateQueries({queryKey: ["album"]})
       void queryClient.invalidateQueries({queryKey: ["storage"]})
+    },
+  })
+}
+
+/** Deletes multiple photos, summarizes failures, and refreshes gallery caches. */
+export function useDeletePhotos() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (photoIDs: string[]) => {
+      let failed = 0
+      for (const id of photoIDs) {
+        try {
+          await api.deletePhoto({id})
+        } catch (error) {
+          console.error(error)
+          failed++
+        }
+      }
+      if (failed > 0) {
+        toast.error(`Failed to delete ${failed} of ${photoIDs.length} selected files`)
+      }
+    },
+    onSettled: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({queryKey: ["photo"]}),
+        queryClient.invalidateQueries({queryKey: ["album"]}),
+        queryClient.invalidateQueries({queryKey: ["photo-by-album"]}),
+        queryClient.invalidateQueries({queryKey: ["storage"]}),
+      ])
     },
   })
 }

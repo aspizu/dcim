@@ -1,18 +1,27 @@
+import {motion, useReducedMotion, type HTMLMotionProps} from "framer-motion"
 import {forwardRef} from "react"
 
 import {cn} from "#lib/utils"
 
-const HeaderRoot = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<"div">>(
-  ({className, ...props}, ref) => (
-    <div
-      ref={ref}
-      className={cn(
-        "sticky top-0 z-10 grid grid-cols-[1fr_minmax(0,auto)_1fr] bg-background/85 p-2 backdrop-blur",
-        className,
-      )}
-      {...props}
-    />
-  ),
+const HeaderRoot = forwardRef<HTMLDivElement, HTMLMotionProps<"div"> & {collapsed?: boolean}>(
+  ({className, collapsed = false, ...props}, ref) => {
+    const reducedMotion = useReducedMotion()
+    return (
+      <motion.div
+        ref={ref}
+        initial={false}
+        animate={{y: collapsed ? "-100%" : "0%"}}
+        transition={{duration: reducedMotion ? 0 : 0.2, ease: "easeInOut"}}
+        inert={collapsed}
+        aria-hidden={collapsed || undefined}
+        className={cn(
+          "sticky top-0 z-10 grid grid-cols-[1fr_minmax(0,auto)_1fr] bg-background/85 p-2 backdrop-blur",
+          className,
+        )}
+        {...props}
+      />
+    )
+  },
 )
 HeaderRoot.displayName = "Header"
 

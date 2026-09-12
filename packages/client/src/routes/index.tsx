@@ -1,5 +1,6 @@
 import {createFileRoute, Link} from "@tanstack/react-router"
 
+import {ActionBar} from "#components/action-bar"
 import {Header} from "#components/header"
 import {IndexHeaderMenu, NewMenu} from "#components/menus"
 import {PhotoDropZone} from "#components/photo-drop-zone"
@@ -8,6 +9,7 @@ import {Tabs, TabsList, TabsTrigger} from "#components/ui/tabs.tsx"
 import {queryPhotosOptions, useQueryPhotos} from "#hooks/queries"
 import {useOnScrollEnd} from "#hooks/use-on-scroll-end"
 import type {Photo} from "#services/api"
+import {$isMultiSelectionMode} from "#stores/photo-grid"
 
 import {queryClient} from "../main"
 
@@ -20,7 +22,7 @@ function RouteComponent() {
   )
   return (
     <PhotoDropZone>
-      <Header>
+      <Header collapsed={$isMultiSelectionMode.value}>
         <Header.Before>
           <NewMenu />
         </Header.Before>
@@ -43,6 +45,7 @@ function RouteComponent() {
       <div className="p-2">
         <PhotoGrid photos={allPhotos} />
       </div>
+      <ActionBar photos={allPhotos} />
     </PhotoDropZone>
   )
 }
