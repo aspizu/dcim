@@ -4,15 +4,10 @@
  */
 export const IMAGE_MIME_TYPES = {
   "image/jpeg": [".jpg", ".jpeg", ".jfif", ".pjpeg", ".pjp"],
-  "image/png": [".png", ".apng"],
-  "image/apng": [".apng", ".png"],
-  "image/gif": [".gif"],
+  "image/png": [".png"],
   "image/webp": [".webp"],
   "image/avif": [".avif"],
-  "image/svg+xml": [".svg"],
   "image/bmp": [".bmp"],
-  "image/vnd.microsoft.icon": [".ico", ".cur"],
-  "image/x-icon": [".ico", ".cur"],
 } as const
 
 /**
