@@ -41,9 +41,9 @@ export function NewMenu(props: {album?: Album}) {
     const handles = await tryShowOpenFilePicker({
       types: [
         {
-          description: "Images",
+          description: "Photos and videos",
           accept: Object.fromEntries(
-            Object.entries(constants.IMAGE_MIME_TYPES).map(([type, extensions]) => [
+            Object.entries(constants.MIME_TYPES).map(([type, extensions]) => [
               type,
               [...extensions],
             ]),
@@ -62,8 +62,8 @@ export function NewMenu(props: {album?: Album}) {
       .map((result) => {
         if (result.status !== "fulfilled") return
         const file = result.value
-        const type = file.type || constants.getImageMimeType(file.name)
-        if (!type || !constants.isImageMimeType(type)) return
+        const type = file.type || constants.getMimeType(file.name)
+        if (!type || !constants.isMimeType(type)) return
         return file.type
           ? file
           : new File([file], file.name, {type, lastModified: file.lastModified})
@@ -71,7 +71,7 @@ export function NewMenu(props: {album?: Album}) {
       .filter((file) => file !== undefined)
     setIsLoading(false)
     if (files.length === 0) {
-      toast.error("No supported image files could be opened")
+      toast.error("No supported files could be opened")
       return
     }
     const skipped = results.length - files.length
