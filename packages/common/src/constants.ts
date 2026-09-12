@@ -11,11 +11,11 @@ export const IMAGE_MIME_TYPES = {
 } as const
 
 /**
- * Video MIME types supported by modern browsers, with accepted extensions.
- * The first extension is canonical. Playback also depends on the encoded codecs.
+ * MP4 and WebM video containers, plus the separately identified M4V variant.
+ * The first extension is canonical. Playback depends on browser and codec support.
  */
 export const VIDEO_MIME_TYPES = {
-  "video/mp4": [".mp4"],
+  "video/mp4": [".mp4", ".mp4v", ".mpg4"],
   "video/x-m4v": [".m4v"],
   "video/webm": [".webm"],
 } as const
