@@ -10,12 +10,16 @@ pre-commit:
       run: cd cli && ruff check
 
     - name: typecheck-client
-      glob: "packages/client/**/*.{ts,tsx}"
+      glob: "{packages/client/**/*.{ts,tsx},packages/common/**/*.ts}"
       run: cd packages/client && node_modules/.bin/tsc -p tsconfig.app.json
 
     - name: typecheck-server
-      glob: "{packages/server/**/*.ts,packages/server/tsconfig.json}"
+      glob: "{packages/server/**/*.ts,packages/server/tsconfig.json,packages/common/**/*.ts}"
       run: cd packages/server && node_modules/.bin/tsc -p tsconfig.json
+
+    - name: typecheck-common
+      glob: "{packages/common/**/*.ts,packages/common/tsconfig.json}"
+      run: cd packages/common && node_modules/.bin/tsc -p tsconfig.json
 
     - name: typecheck-scripts
       glob: "{scripts/**/*.ts,scripts/tsconfig.json,packages/server/tsconfig.json}"

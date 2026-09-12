@@ -1,3 +1,4 @@
+import {constants} from "@dcim/common"
 import {useNavigate} from "@tanstack/react-router"
 import {AlbumIcon, ImagePlus, Images, Plus} from "lucide-react"
 import {fromAsyncThrowable} from "neverthrow"
@@ -37,7 +38,17 @@ export function NewMenu(props: {album?: Album}) {
   async function _onUploadPhotosClick() {
     setIsLoading(true)
     const handles = await tryShowOpenFilePicker({
-      types: [{description: "Images", accept: {"image/*": [".png", ".gif", ".jpeg", ".jpg"]}}],
+      types: [
+        {
+          description: "Images",
+          accept: Object.fromEntries(
+            Object.entries(constants.IMAGE_MIME_TYPES).map(([type, extensions]) => [
+              type,
+              [...extensions],
+            ]),
+          ),
+        },
+      ],
       excludeAcceptAllOption: true,
       multiple: true,
     })

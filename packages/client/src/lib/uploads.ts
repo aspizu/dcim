@@ -1,3 +1,4 @@
+import {constants} from "@dcim/common"
 import axios from "axios"
 
 import * as api from "#services/api"
@@ -9,7 +10,10 @@ export async function prepareFileUpload(handle: FileSystemFileHandle | File) {
   const {image, thumbnail} = await transform(handle)
   return {
     upload: {
-      fileName: handle.name,
+      fileName:
+        image.type === constants.COMPRESSED_IMAGE_MIME_TYPE
+          ? handle.name.replace(/\.[^.]*$/, "") + constants.COMPRESSED_IMAGE_EXTENSION
+          : handle.name,
       image: {
         contentType: image.type,
         contentSHA256: image.hash,

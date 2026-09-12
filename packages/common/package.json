@@ -1,0 +1,16 @@
+{
+  "name": "@dcim/common",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check": "tsc -p tsconfig.json",
+    "fmt": "oxfmt ."
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}

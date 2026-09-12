@@ -1,10 +1,14 @@
+import {constants} from "@dcim/common"
 import * as exifr from "exifr"
+import {fromAsyncThrowable} from "neverthrow"
 
 import {sha256} from "#lib/hash"
 import {transform} from "#lib/transformations/pipeline"
 import type {PipelineOptions} from "#lib/transformations/types"
 
 import {Server} from "./scheduler"
+
+const _parseExif = fromAsyncThrowable(exifr.parse)
 
 export type HandleRequestInput = {
   fileHandle: FileSystemFileHandle | File
@@ -15,25 +19,25 @@ export type HandleRequestInput = {
 const THUMBNAIL_PRESETS: Record<string, PipelineOptions> = {
   low: {
     resize: {width: 480, height: 480, fit: "scale-down", letterbox: false},
-    convert: {format: "image/webp", quality: 0.25},
+    convert: {format: constants.COMPRESSED_IMAGE_MIME_TYPE, quality: 0.25},
   },
   balanced: {
     resize: {width: 720, height: 720, fit: "scale-down", letterbox: false},
-    convert: {format: "image/webp", quality: 0.5},
+    convert: {format: constants.COMPRESSED_IMAGE_MIME_TYPE, quality: 0.5},
   },
   high: {
     resize: {width: 1024, height: 1024, fit: "scale-down", letterbox: false},
-    convert: {format: "image/webp", quality: 0.75},
+    convert: {format: constants.COMPRESSED_IMAGE_MIME_TYPE, quality: 0.75},
   },
 }
 
 const THUMBHASH_PIPELINE: PipelineOptions = {
   resize: {width: 8, height: 8, fit: "fill", letterbox: false},
-  convert: {format: "image/webp", quality: 0.0},
+  convert: {format: constants.COMPRESSED_IMAGE_MIME_TYPE, quality: 0.0},
 }
 
 const STORAGE_SAVER_PIPELINE: PipelineOptions = {
-  convert: {format: "image/webp", quality: 0.9},
+  convert: {format: constants.COMPRESSED_IMAGE_MIME_TYPE, quality: 0.9},
 }
 
 export type ImageEntry = {
@@ -77,7 +81,11 @@ export class TransformationsWorker extends Server {
   async handleRequest(input: HandleRequestInput): Promise<Output> {
     const {fileHandle, thumbnailQuality, backupQuality} = input
     const blob = fileHandle instanceof File ? fileHandle : await fileHandle.getFile()
-    const metadata = await exifr.parse(blob)
+    const metadata = await _parseExif(blob)
+      .orTee((error) => {
+        console.error("Failed to parse EXIF metadata", error)
+      })
+      .unwrapOr({})
     const image = await createImageBitmap(blob)
 
     if (!(thumbnailQuality in THUMBNAIL_PRESETS)) {

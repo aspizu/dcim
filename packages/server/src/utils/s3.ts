@@ -2,20 +2,6 @@ import S3mini from "s3mini"
 
 import type {Context} from "./hono"
 
-export const CT_EXTENSIONS: Record<string, string[]> = {
-  "image/png": [".png"],
-  "image/jpeg": [".jpg", ".jpeg"],
-  "image/webp": [".webp"],
-  "image/avif": [".avif"],
-}
-
-export const CT_EXT: Record<string, string> = {
-  "image/png": ".png",
-  "image/jpeg": ".jpg",
-  "image/webp": ".webp",
-  "image/avif": ".avif",
-}
-
 export function makeS3(env: {
   S3_ACCESS_KEY_ID: string
   S3_SECRET_ACCESS_KEY: string
