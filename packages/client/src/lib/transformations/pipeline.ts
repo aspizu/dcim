@@ -11,8 +11,9 @@ export async function transform(
   if (!options.resize && !options.convert) {
     throw new Error("[lib-dcim] transform called with empty options")
   }
+  const format = options.convert?.format ?? type
   if (options.convert) {
-    validateFormat(options.convert.format ?? "image/avif")
+    validateFormat(format)
     validateQuality(options.convert.quality ?? 1)
   }
   const originalSize = {width: image.width, height: image.height}
@@ -26,7 +27,6 @@ export async function transform(
     options.resize?.letterbox ?? true,
   )
   const canvas = drawImage(image, resizeResult, "black")
-  const format = options.convert?.format ?? type
   const quality = options.convert?.quality ?? 1
   const result = await canvas.convertToBlob({type: format, quality})
   return result.arrayBuffer()

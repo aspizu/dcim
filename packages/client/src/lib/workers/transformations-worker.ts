@@ -1,3 +1,4 @@
+import {constants} from "@dcim/common"
 import * as exifr from "exifr"
 
 import {sha256} from "#lib/hash"
@@ -15,25 +16,25 @@ export type HandleRequestInput = {
 const THUMBNAIL_PRESETS: Record<string, PipelineOptions> = {
   low: {
     resize: {width: 480, height: 480, fit: "scale-down", letterbox: false},
-    convert: {format: "image/webp", quality: 0.25},
+    convert: {format: constants.COMPRESSED_IMAGE_MIME_TYPE, quality: 0.25},
   },
   balanced: {
     resize: {width: 720, height: 720, fit: "scale-down", letterbox: false},
-    convert: {format: "image/webp", quality: 0.5},
+    convert: {format: constants.COMPRESSED_IMAGE_MIME_TYPE, quality: 0.5},
   },
   high: {
     resize: {width: 1024, height: 1024, fit: "scale-down", letterbox: false},
-    convert: {format: "image/webp", quality: 0.75},
+    convert: {format: constants.COMPRESSED_IMAGE_MIME_TYPE, quality: 0.75},
   },
 }
 
 const THUMBHASH_PIPELINE: PipelineOptions = {
   resize: {width: 8, height: 8, fit: "fill", letterbox: false},
-  convert: {format: "image/webp", quality: 0.0},
+  convert: {format: constants.COMPRESSED_IMAGE_MIME_TYPE, quality: 0.0},
 }
 
 const STORAGE_SAVER_PIPELINE: PipelineOptions = {
-  convert: {format: "image/webp", quality: 0.9},
+  convert: {format: constants.COMPRESSED_IMAGE_MIME_TYPE, quality: 0.9},
 }
 
 export type ImageEntry = {

@@ -133,6 +133,9 @@ importers:
 
   packages/client:
     dependencies:
+      '@dcim/common':
+        specifier: workspace:*
+        version: link:../common
       '@fontsource-variable/geist':
         specifier: ^5.2.8
         version: 5.2.9
@@ -291,8 +294,17 @@ importers:
         specifier: ^8.0.11
         version: 8.0.14(@types/node@25.9.1)(esbuild@0.28.1)(jiti@2.7.0)
 
+  packages/common:
+    devDependencies:
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+
   packages/server:
     dependencies:
+      '@dcim/common':
+        specifier: workspace:*
+        version: link:../common
       '@hono/standard-validator':
         specifier: ^0.2.2
         version: 0.2.2(@standard-schema/spec@1.1.0)(hono@4.12.23)

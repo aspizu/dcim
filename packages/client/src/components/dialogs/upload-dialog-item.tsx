@@ -65,7 +65,7 @@ export function UploadDialogItem(
   }, [props.handle])
   const thumbnailURL = useObjectURL(
     thumbnail.value?.buffer ?? null,
-    thumbnail.value?.type ?? "image/png",
+    thumbnail.value?.type ?? "",
   )
   return (
     <div

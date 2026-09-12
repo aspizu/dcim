@@ -1,3 +1,4 @@
+import {constants} from "@dcim/common"
 import {useSignal} from "@preact/signals-react"
 import {Upload} from "lucide-react"
 import type {DragEvent, ReactNode} from "react"
@@ -11,17 +12,9 @@ type UploadBatch = {
   files: {id: string; handle: File}[]
 }
 
-const _imageTypes: Record<string, string> = {
-  jpg: "image/jpeg",
-  jpeg: "image/jpeg",
-  png: "image/png",
-  webp: "image/webp",
-  avif: "image/avif",
-}
-
 function _imageFile(file: File) {
-  const type = file.type || _imageTypes[file.name.split(".").at(-1)?.toLowerCase() ?? ""]
-  if (!Object.values(_imageTypes).includes(type)) return
+  const type = file.type || constants.getImageMimeType(file.name)
+  if (!type || !constants.isImageMimeType(type)) return
   return file.type ? file : new File([file], file.name, {type, lastModified: file.lastModified})
 }
 
@@ -58,7 +51,7 @@ export function PhotoDropZone(props: {children: ReactNode}) {
     const files = Array.from(event.dataTransfer.files)
     const images = files.map(_imageFile).filter((file) => file !== undefined)
     if (images.length === 0) {
-      toast.error("Drop JPEG, PNG, WebP, or AVIF photos to upload")
+      toast.error("Drop a supported image file to upload")
       return
     }
     const skipped = files.length - images.length

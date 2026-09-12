@@ -1,5 +1,7 @@
+import {constants} from "@dcim/common"
+
 export function validateFormat(format: string): void {
-  if (!format.startsWith("image/")) {
+  if (!constants.isImageMimeType(format)) {
     throw new Error("[lib-dcim] invalid format")
   }
 }

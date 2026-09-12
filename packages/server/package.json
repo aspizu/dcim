@@ -8,6 +8,7 @@
     "fmt": "oxfmt ."
   },
   "dependencies": {
+    "@dcim/common": "workspace:*",
     "@hono/standard-validator": "^0.2.2",
     "@hono/zod-validator": "^0.8.0",
     "@otplib/plugin-base32-scure": "^13.4.0",

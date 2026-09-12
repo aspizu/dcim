@@ -1,18 +1,21 @@
 import * as Path from "node:path"
 
+import {constants} from "@dcim/common"
 import {zValidator} from "@hono/zod-validator"
 import {HTTPException} from "hono/http-exception"
 import {z} from "zod"
 
 import {ensureLoggedIn} from "#utils/auth"
 import hono from "#utils/hono"
-import {CT_EXT, CT_EXTENSIONS, getImageKey, getThumbnailKey, makeS3} from "#utils/s3"
+import {getImageKey, getThumbnailKey, makeS3} from "#utils/s3"
 import sql from "#utils/sql"
 import {generatePhotoID} from "#utils/uuids"
 
 const $metadata = z.record(z.string(), z.any())
 const $image = z.object({
-  contentType: z.enum(Object.keys(CT_EXT)),
+  contentType: z.custom<keyof typeof constants.IMAGE_MIME_TYPES>(
+    (value) => typeof value === "string" && constants.isImageMimeType(value),
+  ),
   contentSHA256: z.string().length(44),
   contentLength: z.number().min(0),
 })
@@ -38,12 +41,16 @@ export default hono()
         c.req.valid("json")
       const s3 = makeS3(c.env)
       const id = generatePhotoID(metadata)
-      const imageKey = `${id}/image${CT_EXT[image.contentType]}`
-      const thumbnailKey = `${id}/thumbnail${CT_EXT[thumbnail.contentType]}`
+      const imageKey = `${id}/image${constants.IMAGE_MIME_TYPES[image.contentType][0]}`
+      const thumbnailKey = `${id}/thumbnail${constants.IMAGE_MIME_TYPES[thumbnail.contentType][0]}`
       const publicURL = c.env.S3_PUBLIC_URL.replace(/\/$/, "")
       const imageURL = `${publicURL}/${imageKey}`
       const thumbnailURL = `${publicURL}/${thumbnailKey}`
-      if (!CT_EXTENSIONS[image.contentType]?.includes(Path.extname(fileName).toLowerCase())) {
+      if (
+        !constants.IMAGE_MIME_TYPES[image.contentType].some(
+          (extension) => extension === Path.extname(fileName).toLowerCase(),
+        )
+      ) {
         throw new HTTPException(400, {message: "File extension does not match content type."})
       }
       const [imagePresignedURL, thumbnailPresignedURL] = await Promise.all([

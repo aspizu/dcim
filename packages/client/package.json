@@ -18,6 +18,7 @@
     "fmt": "oxfmt ."
   },
   "dependencies": {
+    "@dcim/common": "workspace:*",
     "@fontsource-variable/geist": "^5.2.8",
     "@preact/signals-react": "^3.10.0",
     "@tailwindcss/vite": "^4.3.0",
