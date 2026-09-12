@@ -82,7 +82,6 @@ export function PhotoHeaderMenu(props: {
             </DropdownMenuItem>
             {$authState.value === AuthState.AUTHENTICATED && (
               <DropdownMenuItem
-                variant="destructive"
                 onClick={() => {
                   props.setCaptionEditable(true)
                 }}
@@ -103,7 +102,6 @@ export function PhotoHeaderMenu(props: {
             )}
             {$authState.value === AuthState.AUTHENTICATED && (
               <DropdownMenuItem
-                variant="destructive"
                 onClick={() => {
                   setIsDeleteOpen(true)
                 }}

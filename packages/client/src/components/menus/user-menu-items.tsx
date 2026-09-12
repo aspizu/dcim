@@ -25,11 +25,7 @@ export function UserMenuItems() {
           Settings
         </Link>
       </DropdownMenuItem>
-      <DropdownMenuItem
-        variant="destructive"
-        onClick={() => void _onSignOutClick()}
-        disabled={isLoggingOut}
-      >
+      <DropdownMenuItem onClick={() => void _onSignOutClick()} disabled={isLoggingOut}>
         {isLoggingOut ? <Spinner /> : <LogOut />}
         Sign out
       </DropdownMenuItem>

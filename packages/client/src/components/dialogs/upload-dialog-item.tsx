@@ -41,9 +41,7 @@ function UploadItemDropDown(props: {id: string; onRemove: (id: string) => void})
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuGroup>
-          <DropdownMenuItem variant="destructive" onClick={_onRemoveClick}>
-            Remove
-          </DropdownMenuItem>
+          <DropdownMenuItem onClick={_onRemoveClick}>Remove</DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -31,7 +31,6 @@ export function AlbumHeaderMenu(props: {album: Album}) {
             <>
               <DropdownMenuGroup>
                 <DropdownMenuItem
-                  variant="destructive"
                   onClick={() => {
                     setIsDeleteOpen(true)
                   }}
