@@ -12,6 +12,7 @@ const _parseExif = fromAsyncThrowable(exifr.parse)
 
 export type HandleRequestInput = {
   fileHandle: File
+  videoFrame?: {blob: Blob; width: number; height: number}
   thumbnailQuality: string
   backupQuality: string
 }
@@ -79,51 +80,64 @@ function _arrayBufferToDataURL(buffer: ArrayBuffer, mimeType: string): string {
 
 export class TransformationsWorker extends Server {
   async handleRequest(input: HandleRequestInput): Promise<Output> {
-    const {fileHandle, thumbnailQuality, backupQuality} = input
+    const {fileHandle, thumbnailQuality, backupQuality, videoFrame} = input
     const blob = fileHandle
-    const metadata = await _parseExif(blob)
-      .orTee((error) => {
-        console.error("Failed to parse EXIF metadata", error)
-      })
-      .unwrapOr({})
-    const image = await createImageBitmap(blob)
-
-    if (!(thumbnailQuality in THUMBNAIL_PRESETS)) {
-      throw new Error(`Invalid thumbnail quality: ${thumbnailQuality}`)
+    const isVideo = constants.isVideoMimeType(blob.type)
+    if (isVideo && !videoFrame) {
+      throw new Error("Video thumbnail frame is missing")
     }
-
-    const [thumbnailBuffer, thumbhashBuffer] = await Promise.all([
-      transform(image, blob.type, THUMBNAIL_PRESETS[thumbnailQuality]),
-      transform(image, blob.type, THUMBHASH_PIPELINE),
-    ])
-    const thumbnailHash = await sha256(thumbnailBuffer)
-    const thumbhashDataURL = _arrayBufferToDataURL(
-      thumbhashBuffer,
-      THUMBHASH_PIPELINE.convert?.format ?? blob.type,
-    )
-
-    const thumbnail: ThumbnailEntry = {
-      arrayBuffer: thumbnailBuffer,
-      hash: thumbnailHash,
-      type: THUMBNAIL_PRESETS[thumbnailQuality].convert?.format ?? blob.type,
-      thumbhash: thumbhashDataURL,
-    }
-
-    let imageBuffer: ArrayBuffer
-    let imageType: string
-    let imageSize: number
-
-    if (backupQuality === "original") {
-      imageBuffer = await blob.arrayBuffer()
-      imageType = blob.type
-      imageSize = blob.size
-    } else if (backupQuality === "smart") {
-      const ratio = _compressionRatio(image.width, image.height, blob.size)
-      if (ratio < 0.15) {
+    const metadata = isVideo
+      ? {}
+      : await _parseExif(blob)
+          .orTee((error) => {
+            console.error("Failed to parse EXIF metadata", error)
+          })
+          .unwrapOr({})
+    const source = isVideo ? videoFrame!.blob : blob
+    const image = await createImageBitmap(source)
+    try {
+      if (!(thumbnailQuality in THUMBNAIL_PRESETS)) {
+        throw new Error(`Invalid thumbnail quality: ${thumbnailQuality}`)
+      }
+      const [thumbnailBuffer, thumbhashBuffer] = await Promise.all([
+        transform(image, source.type, THUMBNAIL_PRESETS[thumbnailQuality]),
+        transform(image, source.type, THUMBHASH_PIPELINE),
+      ])
+      const thumbnailHash = await sha256(thumbnailBuffer)
+      const thumbhashDataURL = _arrayBufferToDataURL(
+        thumbhashBuffer,
+        THUMBHASH_PIPELINE.convert?.format ?? source.type,
+      )
+      const thumbnail: ThumbnailEntry = {
+        arrayBuffer: thumbnailBuffer,
+        hash: thumbnailHash,
+        type: THUMBNAIL_PRESETS[thumbnailQuality].convert?.format ?? source.type,
+        thumbhash: thumbhashDataURL,
+      }
+      let imageBuffer: ArrayBuffer
+      let imageType: string
+      let imageSize: number
+      if (isVideo || backupQuality === "original") {
         imageBuffer = await blob.arrayBuffer()
         imageType = blob.type
         imageSize = blob.size
-      } else {
+      } else if (backupQuality === "smart") {
+        const ratio = _compressionRatio(image.width, image.height, blob.size)
+        if (ratio < 0.15) {
+          imageBuffer = await blob.arrayBuffer()
+          imageType = blob.type
+          imageSize = blob.size
+        } else {
+          imageBuffer = await transform(image, blob.type, STORAGE_SAVER_PIPELINE)
+          imageType = STORAGE_SAVER_PIPELINE.convert!.format!
+          imageSize = imageBuffer.byteLength
+          if (imageSize > blob.size) {
+            imageBuffer = await blob.arrayBuffer()
+            imageType = blob.type
+            imageSize = blob.size
+          }
+        }
+      } else if (backupQuality === "storageSaver") {
         imageBuffer = await transform(image, blob.type, STORAGE_SAVER_PIPELINE)
         imageType = STORAGE_SAVER_PIPELINE.convert!.format!
         imageSize = imageBuffer.byteLength
@@ -132,33 +146,24 @@ export class TransformationsWorker extends Server {
           imageType = blob.type
           imageSize = blob.size
         }
+      } else {
+        throw new Error(`backupQuality is invalid: ${backupQuality}`)
       }
-    } else if (backupQuality === "storageSaver") {
-      imageBuffer = await transform(image, blob.type, STORAGE_SAVER_PIPELINE)
-      imageType = STORAGE_SAVER_PIPELINE.convert!.format!
-      imageSize = imageBuffer.byteLength
-      if (imageSize > blob.size) {
-        imageBuffer = await blob.arrayBuffer()
-        imageType = blob.type
-        imageSize = blob.size
+      const imageHash = await sha256(imageBuffer)
+      return {
+        image: {
+          arrayBuffer: imageBuffer,
+          hash: imageHash,
+          type: imageType,
+          metadata: metadata ?? {},
+          width: isVideo ? videoFrame!.width : image.width,
+          height: isVideo ? videoFrame!.height : image.height,
+          size: imageSize,
+        },
+        thumbnail,
       }
-    } else {
-      throw new Error(`backupQuality is invalid: ${backupQuality}`)
-    }
-
-    const imageHash = await sha256(imageBuffer)
-
-    return {
-      image: {
-        arrayBuffer: imageBuffer,
-        hash: imageHash,
-        type: imageType,
-        metadata: metadata ?? {},
-        width: image.width,
-        height: image.height,
-        size: imageSize,
-      },
-      thumbnail,
+    } finally {
+      image.close()
     }
   }
 }

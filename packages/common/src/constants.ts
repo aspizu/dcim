@@ -11,11 +11,11 @@ export const IMAGE_MIME_TYPES = {
 } as const
 
 /**
- * Video MIME types supported by modern browsers, with accepted extensions.
- * The first extension is canonical. Playback also depends on the encoded codecs.
+ * MP4 (including M4V) and WebM video containers with accepted extensions.
+ * The first extension is canonical. Playback depends on browser and codec support.
  */
 export const VIDEO_MIME_TYPES = {
-  "video/mp4": [".mp4", ".m4v"],
+  "video/mp4": [".mp4", ".mp4v", ".mpg4", ".m4v"],
   "video/webm": [".webm"],
 } as const
 
@@ -38,6 +38,11 @@ export function isVideoMimeType(type: string): type is keyof typeof VIDEO_MIME_T
   return Object.hasOwn(VIDEO_MIME_TYPES, type)
 }
 
+/** Checks whether a MIME type is in the supported image or video map. */
+export function isMimeType(type: string): type is keyof typeof MIME_TYPES {
+  return Object.hasOwn(MIME_TYPES, type)
+}
+
 function _fileExtension(path: string): string {
   const name = path.split(/[\\/]/).at(-1) ?? ""
   const dot = name.lastIndexOf(".")
@@ -51,6 +56,14 @@ export function getImageMimeType(path: string): keyof typeof IMAGE_MIME_TYPES | 
   return Object.keys(IMAGE_MIME_TYPES)
     .filter(isImageMimeType)
     .find((type) => IMAGE_MIME_TYPES[type].some((value) => value === extension))
+}
+
+/** Infers a supported image or video MIME type from an extension, filename, or POSIX/Windows path. */
+export function getMimeType(path: string): keyof typeof MIME_TYPES | undefined {
+  const extension = _fileExtension(path)
+  return Object.keys(MIME_TYPES)
+    .filter(isMimeType)
+    .find((type) => MIME_TYPES[type].some((value) => value === extension))
 }
 
 /**

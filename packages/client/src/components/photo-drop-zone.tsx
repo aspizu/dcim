@@ -44,26 +44,29 @@ export function PhotoDropZone(props: {children: ReactNode; album?: Album}) {
     if (!event.dataTransfer.types.includes("Files")) return
     event.preventDefault()
     const files = Array.from(event.dataTransfer.files)
-    const images = files
+    const mediaFiles = files
       .map((file) => {
-        const type = file.type || constants.getImageMimeType(file.name)
-        if (!type || !constants.isImageMimeType(type)) return
-        return file.type
+        const type =
+          file.type === "video/x-m4v"
+            ? "video/mp4"
+            : file.type || constants.getMimeType(file.name)
+        if (!type || !constants.isMimeType(type)) return
+        return file.type === type
           ? file
           : new File([file], file.name, {type, lastModified: file.lastModified})
       })
       .filter((file) => file !== undefined)
-    if (images.length === 0) {
-      toast.error("Drop a supported image file to upload")
+    if (mediaFiles.length === 0) {
+      toast.error("Drop a supported file to upload")
       return
     }
-    const skipped = files.length - images.length
+    const skipped = files.length - mediaFiles.length
     if (skipped > 0) {
       toast.warning(`Skipped ${skipped} unsupported file${skipped === 1 ? "" : "s"}`)
     }
     $batches.value = [
       ...$batches.value,
-      {id: uuid(), files: images.map((handle) => ({id: uuid(), handle}))},
+      {id: uuid(), files: mediaFiles.map((handle) => ({id: uuid(), handle}))},
     ]
   }
   return (

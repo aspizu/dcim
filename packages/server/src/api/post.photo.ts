@@ -12,12 +12,18 @@ import sql from "#utils/sql"
 import {generatePhotoID} from "#utils/uuids"
 
 const $metadata = z.record(z.string(), z.any())
-const $image = z.object({
-  contentType: z.custom<keyof typeof constants.IMAGE_MIME_TYPES>(
-    (value) => typeof value === "string" && constants.isImageMimeType(value),
+const $media = z.object({
+  contentType: z.custom<keyof typeof constants.MIME_TYPES>(
+    (value) => typeof value === "string" && constants.isMimeType(value),
   ),
   contentSHA256: z.string().length(44),
   contentLength: z.number().min(0),
+})
+
+const $image = $media.extend({
+  contentType: z.custom<keyof typeof constants.IMAGE_MIME_TYPES>(
+    (value) => typeof value === "string" && constants.isImageMimeType(value),
+  ),
 })
 
 export default hono()
@@ -27,7 +33,7 @@ export default hono()
       "json",
       z.object({
         fileName: z.string().min(1),
-        image: $image,
+        image: $media,
         thumbnail: $image,
         thumbhash: z.string().min(0),
         width: z.number().int().min(1),
@@ -41,13 +47,13 @@ export default hono()
         c.req.valid("json")
       const s3 = makeS3(c.env)
       const id = generatePhotoID(metadata)
-      const imageKey = `${id}/image${constants.IMAGE_MIME_TYPES[image.contentType][0]}`
+      const imageKey = `${id}/image${constants.MIME_TYPES[image.contentType][0]}`
       const thumbnailKey = `${id}/thumbnail${constants.IMAGE_MIME_TYPES[thumbnail.contentType][0]}`
       const publicURL = c.env.S3_PUBLIC_URL.replace(/\/$/, "")
       const imageURL = `${publicURL}/${imageKey}`
       const thumbnailURL = `${publicURL}/${thumbnailKey}`
       if (
-        !constants.IMAGE_MIME_TYPES[image.contentType].some(
+        !constants.MIME_TYPES[image.contentType].some(
           (extension) => extension === Path.extname(fileName).toLowerCase(),
         )
       ) {

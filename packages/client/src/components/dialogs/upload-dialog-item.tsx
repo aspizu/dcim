@@ -1,8 +1,10 @@
-import {Ellipsis} from "lucide-react"
+import {constants} from "@dcim/common"
+import {Ellipsis, ImageOff} from "lucide-react"
 import prettyBytes from "pretty-bytes"
 
 import {useObjectURL} from "#hooks/object-url"
 import {useAsync} from "#hooks/promises"
+import {generateVideoThumbnail} from "#lib/transformations/core/video"
 import {cn} from "#lib/utils"
 import {createThumbnail} from "#lib/workers/thumbnail-client"
 
@@ -61,6 +63,10 @@ export function UploadDialogItem(
     }
   }, [props.handle])
   const thumbnail = useAsync(async () => {
+    if (constants.isVideoMimeType(props.handle.type)) {
+      const {blob} = await generateVideoThumbnail(props.handle, 128)
+      return {buffer: await blob.arrayBuffer(), type: blob.type}
+    }
     return await createThumbnail(props.handle, 128)
   }, [props.handle])
   const thumbnailURL = useObjectURL(
@@ -78,7 +84,17 @@ export function UploadDialogItem(
       {thumbnailURL ? (
         <img src={thumbnailURL} alt="" className="h-16 w-16 shrink-0 rounded-md object-cover" />
       ) : (
-        <div className="h-16 w-16 shrink-0 animate-pulse rounded-md bg-neutral-500" />
+        <div
+          className={cn(
+            "flex h-16 w-16 shrink-0 items-center justify-center rounded-md bg-neutral-500",
+            thumbnail.loading && "animate-pulse",
+          )}
+          role="img"
+          aria-label={thumbnail.error ? "Preview unavailable" : "Loading preview"}
+          title={thumbnail.error ? "Preview unavailable" : undefined}
+        >
+          {thumbnail.error && <ImageOff aria-hidden="true" className="h-6 w-6" />}
+        </div>
       )}
 
       <div className="flex min-w-0 grow flex-col gap-2">
