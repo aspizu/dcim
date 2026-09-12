@@ -89,10 +89,16 @@ export function UploadDialog(props: {
     $uploading.value = false
     if (hasFailed) return
     props.onOpenChange(false)
-    if (props.autoUpload) return
-    if (len === 1 && !props.album) {
-      await navigate({to: "/p/$photo", params: {photo: photoID!}})
-    } else if (location.pathname === "/albums") {
+    if (len === 1) {
+      if (props.album) {
+        await navigate({
+          to: "/a/$album/p/$photo",
+          params: {album: props.album.id, photo: photoID!},
+        })
+      } else {
+        await navigate({to: "/p/$photo", params: {photo: photoID!}})
+      }
+    } else if (!props.autoUpload && location.pathname === "/albums") {
       await navigate({to: "/"})
     }
   }
