@@ -11,7 +11,7 @@ import {Server} from "./scheduler"
 const _parseExif = fromAsyncThrowable(exifr.parse)
 
 export type HandleRequestInput = {
-  fileHandle: FileSystemFileHandle | File
+  fileHandle: File
   thumbnailQuality: string
   backupQuality: string
 }
@@ -80,7 +80,7 @@ function _arrayBufferToDataURL(buffer: ArrayBuffer, mimeType: string): string {
 export class TransformationsWorker extends Server {
   async handleRequest(input: HandleRequestInput): Promise<Output> {
     const {fileHandle, thumbnailQuality, backupQuality} = input
-    const blob = fileHandle instanceof File ? fileHandle : await fileHandle.getFile()
+    const blob = fileHandle
     const metadata = await _parseExif(blob)
       .orTee((error) => {
         console.error("Failed to parse EXIF metadata", error)

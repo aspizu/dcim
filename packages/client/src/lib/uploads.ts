@@ -6,7 +6,7 @@ import {ApiError, NetworkError} from "#services/fetch"
 
 import {transform} from "./workers/transformations-client"
 
-export async function prepareFileUpload(handle: FileSystemFileHandle | File) {
+export async function prepareFileUpload(handle: File) {
   const {image, thumbnail} = await transform(handle)
   return {
     upload: {
