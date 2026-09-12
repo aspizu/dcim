@@ -15,7 +15,8 @@ export const IMAGE_MIME_TYPES = {
  * The first extension is canonical. Playback also depends on the encoded codecs.
  */
 export const VIDEO_MIME_TYPES = {
-  "video/mp4": [".mp4", ".m4v"],
+  "video/mp4": [".mp4"],
+  "video/x-m4v": [".m4v"],
   "video/webm": [".webm"],
 } as const
 
