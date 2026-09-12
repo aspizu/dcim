@@ -1,9 +1,10 @@
 import {useQueryClient} from "@tanstack/react-query"
 import {createFileRoute} from "@tanstack/react-router"
-import {useRef} from "react"
+import {Fragment, useRef} from "react"
 
 import {Header} from "#components/header"
 import {AlbumHeaderMenu, NewMenu} from "#components/menus"
+import {PhotoDropZone} from "#components/photo-drop-zone"
 import {PhotoGrid} from "#components/photo-grid"
 import {
   queryAlbumOptions,
@@ -75,6 +76,7 @@ function AlbumTitle(props: {album: api.Album}) {
 }
 
 function RouteComponent() {
+  const Wrapper = $authState.value === AuthState.AUTHENTICATED ? PhotoDropZone : Fragment
   const {album: id} = Route.useParams()
   const album = useQueryAlbum(id)
   const albumPhotos = useQueryAlbumPhotos(id)
@@ -84,7 +86,10 @@ function RouteComponent() {
     [],
   )
   return (
-    <>
+    <Wrapper
+      key={id}
+      {...($authState.value === AuthState.AUTHENTICATED ? {album: album.data} : {})}
+    >
       <Header>
         <Header.Before>
           {$authState.value === AuthState.AUTHENTICATED && <NewMenu album={album.data} />}
@@ -98,7 +103,7 @@ function RouteComponent() {
       <div className="p-2 pt-0">
         <PhotoGrid photos={allPhotos} album={album.data} />
       </div>
-    </>
+    </Wrapper>
   )
 }
 

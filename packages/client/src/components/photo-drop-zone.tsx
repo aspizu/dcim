@@ -6,6 +6,7 @@ import {toast} from "sonner"
 import {v4 as uuid} from "uuid"
 
 import {UploadDialog} from "#components/dialogs/upload-dialog"
+import type {Album} from "#services/api"
 
 type UploadBatch = {
   id: string
@@ -18,7 +19,7 @@ function _imageFile(file: File) {
   return file.type ? file : new File([file], file.name, {type, lastModified: file.lastModified})
 }
 
-export function PhotoDropZone(props: {children: ReactNode}) {
+export function PhotoDropZone(props: {children: ReactNode; album?: Album}) {
   const $dragDepth = useSignal(0)
   const $batches = useSignal<UploadBatch[]>([])
   const batch = $batches.value[0]
@@ -76,6 +77,7 @@ export function PhotoDropZone(props: {children: ReactNode}) {
         <UploadDialog
           key={batch.id}
           fileHandles={batch.files}
+          album={props.album}
           open
           autoUpload
           onOpenChange={_onOpenChange}
