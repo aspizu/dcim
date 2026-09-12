@@ -89,7 +89,7 @@ export function LoadingBar() {
       role="progressbar"
       aria-label="Loading"
       aria-hidden={!visible}
-      className="pointer-events-none fixed top-0 right-0 left-0 z-99 h-1 origin-left bg-primary transition-[transform,opacity] duration-200 ease-linear motion-reduce:transition-none"
+      className="pointer-events-none fixed top-0 right-0 left-0 z-99 h-[2px] origin-left bg-linear-to-r from-[#07551a] via-primary via-50% to-[#b8f5c3] transition-[transform,opacity] duration-200 ease-linear motion-reduce:transition-none"
       style={{
         transform: `scaleX(${progress})`,
         opacity: visible ? 1 : 0,
