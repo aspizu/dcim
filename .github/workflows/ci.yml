@@ -19,6 +19,31 @@ env:
   LEFTHOOK: "0"
 
 jobs:
+  codex-review:
+    name: Codex Review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Test review gate
+        run: node --test .github/scripts/codex-review.test.cjs
+
+      - name: Wait for completed Codex review
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const {waitForReview} = require('./.github/scripts/codex-review.cjs')
+            await waitForReview({github, context, core})
+
   formatting:
     name: Formatting
     runs-on: ubuntu-latest
