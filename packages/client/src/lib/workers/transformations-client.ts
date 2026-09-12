@@ -18,6 +18,6 @@ export async function transform(input: File) {
     : undefined
   return await client.request<Output, HandleRequestInput>(
     {fileHandle: input, thumbnailQuality, backupQuality, videoFrame},
-    1000 * 5,
+    1000 * 60 * 5,
   )
 }
