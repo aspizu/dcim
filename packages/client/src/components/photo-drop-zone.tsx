@@ -12,12 +12,6 @@ type UploadBatch = {
   files: {id: string; handle: File}[]
 }
 
-function _imageFile(file: File) {
-  const type = file.type || constants.getImageMimeType(file.name)
-  if (!type || !constants.isImageMimeType(type)) return
-  return file.type ? file : new File([file], file.name, {type, lastModified: file.lastModified})
-}
-
 export function PhotoDropZone(props: {children: ReactNode}) {
   const $dragDepth = useSignal(0)
   const $batches = useSignal<UploadBatch[]>([])
@@ -49,7 +43,15 @@ export function PhotoDropZone(props: {children: ReactNode}) {
     if (!event.dataTransfer.types.includes("Files")) return
     event.preventDefault()
     const files = Array.from(event.dataTransfer.files)
-    const images = files.map(_imageFile).filter((file) => file !== undefined)
+    const images = files
+      .map((file) => {
+        const type = file.type || constants.getImageMimeType(file.name)
+        if (!type || !constants.isImageMimeType(type)) return
+        return file.type
+          ? file
+          : new File([file], file.name, {type, lastModified: file.lastModified})
+      })
+      .filter((file) => file !== undefined)
     if (images.length === 0) {
       toast.error("Drop a supported image file to upload")
       return
