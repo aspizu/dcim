@@ -1,11 +1,14 @@
 import {constants} from "@dcim/common"
 import * as exifr from "exifr"
+import {fromAsyncThrowable} from "neverthrow"
 
 import {sha256} from "#lib/hash"
 import {transform} from "#lib/transformations/pipeline"
 import type {PipelineOptions} from "#lib/transformations/types"
 
 import {Server} from "./scheduler"
+
+const _parseExif = fromAsyncThrowable(exifr.parse)
 
 export type HandleRequestInput = {
   fileHandle: FileSystemFileHandle | File
@@ -78,7 +81,11 @@ export class TransformationsWorker extends Server {
   async handleRequest(input: HandleRequestInput): Promise<Output> {
     const {fileHandle, thumbnailQuality, backupQuality} = input
     const blob = fileHandle instanceof File ? fileHandle : await fileHandle.getFile()
-    const metadata = await exifr.parse(blob)
+    const metadata = await _parseExif(blob)
+      .orTee((error) => {
+        console.error("Failed to parse EXIF metadata", error)
+      })
+      .unwrapOr({})
     const image = await createImageBitmap(blob)
 
     if (!(thumbnailQuality in THUMBNAIL_PRESETS)) {
