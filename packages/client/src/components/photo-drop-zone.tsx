@@ -46,9 +46,12 @@ export function PhotoDropZone(props: {children: ReactNode; album?: Album}) {
     const files = Array.from(event.dataTransfer.files)
     const mediaFiles = files
       .map((file) => {
-        const type = file.type || constants.getMimeType(file.name)
+        const type =
+          file.type === "video/x-m4v"
+            ? "video/mp4"
+            : file.type || constants.getMimeType(file.name)
         if (!type || !constants.isMimeType(type)) return
-        return file.type
+        return file.type === type
           ? file
           : new File([file], file.name, {type, lastModified: file.lastModified})
       })
