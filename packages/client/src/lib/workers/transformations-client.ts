@@ -14,15 +14,7 @@ export async function transform(input: File) {
   const thumbnailQuality = getConfig("thumbnailQuality") ?? "balanced"
   const backupQuality = getConfig("backupQuality") ?? "original"
   const videoFrame = constants.isVideoMimeType(input.type)
-    ? await new Promise<NonNullable<HandleRequestInput["videoFrame"]>>((resolve, reject) => {
-        generateVideoThumbnail(
-          input,
-          (blob, width, height) => {
-            resolve({blob, width, height})
-          },
-          reject,
-        )
-      })
+    ? await generateVideoThumbnail(input)
     : undefined
   return await client.request<Output, HandleRequestInput>(
     {fileHandle: input, thumbnailQuality, backupQuality, videoFrame},
