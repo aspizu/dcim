@@ -44,16 +44,14 @@ export async function completeFileUpload(
   let lastPercent = 0
   try {
     const uploaded = await api.createPhoto(prepared.upload)
-
-    const res1 = await axios.put(uploaded.imagePresignedURL, prepared.image, {
+    const res1 = await axios.put(uploaded.thumbnailPresignedURL, prepared.thumbnail, {
       headers: {
-        "Content-Type": prepared.upload.image.contentType,
-        "x-amz-checksum-sha256": prepared.upload.image.contentSHA256,
+        "Content-Type": prepared.upload.thumbnail.contentType,
+        "x-amz-checksum-sha256": prepared.upload.thumbnail.contentSHA256,
         "Cache-Control": "public, max-age=31536000, immutable, no-transform",
-        "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.upload.fileName)}`,
       },
       onUploadProgress(e) {
-        lastPercent = (e.loaded / e.total!) * 75
+        lastPercent = (e.loaded / e.total!) * 25
         onUploadProgress(clientId, {percent: lastPercent, failed: false})
       },
     })
@@ -61,16 +59,16 @@ export async function completeFileUpload(
       onUploadProgress(clientId, {percent: lastPercent, failed: true})
       return
     }
-
-    lastPercent = 75
-    const res2 = await axios.put(uploaded.thumbnailPresignedURL, prepared.thumbnail, {
+    lastPercent = 25
+    const res2 = await axios.put(uploaded.imagePresignedURL, prepared.image, {
       headers: {
-        "Content-Type": prepared.upload.thumbnail.contentType,
-        "x-amz-checksum-sha256": prepared.upload.thumbnail.contentSHA256,
+        "Content-Type": prepared.upload.image.contentType,
+        "x-amz-checksum-sha256": prepared.upload.image.contentSHA256,
         "Cache-Control": "public, max-age=31536000, immutable, no-transform",
+        "Content-Disposition": `attachment; filename=${JSON.stringify(prepared.upload.fileName)}`,
       },
       onUploadProgress(e) {
-        lastPercent = 75 + (e.loaded / e.total!) * 25
+        lastPercent = 25 + (e.loaded / e.total!) * 75
         onUploadProgress(clientId, {percent: lastPercent, failed: false})
       },
     })
@@ -78,7 +76,6 @@ export async function completeFileUpload(
       onUploadProgress(clientId, {percent: lastPercent, failed: true})
       return
     }
-
     await api.confirmPhotoUploaded({id: uploaded.id})
     return uploaded.id
   } catch (e) {
