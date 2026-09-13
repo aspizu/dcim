@@ -1,28 +1,33 @@
 import {motion, useReducedMotion, type HTMLMotionProps} from "framer-motion"
 import {forwardRef} from "react"
 
+import {ProgressiveBlur} from "#components/progressive-blur"
 import {cn} from "#lib/utils"
 
-const HeaderRoot = forwardRef<HTMLDivElement, HTMLMotionProps<"div"> & {collapsed?: boolean}>(
-  ({className, collapsed = false, ...props}, ref) => {
-    const reducedMotion = useReducedMotion()
-    return (
-      <motion.div
-        ref={ref}
-        initial={false}
-        animate={{y: collapsed ? "-100%" : "0%"}}
-        transition={{duration: reducedMotion ? 0 : 0.2, ease: "easeInOut"}}
-        inert={collapsed}
-        aria-hidden={collapsed || undefined}
-        className={cn(
-          "sticky top-0 z-10 grid grid-cols-[1fr_minmax(0,auto)_1fr] bg-background/85 p-2 backdrop-blur",
-          className,
-        )}
-        {...props}
-      />
-    )
-  },
-)
+const HeaderRoot = forwardRef<
+  HTMLDivElement,
+  Omit<HTMLMotionProps<"div">, "children"> & {children?: React.ReactNode; collapsed?: boolean}
+>(({className, children, collapsed = false, ...props}, ref) => {
+  const reducedMotion = useReducedMotion()
+  return (
+    <motion.div
+      ref={ref}
+      initial={false}
+      animate={{y: collapsed ? "-100%" : "0%"}}
+      transition={{duration: reducedMotion ? 0 : 0.2, ease: "easeInOut"}}
+      inert={collapsed}
+      aria-hidden={collapsed || undefined}
+      className={cn(
+        "sticky top-0 isolate z-10 grid grid-cols-[1fr_minmax(0,auto)_1fr] p-2",
+        className,
+      )}
+      {...props}
+    >
+      <ProgressiveBlur />
+      {children}
+    </motion.div>
+  )
+})
 HeaderRoot.displayName = "Header"
 
 const HeaderBefore = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<"div">>(
@@ -41,7 +46,14 @@ HeaderAfter.displayName = "Header.After"
 
 const HeaderTitle = forwardRef<HTMLHeadingElement, React.ComponentPropsWithoutRef<"h1">>(
   ({className, ...props}, ref) => (
-    <h1 ref={ref} className={cn("truncate font-medium", className)} {...props} />
+    <h1
+      ref={ref}
+      className={cn(
+        "h-8 self-center truncate rounded-lg bg-background px-2 leading-8 font-medium",
+        className,
+      )}
+      {...props}
+    />
   ),
 )
 HeaderTitle.displayName = "Header.Title"
