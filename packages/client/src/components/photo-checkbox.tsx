@@ -15,10 +15,10 @@ export function PhotoCheckbox(props: {
       aria-checked={props.checked}
       aria-label={props.label}
       className={cn(
-        "absolute right-1 bottom-1 grid size-6 cursor-pointer place-items-center rounded-md transition-[color,background-color,opacity] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        "absolute right-1 bottom-1 grid size-6 cursor-pointer place-items-center rounded-md shadow-xs transition-[color,background-color,opacity] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         props.checked
           ? "bg-primary text-primary-foreground opacity-100"
-          : "bg-white/50 text-black/70 opacity-0 group-focus-within/photo:opacity-100 group-hover/photo:opacity-100",
+          : "bg-black/25 text-white opacity-0 backdrop-blur-md group-focus-within/photo:opacity-100 group-hover/photo:opacity-100",
       )}
       onClick={(event) => {
         event.stopPropagation()
