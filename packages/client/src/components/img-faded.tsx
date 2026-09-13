@@ -1,13 +1,11 @@
-import {forwardRef, useEffect, useState, type ComponentPropsWithoutRef} from "react"
+import {forwardRef, useState, type ComponentPropsWithoutRef} from "react"
 
 import {cn} from "#lib/utils"
 
 export const ImgFaded = forwardRef<HTMLImageElement, ComponentPropsWithoutRef<"img">>(
   (props, ref) => {
-    const [loaded, setLoaded] = useState(false)
-    useEffect(() => {
-      setLoaded(false)
-    }, [props.src])
+    const [state, setState] = useState({key: props.src, loaded: false})
+    const loaded = state.key === props.src && state.loaded
     return (
       <img
         ref={ref}
@@ -18,7 +16,7 @@ export const ImgFaded = forwardRef<HTMLImageElement, ComponentPropsWithoutRef<"i
           props.className,
         )}
         onLoad={(event) => {
-          setTimeout(() => setLoaded(true), 100)
+          setTimeout(() => setState({key: props.src, loaded: true}), 100)
           props.onLoad?.(event)
         }}
       />

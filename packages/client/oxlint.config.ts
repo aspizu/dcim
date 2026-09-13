@@ -10,6 +10,7 @@ export default defineConfig({
   jsPlugins: ["oxlint-plugin-aspizuism"],
 
   rules: {
+    "react/immutability": "off",
     "typescript/consistent-type-imports": [
       "error",
       {fixStyle: "separate-type-imports", prefer: "type-imports"},

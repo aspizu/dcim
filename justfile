@@ -22,6 +22,16 @@ build *args:
 fmt *args:
     pnpm exec oxfmt "$@"
 
+# Lint the client, server, and Python CLI.
+lint:
+    pnpm -r --if-present run lint
+    cd cli && ruff check
+
+# Typecheck all TypeScript workspaces, scripts, and the Python CLI.
+typecheck:
+    pnpm -r --if-present run check
+    cd cli && ty check
+
 # Run the Python photo-upload CLI.
 [working-directory('cli')]
 cli *args:
