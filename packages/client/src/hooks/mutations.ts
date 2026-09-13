@@ -1,6 +1,7 @@
 import {useMutation, useQueryClient, type Query} from "@tanstack/react-query"
 
 import * as api from "#services/api"
+import {setPhotoSelected} from "#stores/photo-grid"
 
 export function useUpdatePhotoCaption() {
   const queryClient = useQueryClient()
@@ -36,6 +37,40 @@ export function useDeletePhoto() {
       void queryClient.invalidateQueries({queryKey: ["photo"]})
       void queryClient.invalidateQueries({queryKey: ["album"]})
       void queryClient.invalidateQueries({queryKey: ["storage"]})
+    },
+  })
+}
+
+/** Deletes multiple photos, summarizes failures, and refreshes gallery caches. */
+export function useDeletePhotos() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({photoIDs, galleryKey}: {photoIDs: string[]; galleryKey: string}) => {
+      const deleted: string[] = []
+      let failed = 0
+      for (const id of photoIDs) {
+        try {
+          await api.deletePhoto({id})
+          deleted.push(id)
+        } catch (error) {
+          console.error(error)
+          failed++
+        }
+      }
+      for (const id of deleted) {
+        setPhotoSelected(galleryKey, id, false)
+      }
+      if (failed > 0) {
+        throw new Error(`Failed to delete ${failed} of ${photoIDs.length} selected files`)
+      }
+    },
+    onSettled: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({queryKey: ["photo"]}),
+        queryClient.invalidateQueries({queryKey: ["album"]}),
+        queryClient.invalidateQueries({queryKey: ["photo-by-album"]}),
+        queryClient.invalidateQueries({queryKey: ["storage"]}),
+      ])
     },
   })
 }

@@ -1,7 +1,9 @@
+import {useComputed} from "@preact/signals-react"
 import {useQueryClient} from "@tanstack/react-query"
 import {createFileRoute} from "@tanstack/react-router"
 import {Fragment, useRef} from "react"
 
+import {ActionBar} from "#components/action-bar"
 import {Header} from "#components/header"
 import {AlbumHeaderMenu, NewMenu} from "#components/menus"
 import {PhotoDropZone} from "#components/photo-drop-zone"
@@ -16,6 +18,7 @@ import {useOnScrollEnd} from "#hooks/use-on-scroll-end"
 import {extractTimestampFromUUIDv7, formatDateRange} from "#lib/dates"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
+import {$photoSelection} from "#stores/photo-grid"
 
 import {queryClient} from "../main"
 
@@ -76,6 +79,10 @@ function AlbumTitle(props: {album: api.Album}) {
 }
 
 function RouteComponent() {
+  const selectedGalleryKey = useComputed(() => {
+    const {key, photoIDs} = $photoSelection.value
+    return photoIDs.size > 0 ? key : null
+  })
   const Wrapper = $authState.value === AuthState.AUTHENTICATED ? PhotoDropZone : Fragment
   const {album: id} = Route.useParams()
   const album = useQueryAlbum(id)
@@ -90,7 +97,7 @@ function RouteComponent() {
       key={id}
       {...($authState.value === AuthState.AUTHENTICATED ? {album: album.data} : {})}
     >
-      <Header>
+      <Header collapsed={selectedGalleryKey.value === id}>
         <Header.Before>
           {$authState.value === AuthState.AUTHENTICATED && <NewMenu album={album.data} />}
         </Header.Before>
@@ -103,6 +110,7 @@ function RouteComponent() {
       <div className="p-2 pt-0">
         <PhotoGrid photos={allPhotos} album={album.data} />
       </div>
+      <ActionBar galleryKey={id} photos={allPhotos} />
     </Wrapper>
   )
 }

@@ -1,4 +1,5 @@
 export {DeleteAlbumDialog} from "./delete-album-dialog"
+export {DeletePhotosDialog} from "./delete-photos-dialog"
 export {DeletePhotoDialog} from "./delete-photo-dialog"
 export {RemovePhotoFromAlbumDialog} from "./remove-photo-from-album-dialog"
 export {UploadDialog} from "./upload-dialog"
