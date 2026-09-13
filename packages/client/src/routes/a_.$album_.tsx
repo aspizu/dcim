@@ -92,25 +92,38 @@ function RouteComponent() {
     (prev: api.Photo[], cur) => [...prev, ...cur.photos],
     [],
   )
+  const cover = allPhotos.find((photo) => photo.id === album.data.newest)
   return (
     <Wrapper
       key={id}
       {...($authState.value === AuthState.AUTHENTICATED ? {album: album.data} : {})}
     >
-      <Header collapsed={selectedGalleryKey.value === id}>
-        <Header.Before>
-          {$authState.value === AuthState.AUTHENTICATED && <NewMenu album={album.data} />}
-        </Header.Before>
-        <Header.Title>Album</Header.Title>
-        <Header.After>
-          <AlbumHeaderMenu album={album.data} />
-        </Header.After>
-      </Header>
-      <AlbumTitle album={album.data} />
-      <div className="p-2 pt-0">
-        <PhotoGrid photos={allPhotos} album={album.data} />
+      <div className="relative isolate min-h-dvh">
+        {cover && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-48 bg-cover bg-center opacity-30"
+            style={{
+              backgroundImage: `url(${JSON.stringify(cover.thumbnail_url)})`,
+              maskImage: "linear-gradient(to bottom, black, transparent)",
+            }}
+          />
+        )}
+        <Header collapsed={selectedGalleryKey.value === id}>
+          <Header.Before>
+            {$authState.value === AuthState.AUTHENTICATED && <NewMenu album={album.data} />}
+          </Header.Before>
+          <div />
+          <Header.After>
+            <AlbumHeaderMenu album={album.data} />
+          </Header.After>
+        </Header>
+        <AlbumTitle album={album.data} />
+        <div className="p-2 pt-0">
+          <PhotoGrid photos={allPhotos} album={album.data} />
+        </div>
+        <ActionBar galleryKey={id} photos={allPhotos} />
       </div>
-      <ActionBar galleryKey={id} photos={allPhotos} />
     </Wrapper>
   )
 }
