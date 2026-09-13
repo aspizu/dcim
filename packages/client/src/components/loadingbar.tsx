@@ -89,8 +89,10 @@ export function LoadingBar() {
       role="progressbar"
       aria-label="Loading"
       aria-hidden={!visible}
-      className="pointer-events-none fixed top-0 right-0 left-0 z-99 h-[2px] origin-left bg-linear-to-r from-[#07551a] via-primary via-50% to-[#b8f5c3] transition-[transform,opacity] duration-200 ease-linear motion-reduce:transition-none"
+      className="pointer-events-none fixed top-0 right-0 left-0 z-99 h-0.5 origin-left transition-[transform,opacity] duration-200 ease-linear motion-reduce:transition-none"
       style={{
+        backgroundImage:
+          "linear-gradient(to right in oklab, transparent, transparent 25%, color-mix(in oklab, var(--primary) 50%, transparent) 50%, var(--primary))",
         transform: `scaleX(${progress})`,
         opacity: visible ? 1 : 0,
         transitionProperty: progress === 0 ? "none" : undefined,
