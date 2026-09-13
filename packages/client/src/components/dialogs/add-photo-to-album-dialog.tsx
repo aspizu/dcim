@@ -28,8 +28,6 @@ function Photo(props: {
   return (
     <div
       className="group/photo relative aspect-square overflow-hidden rounded-md"
-      role="button"
-      aria-selected={selected ? "true" : "false"}
       onClick={() => {
         props.setSelected(!selected)
       }}
