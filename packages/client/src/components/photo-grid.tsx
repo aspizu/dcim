@@ -1,3 +1,4 @@
+import {useComputed} from "@preact/signals-react"
 import {Link} from "@tanstack/react-router"
 import {useEffect, useRef} from "react"
 
@@ -5,10 +6,11 @@ import {ImgFaded} from "#components/img-faded"
 import {PhotoCheckbox} from "#components/photo-checkbox"
 import {groupPhotosByDate} from "#lib/dates"
 import type * as api from "#services/api"
-import {getSelectedPhotoIDs, isMultiSelectionMode, setPhotoSelected} from "#stores/photo-grid"
+import {isPhotoSelected, isMultiSelectionMode, setPhotoSelected} from "#stores/photo-grid"
 
 function Photo(props: {photo: api.Photo; album?: api.Album}) {
   const galleryKey = props.album?.id ?? "/"
+  const selected = useComputed(() => isPhotoSelected(galleryKey, props.photo.id))
   const holdTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const suppressClick = useRef(false)
   function _cancelHold(): void {
@@ -17,10 +19,7 @@ function Photo(props: {photo: api.Photo; album?: api.Album}) {
   }
   useEffect(() => _cancelHold, [])
   return (
-    <div
-      data-selected={getSelectedPhotoIDs(galleryKey).includes(props.photo.id)}
-      className="group/photo relative rounded-md"
-    >
+    <div data-selected={selected.value} className="group/photo relative rounded-md">
       <Link
         className="select-none [-webkit-touch-callout:none]"
         onTouchStart={(event) => {
@@ -49,11 +48,7 @@ function Photo(props: {photo: api.Photo; album?: api.Album}) {
           }
           if (!isMultiSelectionMode(galleryKey)) return
           event.preventDefault()
-          setPhotoSelected(
-            galleryKey,
-            props.photo.id,
-            !getSelectedPhotoIDs(galleryKey).includes(props.photo.id),
-          )
+          setPhotoSelected(galleryKey, props.photo.id, !selected.value)
         }}
         to={props.album ? `/a/$album/p/$photo` : `/p/$photo`}
         params={
@@ -80,7 +75,7 @@ function Photo(props: {photo: api.Photo; album?: api.Album}) {
         </div>
       </Link>
       <PhotoCheckbox
-        checked={getSelectedPhotoIDs(galleryKey).includes(props.photo.id)}
+        checked={selected.value}
         onCheckedChange={(checked) => {
           setPhotoSelected(galleryKey, props.photo.id, checked)
         }}
@@ -99,7 +94,11 @@ export function PhotoGrid(props: {photos: api.Photo[]; album?: api.Album}) {
           <h2 className="mb-2 text-sm font-medium not-group-first:mt-4">{key}</h2>
           <div className="grid grid-cols-3 gap-2">
             {photos?.map((photo) => (
-              <Photo key={photo.id} photo={photo} album={props.album} />
+              <Photo
+                key={`${props.album?.id ?? "/"}:${photo.id}`}
+                photo={photo}
+                album={props.album}
+              />
             ))}
           </div>
         </div>

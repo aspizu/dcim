@@ -8,11 +8,7 @@ import {Button} from "#components/ui/button"
 import {cn} from "#lib/utils"
 import type {Photo} from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
-import {
-  clearPhotoSelection,
-  getSelectedPhotoIDs,
-  isMultiSelectionMode,
-} from "#stores/photo-grid"
+import {clearPhotoSelection, isPhotoSelected, isMultiSelectionMode} from "#stores/photo-grid"
 
 /** Gallery actions for the selected photos, layered over the header. */
 export function ActionBar({
@@ -23,7 +19,7 @@ export function ActionBar({
 }: HTMLMotionProps<"div"> & {photos: Photo[]; galleryKey: string}) {
   const reducedMotion = useReducedMotion()
   const isDeleteOpen = useSignal(false)
-  const selected = photos.filter((photo) => getSelectedPhotoIDs(galleryKey).includes(photo.id))
+  const selected = photos.filter((photo) => isPhotoSelected(galleryKey, photo.id))
   function _download() {
     for (const photo of selected) {
       const link = document.createElement("a")
