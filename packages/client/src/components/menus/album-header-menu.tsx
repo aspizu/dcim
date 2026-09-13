@@ -22,7 +22,7 @@ export function AlbumHeaderMenu(props: {album: Album}) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
+          <Button variant="solid" size="icon">
             <Ellipsis />
           </Button>
         </DropdownMenuTrigger>

@@ -31,18 +31,16 @@ function RouteComponent() {
         <Header.Before>
           <NewMenu />
         </Header.Before>
-        <Header.Title>
-          <Tabs value="photos">
-            <TabsList>
-              <TabsTrigger value="photos" asChild>
-                <Link to="/">Photos</Link>
-              </TabsTrigger>
-              <TabsTrigger value="albums">
-                <Link to="/albums">Albums</Link>
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </Header.Title>
+        <Tabs value="photos" className="self-center">
+          <TabsList>
+            <TabsTrigger value="photos" asChild>
+              <Link to="/">Photos</Link>
+            </TabsTrigger>
+            <TabsTrigger value="albums">
+              <Link to="/albums">Albums</Link>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
         <Header.After>
           <IndexHeaderMenu />
         </Header.After>

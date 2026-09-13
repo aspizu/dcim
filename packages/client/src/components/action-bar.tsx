@@ -4,6 +4,7 @@ import {Download, Trash, X} from "lucide-react"
 import {toast} from "sonner"
 
 import {DeletePhotosDialog} from "#components/dialogs/delete-photos-dialog"
+import {ProgressiveBlur} from "#components/progressive-blur"
 import {Button} from "#components/ui/button"
 import {cn} from "#lib/utils"
 import type {Photo} from "#services/api"
@@ -46,14 +47,15 @@ export function ActionBar({
             exit={{y: "-100%"}}
             transition={{duration: reducedMotion ? 0 : 0.2, ease: "easeInOut"}}
             className={cn(
-              "fixed inset-x-0 top-0 z-20 flex min-h-12 items-center gap-2 bg-background/85 p-2 backdrop-blur",
+              "fixed inset-x-0 top-0 isolate z-20 flex min-h-12 items-center gap-2 p-2",
               className,
             )}
             {...props}
           >
+            <ProgressiveBlur />
             <Button
               type="button"
-              variant="ghost"
+              variant="solid"
               size="icon"
               aria-label="Clear selection"
               onClick={() => {
@@ -63,15 +65,15 @@ export function ActionBar({
               <X aria-hidden="true" />
             </Button>
             <span
-              className="min-w-0 flex-1 truncate text-sm font-medium tabular-nums"
+              className="h-8 min-w-0 truncate rounded-lg bg-background px-2 text-sm leading-8 font-medium tabular-nums"
               aria-live="polite"
             >
               {selected.length} selected
             </span>
-            <div className="flex shrink-0 items-center gap-1">
+            <div className="ml-auto flex shrink-0 items-center gap-1">
               <Button
                 type="button"
-                variant="ghost"
+                variant="solid"
                 size="icon"
                 aria-label="Download"
                 disabled={selected.length === 0}
@@ -82,7 +84,7 @@ export function ActionBar({
               {$authState.value === AuthState.AUTHENTICATED && (
                 <Button
                   type="button"
-                  variant="ghost"
+                  variant="solid"
                   size="icon"
                   aria-label="Delete"
                   disabled={selected.length === 0}
