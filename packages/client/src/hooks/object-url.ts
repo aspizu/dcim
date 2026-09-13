@@ -1,20 +1,23 @@
-import {useEffect, useState} from "react"
+import {useSignal} from "@preact/signals-react"
+import {useEffect} from "react"
 
+/** Creates an object URL for the current buffer and MIME type, revoking it on cleanup. */
 export function useObjectURL(buffer: ArrayBuffer | null, type: string): string | null {
-  const [url, setURL] = useState<string | null>(null)
-
+  const state = useSignal<{
+    key: ArrayBuffer
+    type: string
+    url: string
+  } | null>(null)
   useEffect(() => {
-    if (!buffer) {
-      setURL(null)
-      return
-    }
+    if (!buffer) return
     const blob = new Blob([buffer], {type})
-    const objURL = URL.createObjectURL(blob)
-    setURL(objURL)
+    const url = URL.createObjectURL(blob)
+    state.value = {key: buffer, type, url}
     return () => {
-      URL.revokeObjectURL(objURL)
+      URL.revokeObjectURL(url)
+      state.value = null
     }
-  }, [buffer, type])
-
-  return url
+  }, [buffer, type, state])
+  const current = state.value
+  return current?.key === buffer && current.type === type ? current.url : null
 }
