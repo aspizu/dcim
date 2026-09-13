@@ -31,6 +31,7 @@ function RouteComponent() {
 }
 
 export const Route = createFileRoute("/p/$photo")({
-  loader: ({params: {photo}}) => queryClient.ensureQueryData(queryPhotoOptions(photo)),
+  loader: ({params: {photo}}) =>
+    queryClient.query({...queryPhotoOptions(photo), staleTime: "static"}),
   component: RouteComponent,
 })
