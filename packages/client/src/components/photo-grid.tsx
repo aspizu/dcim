@@ -5,9 +5,10 @@ import {ImgFaded} from "#components/img-faded"
 import {PhotoCheckbox} from "#components/photo-checkbox"
 import {groupPhotosByDate} from "#lib/dates"
 import type * as api from "#services/api"
-import {$isMultiSelectionMode, $selectedPhotoIDs, setPhotoSelected} from "#stores/photo-grid"
+import {getSelectedPhotoIDs, isMultiSelectionMode, setPhotoSelected} from "#stores/photo-grid"
 
 function Photo(props: {photo: api.Photo; album?: api.Album}) {
+  const galleryKey = props.album?.id ?? "/"
   const holdTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const suppressClick = useRef(false)
   function _cancelHold(): void {
@@ -17,7 +18,7 @@ function Photo(props: {photo: api.Photo; album?: api.Album}) {
   useEffect(() => _cancelHold, [])
   return (
     <div
-      data-selected={$selectedPhotoIDs.value.includes(props.photo.id)}
+      data-selected={getSelectedPhotoIDs(galleryKey).includes(props.photo.id)}
       className="group/photo relative rounded-md"
     >
       <Link
@@ -29,7 +30,7 @@ function Photo(props: {photo: api.Photo; album?: api.Album}) {
           holdTimer.current = setTimeout(() => {
             holdTimer.current = undefined
             suppressClick.current = true
-            setPhotoSelected(props.photo.id, true)
+            setPhotoSelected(galleryKey, props.photo.id, true)
           }, 500)
         }}
         onTouchMove={_cancelHold}
@@ -46,9 +47,13 @@ function Photo(props: {photo: api.Photo; album?: api.Album}) {
             event.preventDefault()
             return
           }
-          if (!$isMultiSelectionMode.value) return
+          if (!isMultiSelectionMode(galleryKey)) return
           event.preventDefault()
-          setPhotoSelected(props.photo.id, !$selectedPhotoIDs.value.includes(props.photo.id))
+          setPhotoSelected(
+            galleryKey,
+            props.photo.id,
+            !getSelectedPhotoIDs(galleryKey).includes(props.photo.id),
+          )
         }}
         to={props.album ? `/a/$album/p/$photo` : `/p/$photo`}
         params={
@@ -75,9 +80,9 @@ function Photo(props: {photo: api.Photo; album?: api.Album}) {
         </div>
       </Link>
       <PhotoCheckbox
-        checked={$selectedPhotoIDs.value.includes(props.photo.id)}
+        checked={getSelectedPhotoIDs(galleryKey).includes(props.photo.id)}
         onCheckedChange={(checked) => {
-          setPhotoSelected(props.photo.id, checked)
+          setPhotoSelected(galleryKey, props.photo.id, checked)
         }}
         label={`Select ${props.photo.file_name}`}
       />

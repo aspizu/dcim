@@ -8,17 +8,22 @@ import {Button} from "#components/ui/button"
 import {cn} from "#lib/utils"
 import type {Photo} from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
-import {$isMultiSelectionMode, $selectedPhotoIDs} from "#stores/photo-grid"
+import {
+  clearPhotoSelection,
+  getSelectedPhotoIDs,
+  isMultiSelectionMode,
+} from "#stores/photo-grid"
 
 /** Gallery actions for the selected photos, layered over the header. */
 export function ActionBar({
   photos,
+  galleryKey,
   className,
   ...props
-}: HTMLMotionProps<"div"> & {photos: Photo[]}) {
+}: HTMLMotionProps<"div"> & {photos: Photo[]; galleryKey: string}) {
   const reducedMotion = useReducedMotion()
   const isDeleteOpen = useSignal(false)
-  const selected = photos.filter((photo) => $selectedPhotoIDs.value.includes(photo.id))
+  const selected = photos.filter((photo) => getSelectedPhotoIDs(galleryKey).includes(photo.id))
   function _download() {
     for (const photo of selected) {
       const link = document.createElement("a")
@@ -38,7 +43,7 @@ export function ActionBar({
   return (
     <>
       <AnimatePresence initial={false}>
-        {$isMultiSelectionMode.value && (
+        {isMultiSelectionMode(galleryKey) && (
           <motion.div
             initial={{y: "-100%"}}
             animate={{y: "0%"}}
@@ -56,7 +61,7 @@ export function ActionBar({
               size="icon"
               aria-label="Clear selection"
               onClick={() => {
-                $selectedPhotoIDs.value = []
+                clearPhotoSelection(galleryKey)
               }}
             >
               <X aria-hidden="true" />
@@ -97,6 +102,7 @@ export function ActionBar({
         )}
       </AnimatePresence>
       <DeletePhotosDialog
+        galleryKey={galleryKey}
         photoIDs={selected.map((photo) => photo.id)}
         open={isDeleteOpen.value}
         onOpenChange={(open) => {

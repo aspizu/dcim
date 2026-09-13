@@ -1,18 +1,36 @@
-import {computed, signal} from "@preact/signals-react"
+import {signal} from "@preact/signals-react"
 
-/** Photo IDs selected in the photo grid for the current app session. */
-export const $selectedPhotoIDs = signal<string[]>([])
+/** The gallery key and photo IDs selected for the current app session. */
+export const $photoSelection = signal<{key: string; photoIDs: string[]}>({
+  key: "/",
+  photoIDs: [],
+})
 
-/** Whether photo clicks toggle selection instead of opening the photo. */
-export const $isMultiSelectionMode = computed(() => $selectedPhotoIDs.value.length > 0)
+/** Returns the selected photo IDs belonging to the given gallery. */
+export function getSelectedPhotoIDs(key: string): string[] {
+  const selection = $photoSelection.value
+  return selection.key === key ? selection.photoIDs : []
+}
 
-/** Selects or deselects a photo without changing other selections. */
-export function setPhotoSelected(photoID: string, selected: boolean): void {
-  const ids = $selectedPhotoIDs.value
+/** Whether photo clicks in the given gallery toggle selection. */
+export function isMultiSelectionMode(key: string): boolean {
+  return getSelectedPhotoIDs(key).length > 0
+}
+
+/** Clears selection only when it belongs to the given gallery. */
+export function clearPhotoSelection(key: string): void {
+  if ($photoSelection.value.key !== key) return
+  $photoSelection.value = {key, photoIDs: []}
+}
+
+/** Selects or deselects a photo, replacing selection from another gallery. */
+export function setPhotoSelected(key: string, photoID: string, selected: boolean): void {
+  const ids = getSelectedPhotoIDs(key)
   if (selected) {
     if (ids.includes(photoID)) return
-    $selectedPhotoIDs.value = [...ids, photoID]
+    $photoSelection.value = {key, photoIDs: [...ids, photoID]}
   } else {
-    $selectedPhotoIDs.value = ids.filter((id) => id !== photoID)
+    if ($photoSelection.value.key !== key) return
+    $photoSelection.value = {key, photoIDs: ids.filter((id) => id !== photoID)}
   }
 }

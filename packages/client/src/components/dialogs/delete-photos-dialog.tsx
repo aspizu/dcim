@@ -9,10 +9,11 @@ import {
 } from "#components/ui/dialog"
 import {useDeletePhotos} from "#hooks/mutations"
 import {$authState, AuthState} from "#stores/auth"
-import {$selectedPhotoIDs} from "#stores/photo-grid"
+import {clearPhotoSelection} from "#stores/photo-grid"
 
 /** Confirms permanent deletion of multiple photos from the library and all albums. */
 export function DeletePhotosDialog(props: {
+  galleryKey: string
   photoIDs: string[]
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -21,7 +22,7 @@ export function DeletePhotosDialog(props: {
   function _delete() {
     if ($authState.value !== AuthState.AUTHENTICATED) return
     deletePhotos.mutate(props.photoIDs)
-    $selectedPhotoIDs.value = []
+    clearPhotoSelection(props.galleryKey)
     props.onOpenChange(false)
   }
   return (

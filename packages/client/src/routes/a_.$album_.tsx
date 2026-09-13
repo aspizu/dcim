@@ -17,7 +17,7 @@ import {useOnScrollEnd} from "#hooks/use-on-scroll-end"
 import {extractTimestampFromUUIDv7, formatDateRange} from "#lib/dates"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
-import {$isMultiSelectionMode} from "#stores/photo-grid"
+import {isMultiSelectionMode} from "#stores/photo-grid"
 
 import {queryClient} from "../main"
 
@@ -92,7 +92,7 @@ function RouteComponent() {
       key={id}
       {...($authState.value === AuthState.AUTHENTICATED ? {album: album.data} : {})}
     >
-      <Header collapsed={$isMultiSelectionMode.value}>
+      <Header collapsed={isMultiSelectionMode(id)}>
         <Header.Before>
           {$authState.value === AuthState.AUTHENTICATED && <NewMenu album={album.data} />}
         </Header.Before>
@@ -105,7 +105,7 @@ function RouteComponent() {
       <div className="p-2 pt-0">
         <PhotoGrid photos={allPhotos} album={album.data} />
       </div>
-      <ActionBar photos={allPhotos} />
+      <ActionBar galleryKey={id} photos={allPhotos} />
     </Wrapper>
   )
 }
