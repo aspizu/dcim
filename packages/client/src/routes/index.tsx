@@ -49,5 +49,5 @@ function RouteComponent() {
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
-  loader: () => queryClient.ensureInfiniteQueryData(queryPhotosOptions),
+  loader: () => queryClient.infiniteQuery({...queryPhotosOptions, staleTime: "static"}),
 })

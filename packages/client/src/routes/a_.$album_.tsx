@@ -111,7 +111,10 @@ export const Route = createFileRoute("/a_/$album_")({
   component: RouteComponent,
   loader: ({params}) =>
     Promise.all([
-      queryClient.ensureQueryData(queryAlbumOptions(params.album)),
-      queryClient.ensureInfiniteQueryData(queryAlbumPhotosOptions(params.album)),
+      queryClient.query({...queryAlbumOptions(params.album), staleTime: "static"}),
+      queryClient.infiniteQuery({
+        ...queryAlbumPhotosOptions(params.album),
+        staleTime: "static",
+      }),
     ]),
 })

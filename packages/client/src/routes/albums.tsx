@@ -80,5 +80,5 @@ function RouteComponent() {
 
 export const Route = createFileRoute("/albums")({
   component: RouteComponent,
-  loader: () => queryClient.ensureQueryData(queryAlbumsOptions),
+  loader: () => queryClient.query({...queryAlbumsOptions, staleTime: "static"}),
 })
