@@ -9,22 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AlbumsRouteImport } from './routes/albums'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as AAlbumRouteImport } from './routes/a_.$album_'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AlbumsRouteImport } from './routes/albums'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as PPhotoRouteImport } from './routes/p.$photo'
+import { Route as AAlbumRouteImport } from './routes/a_.$album_'
 import { Route as AAlbumPPhotoRouteImport } from './routes/a.$album_.p.$photo'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AlbumsRoute = AlbumsRouteImport.update({
-  id: '/albums',
-  path: '/albums',
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -32,19 +27,24 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
+const AlbumsRoute = AlbumsRouteImport.update({
+  id: '/albums',
+  path: '/albums',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AAlbumRoute = AAlbumRouteImport.update({
-  id: '/a_/$album_',
-  path: '/a/$album',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PPhotoRoute = PPhotoRouteImport.update({
   id: '/p/$photo',
   path: '/p/$photo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AAlbumRoute = AAlbumRouteImport.update({
+  id: '/a_/$album_',
+  path: '/a/$album',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AAlbumPPhotoRoute = AAlbumPPhotoRouteImport.update({
@@ -123,18 +123,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/albums': {
-      id: '/albums'
-      path: '/albums'
-      fullPath: '/albums'
-      preLoaderRoute: typeof AlbumsRouteImport
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -144,18 +137,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
+    '/albums': {
+      id: '/albums'
+      path: '/albums'
+      fullPath: '/albums'
+      preLoaderRoute: typeof AlbumsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/a_/$album_': {
-      id: '/a_/$album_'
-      path: '/a/$album'
-      fullPath: '/a/$album'
-      preLoaderRoute: typeof AAlbumRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/p/$photo': {
@@ -163,6 +156,13 @@ declare module '@tanstack/react-router' {
       path: '/p/$photo'
       fullPath: '/p/$photo'
       preLoaderRoute: typeof PPhotoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/a_/$album_': {
+      id: '/a_/$album_'
+      path: '/a/$album'
+      fullPath: '/a/$album'
+      preLoaderRoute: typeof AAlbumRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/a/$album_/p/$photo': {
