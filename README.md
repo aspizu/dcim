@@ -14,7 +14,7 @@ The API runs on Cloudflare Workers and metadata is stored in Cloudflare D1.
 
 [Example album](https://dcim.aspiz.uk/a/019e601f-2300-757a-9fd1-2dcded13f28c)
 
-![](docs/assets/screenshot0.webp)
-![](docs/assets/screenshot1.webp)
-![](docs/assets/screenshot2.webp)
-![](docs/assets/screenshot3.webp)
+![Photo gallery](docs/assets/screenshot0.webp)
+![Photo viewer with caption](docs/assets/screenshot1.webp)
+![Multiple photo selection and bulk actions](docs/assets/screenshot2.webp)
+![Album gallery](docs/assets/screenshot3.webp)
