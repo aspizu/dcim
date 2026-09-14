@@ -64,7 +64,6 @@ function PhotoCaption(props: {
     },
     [mouseY, props.editable],
   )
-
   const onDragEnd = useCallback(() => {
     setMouseY(null)
   }, [])
@@ -80,7 +79,6 @@ function PhotoCaption(props: {
       window.removeEventListener("mouseup", onDragEnd)
     }
   }, [onDragMove, onDragEnd, props.editable])
-
   return (
     <>
       <div
@@ -142,6 +140,7 @@ function PhotoCaption(props: {
 export function Photo(props: {
   photo: api.Photo & {prev: string | null; next: string | null}
   album?: api.Album
+  preview?: boolean
   captionEditable: boolean
   setCaptionEditable: (value: boolean) => void
 }) {
@@ -158,44 +157,51 @@ export function Photo(props: {
         className="relative overflow-hidden"
         style={{
           aspectRatio: `${props.photo.width / props.photo.height}`,
-          viewTransitionName: `photo-${props.photo.id}`,
+          viewTransitionName: props.preview ? undefined : `gallery-photo-${props.photo.id}`,
           width: `${w}px`,
           height: `${h}px`,
         }}
       >
-        <img
-          src={props.photo.thumbhash}
-          alt=""
-          className="absolute inset-0 scale-[1.05] blur-md"
-        />
-        <ImgFaded
-          src={props.photo.thumbnail_url}
-          alt=""
-          className="absolute inset-0 h-full w-full"
-        />
-        {constants.isVideoExtension(props.photo.file_name) ? (
-          <VideoPlayer
-            key={props.photo.id}
-            src={props.photo.image_url}
-            label={props.photo.file_name}
+        <div
+          className="relative h-full w-full"
+          style={{viewTransitionName: `photo-${props.photo.id}`}}
+        >
+          <img
+            src={props.photo.thumbhash}
+            alt=""
+            className="absolute inset-0 scale-[1.05] blur-md"
           />
-        ) : (
-          <>
-            <ImgFaded
-              src={props.photo.image_url}
-              alt={props.photo.file_name}
-              className="absolute inset-0 h-full w-full"
-            />
-            <PhotoCaption
-              photoId={props.photo.id}
-              caption={props.photo.caption}
-              editable={props.captionEditable}
-              onSetEditable={props.setCaptionEditable}
-            />
-          </>
-        )}
+          <ImgFaded
+            src={props.photo.thumbnail_url}
+            alt=""
+            className="absolute inset-0 h-full w-full"
+          />
+          {constants.isVideoExtension(props.photo.file_name) ? (
+            !props.preview && (
+              <VideoPlayer
+                key={props.photo.id}
+                src={props.photo.image_url}
+                label={props.photo.file_name}
+              />
+            )
+          ) : (
+            <>
+              <ImgFaded
+                src={props.photo.image_url}
+                alt={props.photo.file_name}
+                className="absolute inset-0 h-full w-full"
+              />
+              <PhotoCaption
+                photoId={props.photo.id}
+                caption={props.photo.caption}
+                editable={props.captionEditable}
+                onSetEditable={props.setCaptionEditable}
+              />
+            </>
+          )}
+        </div>
       </div>
-      {props.photo.prev && (
+      {!props.preview && props.photo.prev && (
         <Button
           className="absolute top-[50%] left-4 translate-y-[-50%]"
           variant="secondary"
@@ -220,7 +226,7 @@ export function Photo(props: {
           )}
         </Button>
       )}
-      {props.photo.next && (
+      {!props.preview && props.photo.next && (
         <Button
           className="absolute top-[50%] right-4 translate-y-[-50%]"
           variant="secondary"
