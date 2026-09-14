@@ -3,7 +3,7 @@ import {useState} from "react"
 
 import {Header} from "#components/header"
 import {PhotoHeaderMenu} from "#components/menus"
-import {Photo} from "#components/photo"
+import {PhotoStrip} from "#components/photo-strip"
 import {
   queryAlbumOptions,
   queryAlbumPhotoOptions,
@@ -31,7 +31,7 @@ function RouteComponent() {
           />
         </Header.After>
       </Header>
-      <Photo
+      <PhotoStrip
         photo={photo.data}
         album={album.data}
         captionEditable={captionEditable}

@@ -16,7 +16,7 @@ export const ImgFaded = forwardRef<HTMLImageElement, ComponentPropsWithoutRef<"i
           props.className,
         )}
         onLoad={(event) => {
-          setTimeout(() => setState({key: props.src, loaded: true}), 100)
+          setTimeout(() => setState({key: props.src, loaded: true}), 50)
           props.onLoad?.(event)
         }}
       />

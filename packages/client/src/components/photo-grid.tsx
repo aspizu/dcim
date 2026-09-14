@@ -58,7 +58,7 @@ function Photo(props: {photo: api.Photo; album?: api.Album}) {
         <div
           className="relative aspect-square overflow-hidden rounded-md"
           style={{
-            viewTransitionName: `photo-${props.photo.id}`,
+            viewTransitionName: `gallery-photo-${props.photo.id}`,
           }}
         >
           <img

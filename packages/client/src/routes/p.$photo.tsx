@@ -3,7 +3,7 @@ import {useState} from "react"
 
 import {Header} from "#components/header"
 import {PhotoHeaderMenu} from "#components/menus"
-import {Photo} from "#components/photo"
+import {PhotoStrip} from "#components/photo-strip"
 import {queryPhotoOptions, useQueryPhoto} from "#hooks/queries"
 
 import {queryClient} from "../main"
@@ -21,7 +21,7 @@ function RouteComponent() {
           <PhotoHeaderMenu photo={photo.data} setCaptionEditable={setCaptionEditable} />
         </Header.After>
       </Header>
-      <Photo
+      <PhotoStrip
         photo={photo.data}
         captionEditable={captionEditable}
         setCaptionEditable={setCaptionEditable}
