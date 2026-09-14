@@ -38,6 +38,7 @@ export function VideoPlayer(props: {src: string; label: string}) {
           role="status"
         >
           <CircleAlert className="size-10" aria-hidden="true" />
+          <span className="sr-only">Video failed to load</span>
         </div>
       )}
     </>
