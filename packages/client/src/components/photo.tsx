@@ -192,14 +192,14 @@ export function Photo(props: {
               alt={props.photo.file_name}
               className="absolute inset-0 h-full w-full"
             />
+            <PhotoCaption
+              photoId={props.photo.id}
+              caption={props.photo.caption}
+              editable={props.captionEditable}
+              onSetEditable={props.setCaptionEditable}
+            />
           </>
         )}
-        <PhotoCaption
-          photoId={props.photo.id}
-          caption={props.photo.caption}
-          editable={props.captionEditable}
-          onSetEditable={props.setCaptionEditable}
-        />
       </div>
       {props.photo.prev && (
         <Button

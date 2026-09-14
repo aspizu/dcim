@@ -83,16 +83,17 @@ export function PhotoHeaderMenu(props: {
                 Download
               </a>
             </DropdownMenuItem>
-            {$authState.value === AuthState.AUTHENTICATED && (
-              <DropdownMenuItem
-                onClick={() => {
-                  props.setCaptionEditable(true)
-                }}
-              >
-                <Pencil />
-                Edit Caption
-              </DropdownMenuItem>
-            )}
+            {$authState.value === AuthState.AUTHENTICATED &&
+              !constants.isVideoExtension(props.photo.file_name) && (
+                <DropdownMenuItem
+                  onClick={() => {
+                    props.setCaptionEditable(true)
+                  }}
+                >
+                  <Pencil />
+                  Edit Caption
+                </DropdownMenuItem>
+              )}
             {$authState.value === AuthState.AUTHENTICATED && props.album && (
               <DropdownMenuItem
                 onClick={() => {
