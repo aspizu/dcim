@@ -165,12 +165,12 @@ export function Photo(props: {
       >
         <img
           src={props.photo.thumbhash}
-          alt={props.photo.file_name}
+          alt=""
           className="absolute inset-0 scale-[1.05] blur-md"
         />
         <ImgFaded
           src={props.photo.thumbnail_url}
-          alt={props.photo.file_name}
+          alt=""
           className="absolute inset-0 h-full w-full"
         />
         {constants.isVideoExtension(props.photo.file_name) ? (
