@@ -41,7 +41,7 @@ export default hono()
     if (next) {
       rows = await sql(c)`
         SELECT p.* FROM photo_album pa JOIN photo p ON p.id = pa.photo_id
-        WHERE pa.album_id = ${id} AND pa.photo_id < ${next}
+        WHERE pa.album_id = ${id} AND pa.photo_id <= ${next}
         ORDER BY pa.photo_id DESC
         LIMIT ${limit + 1}
         `.all()

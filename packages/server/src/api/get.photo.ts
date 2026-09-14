@@ -39,7 +39,7 @@ export default hono()
           LEFT JOIN photo_album pa
             ON pa.photo_id = p.id
             AND pa.album_id = ${albumId}
-          WHERE p.id < ${next}
+          WHERE p.id <= ${next}
           ORDER BY p.id DESC
           LIMIT ${LIMIT + 1}
         `.all()
@@ -77,7 +77,7 @@ export default hono()
       ? await sql(c)`
           SELECT *
           FROM photo
-          WHERE id < ${next}
+          WHERE id <= ${next}
           ORDER BY id DESC
           LIMIT ${LIMIT + 1}
         `.all()
