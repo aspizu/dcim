@@ -7,6 +7,7 @@ import {useCallback, useEffect, useRef, useState} from "react"
 
 import {ImgFaded} from "#components/img-faded"
 import {Button} from "#components/ui/button"
+import {VideoPlayer} from "#components/video-player"
 import {useUpdatePhotoCaption} from "#hooks/mutations"
 import {cn} from "#lib/utils"
 import type * as api from "#services/api"
@@ -162,31 +163,24 @@ export function Photo(props: {
           height: `${h}px`,
         }}
       >
+        <img
+          src={props.photo.thumbhash}
+          alt={props.photo.file_name}
+          className="absolute inset-0 scale-[1.05] blur-md"
+        />
+        <ImgFaded
+          src={props.photo.thumbnail_url}
+          alt={props.photo.file_name}
+          className="absolute inset-0 h-full w-full"
+        />
         {constants.isVideoExtension(props.photo.file_name) ? (
-          <video
+          <VideoPlayer
             key={props.photo.id}
             src={props.photo.image_url}
-            poster={props.photo.thumbnail_url}
-            aria-label={props.photo.file_name}
-            controls
-            autoPlay
-            muted
-            playsInline
-            preload="metadata"
-            className="absolute inset-0 h-full w-full"
+            label={props.photo.file_name}
           />
         ) : (
           <>
-            <img
-              src={props.photo.thumbhash}
-              alt={props.photo.file_name}
-              className="absolute inset-0 scale-[1.05] blur-md"
-            />
-            <ImgFaded
-              src={props.photo.thumbnail_url}
-              alt={props.photo.file_name}
-              className="absolute inset-0 h-full w-full"
-            />
             <ImgFaded
               src={props.photo.image_url}
               alt={props.photo.file_name}
