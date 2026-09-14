@@ -1,3 +1,4 @@
+import {constants} from "@dcim/common"
 import {Link} from "@tanstack/react-router"
 import {useWindowSize} from "@uidotdev/usehooks"
 import _ from "lodash"
@@ -26,7 +27,7 @@ function _calcDimensions(
   }
   const aspect = photoW / photoH
   const maxW = windowW
-  const maxH = windowH - 88
+  const maxH = windowH - 48 * 2
   if (maxW / maxH > aspect) {
     return {w: maxH * aspect, h: maxH}
   }
@@ -44,16 +45,13 @@ function PhotoCaption(props: {
   const [position, setPosition] = useState(captionParams?.y ?? 0.9)
   const [mouseY, setMouseY] = useState<number | null>(null)
   const updateCaption = useUpdatePhotoCaption()
-
   const ref = useRef<HTMLDivElement>(null)
-
   function _onDragStart(clientY: number) {
     const parent = ref.current?.parentElement
     if (!parent) return
     const parentRect = parent.getBoundingClientRect()
     setMouseY(position - (clientY - parentRect.top) / parentRect.height)
   }
-
   const onDragMove = useCallback(
     (clientY: number) => {
       if (mouseY === null) return
@@ -69,7 +67,6 @@ function PhotoCaption(props: {
   const onDragEnd = useCallback(() => {
     setMouseY(null)
   }, [])
-
   useEffect(() => {
     function _onMouseMove(e: MouseEvent) {
       if (e.buttons != 1) return
@@ -155,7 +152,7 @@ export function Photo(props: {
     windowSize.height,
   )
   return (
-    <div className="relative mb-11 grid grow place-items-center">
+    <div className="relative mb-12 grid grow place-items-center">
       <div
         className="relative overflow-hidden"
         style={{
@@ -165,21 +162,38 @@ export function Photo(props: {
           height: `${h}px`,
         }}
       >
-        <img
-          src={props.photo.thumbhash}
-          alt={props.photo.file_name}
-          className="absolute inset-0 scale-[1.05] blur-md"
-        />
-        <ImgFaded
-          src={props.photo.thumbnail_url}
-          alt={props.photo.file_name}
-          className="absolute inset-0 h-full w-full"
-        />
-        <ImgFaded
-          src={props.photo.image_url}
-          alt={props.photo.file_name}
-          className="absolute inset-0 h-full w-full"
-        />
+        {constants.isVideoExtension(props.photo.file_name) ? (
+          <video
+            key={props.photo.id}
+            src={props.photo.image_url}
+            poster={props.photo.thumbnail_url}
+            aria-label={props.photo.file_name}
+            controls
+            autoPlay
+            muted
+            playsInline
+            preload="metadata"
+            className="absolute inset-0 h-full w-full"
+          />
+        ) : (
+          <>
+            <img
+              src={props.photo.thumbhash}
+              alt={props.photo.file_name}
+              className="absolute inset-0 scale-[1.05] blur-md"
+            />
+            <ImgFaded
+              src={props.photo.thumbnail_url}
+              alt={props.photo.file_name}
+              className="absolute inset-0 h-full w-full"
+            />
+            <ImgFaded
+              src={props.photo.image_url}
+              alt={props.photo.file_name}
+              className="absolute inset-0 h-full w-full"
+            />
+          </>
+        )}
         <PhotoCaption
           photoId={props.photo.id}
           caption={props.photo.caption}
