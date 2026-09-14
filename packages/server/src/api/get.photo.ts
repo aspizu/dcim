@@ -39,7 +39,7 @@ export default hono()
           LEFT JOIN photo_album pa
             ON pa.photo_id = p.id
             AND pa.album_id = ${albumId}
-          WHERE p.id <= ${next}
+          WHERE p.status = 'uploaded' AND p.id <= ${next}
           ORDER BY p.id DESC
           LIMIT ${LIMIT + 1}
         `.all()
@@ -54,6 +54,7 @@ export default hono()
           LEFT JOIN photo_album pa
             ON pa.photo_id = p.id
             AND pa.album_id = ${albumId}
+          WHERE p.status = 'uploaded'
           ORDER BY p.id DESC
           LIMIT ${LIMIT + 1}
         `.all()
@@ -77,13 +78,14 @@ export default hono()
       ? await sql(c)`
           SELECT *
           FROM photo
-          WHERE id <= ${next}
+          WHERE status = 'uploaded' AND id <= ${next}
           ORDER BY id DESC
           LIMIT ${LIMIT + 1}
         `.all()
       : await sql(c)`
           SELECT *
           FROM photo
+          WHERE status = 'uploaded'
           ORDER BY id DESC
           LIMIT ${LIMIT + 1}
         `.all()
@@ -110,7 +112,7 @@ export default hono()
         (
           SELECT id
           FROM photo
-          WHERE id > p.id
+          WHERE status = 'uploaded' AND id > p.id
           ORDER BY id ASC
           LIMIT 1
         ) AS prev,
@@ -118,13 +120,13 @@ export default hono()
         (
           SELECT id
           FROM photo
-          WHERE id < p.id
+          WHERE status = 'uploaded' AND id < p.id
           ORDER BY id DESC
           LIMIT 1
         ) AS next
 
       FROM photo p
-      WHERE p.id = ${id}
+      WHERE p.status = 'uploaded' AND p.id = ${id}
     `.first()
 
     if (!row) {
