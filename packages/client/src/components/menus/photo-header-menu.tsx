@@ -34,7 +34,7 @@ export function PhotoHeaderMenu(props: {
       await navigator.clipboard.writeText(`${prefix}[${alt}](<${url}>)`)
       toast("Copied Markdown to clipboard")
     } catch {
-      toast.error("Failed to copy Markdown to clipboard")
+      return
     }
   }
   async function _copyAsHtml() {
@@ -47,7 +47,7 @@ export function PhotoHeaderMenu(props: {
       await navigator.clipboard.writeText(html)
       toast("Copied HTML to clipboard")
     } catch {
-      toast.error("Failed to copy HTML to clipboard")
+      return
     }
   }
   return (
