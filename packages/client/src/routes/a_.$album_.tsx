@@ -101,7 +101,7 @@ function RouteComponent() {
         <Header.Before>
           {$authState.value === AuthState.AUTHENTICATED && <NewMenu album={album.data} />}
         </Header.Before>
-        <Header.Title>Album</Header.Title>
+        <div />
         <Header.After>
           <AlbumHeaderMenu album={album.data} />
         </Header.After>
