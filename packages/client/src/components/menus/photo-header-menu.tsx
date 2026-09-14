@@ -1,3 +1,4 @@
+import {constants} from "@dcim/common"
 import _ from "lodash"
 import {Code, Copy, Download, Ellipsis, LinkIcon, Pencil, Trash, X} from "lucide-react"
 import {useState} from "react"
@@ -28,8 +29,9 @@ export function PhotoHeaderMenu(props: {
   async function _copyAsMarkdown() {
     const alt = props.photo.file_name.replace(/[\\`*_[\]<>!&]/g, "\\$&").replace(/\s+/g, " ")
     const url = props.photo.image_url.replace(/[<>\s\\]/g, encodeURIComponent)
+    const prefix = constants.isVideoExtension(props.photo.file_name) ? "" : "!"
     try {
-      await navigator.clipboard.writeText(`![${alt}](<${url}>)`)
+      await navigator.clipboard.writeText(`${prefix}[${alt}](<${url}>)`)
       toast("Copied Markdown to clipboard")
     } catch {
       return
@@ -38,10 +40,11 @@ export function PhotoHeaderMenu(props: {
   async function _copyAsHtml() {
     const src = _.escape(props.photo.image_url)
     const alt = _.escape(props.photo.file_name)
+    const html = constants.isVideoExtension(props.photo.file_name)
+      ? `<video src="${src}" poster="${_.escape(props.photo.thumbnail_url)}" aria-label="${alt}" width="${props.photo.width}" height="${props.photo.height}" controls autoplay muted playsinline></video>`
+      : `<img src="${src}" alt="${alt}" width="${props.photo.width}" height="${props.photo.height}" loading="lazy">`
     try {
-      await navigator.clipboard.writeText(
-        `<img src="${src}" alt="${alt}" width="${props.photo.width}" height="${props.photo.height}" loading="lazy">`,
-      )
+      await navigator.clipboard.writeText(html)
       toast("Copied HTML to clipboard")
     } catch {
       return
@@ -80,16 +83,17 @@ export function PhotoHeaderMenu(props: {
                 Download
               </a>
             </DropdownMenuItem>
-            {$authState.value === AuthState.AUTHENTICATED && (
-              <DropdownMenuItem
-                onClick={() => {
-                  props.setCaptionEditable(true)
-                }}
-              >
-                <Pencil />
-                Edit Caption
-              </DropdownMenuItem>
-            )}
+            {$authState.value === AuthState.AUTHENTICATED &&
+              !constants.isVideoExtension(props.photo.file_name) && (
+                <DropdownMenuItem
+                  onClick={() => {
+                    props.setCaptionEditable(true)
+                  }}
+                >
+                  <Pencil />
+                  Edit Caption
+                </DropdownMenuItem>
+              )}
             {$authState.value === AuthState.AUTHENTICATED && props.album && (
               <DropdownMenuItem
                 onClick={() => {
