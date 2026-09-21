@@ -44,7 +44,7 @@ function PhotoSlide(props: {id: string; viewer: PhotoProps; position: number}) {
 
 export function PhotoStrip(props: PhotoProps) {
   const navigate = useNavigate()
-  const drag = useSignal<{pointerId: number; startX: number} | null>(null)
+  const drag = useSignal<{pointerId: number; startX: number; startY: number} | null>(null)
   const offset = useSignal(0)
   const settling = useRef(false)
   const track = useRef<HTMLDivElement>(null)
@@ -60,6 +60,11 @@ export function PhotoStrip(props: PhotoProps) {
   }, [props.photo.id, drag, offset, settling])
   async function _onPointerEnd(event: PointerEvent<HTMLDivElement>) {
     if (drag.value?.pointerId !== event.pointerId) return
+    drag.value = null
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+    if (!track.current || offset.value === 0) return
     const width = event.currentTarget.clientWidth
     const recent = samples.current.find((sample) => event.timeStamp - sample.time <= 100)
     const elapsed = recent ? event.timeStamp - recent.time : 0
@@ -70,14 +75,6 @@ export function PhotoStrip(props: PhotoProps) {
     const target = direction > 0 ? props.photo.prev : props.photo.next
     const shouldNavigate =
       event.type === "pointerup" && target && (flick || Math.abs(offset.value) >= width * 0.25)
-    drag.value = null
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId)
-    }
-    if (!track.current) {
-      offset.value = 0
-      return
-    }
     settling.current = true
     const destination = shouldNavigate ? (direction > 0 ? width : -width) : 0
     const animation = track.current.animate(
@@ -132,9 +129,8 @@ export function PhotoStrip(props: PhotoProps) {
         )
           return
         document.activeViewTransition?.skipTransition()
-        event.currentTarget.setPointerCapture(event.pointerId)
         samples.current = [{x: event.clientX, time: event.timeStamp}]
-        drag.value = {pointerId: event.pointerId, startX: event.clientX}
+        drag.value = {pointerId: event.pointerId, startX: event.clientX, startY: event.clientY}
       }}
       onPointerMove={(event) => {
         if (drag.value?.pointerId !== event.pointerId) return
@@ -143,7 +139,13 @@ export function PhotoStrip(props: PhotoProps) {
           {x: event.clientX, time: event.timeStamp},
         ]
         const distance = event.clientX - drag.value.startX
-        if (Math.abs(distance) > 5) {
+        if (!event.currentTarget.hasPointerCapture(event.pointerId)) {
+          if (Math.abs(distance) <= 5) return
+          if (Math.abs(event.clientY - drag.value.startY) >= Math.abs(distance)) {
+            drag.value = null
+            return
+          }
+          event.currentTarget.setPointerCapture(event.pointerId)
           suppressClick.current = true
         }
         const width = event.currentTarget.clientWidth
@@ -159,6 +161,11 @@ export function PhotoStrip(props: PhotoProps) {
         void _onPointerEnd(event)
       }}
       onLostPointerCapture={(event) => {
+        if (event.target !== event.currentTarget) return
+        void _onPointerEnd(event)
+      }}
+      onPointerLeave={(event) => {
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) return
         void _onPointerEnd(event)
       }}
       onClickCapture={(event) => {
@@ -187,48 +194,30 @@ export function PhotoStrip(props: PhotoProps) {
         )}
         inert={drag.value !== null}
       >
-        {!props.preview && props.photo.prev && (
-          <Button
-            className="absolute top-[50%] left-4 translate-y-[-50%]"
-            variant="secondary"
-            size="icon-sm"
-            asChild
-          >
-            <Link
-              to={props.album ? "/a/$album/p/$photo" : "/p/$photo"}
-              params={
-                props.album
-                  ? {album: props.album.id, photo: props.photo.prev}
-                  : {photo: props.photo.prev}
-              }
-              viewTransition={false}
-              replace
-            >
-              <ArrowLeft />
-            </Link>
-          </Button>
-        )}
-        {!props.preview && props.photo.next && (
-          <Button
-            className="absolute top-[50%] right-4 translate-y-[-50%]"
-            variant="secondary"
-            size="icon-sm"
-            asChild
-          >
-            <Link
-              to={props.album ? "/a/$album/p/$photo" : "/p/$photo"}
-              params={
-                props.album
-                  ? {album: props.album.id, photo: props.photo.next}
-                  : {photo: props.photo.next}
-              }
-              viewTransition={false}
-              replace
-            >
-              <ArrowRight />
-            </Link>
-          </Button>
-        )}
+        {!props.preview &&
+          [props.photo.prev, props.photo.next].map((id, index) =>
+            id ? (
+              <Button
+                key={id}
+                className={cn(
+                  "absolute top-[50%] translate-y-[-50%]",
+                  index === 0 ? "left-4" : "right-4",
+                )}
+                variant="secondary"
+                size="icon-sm"
+                asChild
+              >
+                <Link
+                  to={props.album ? "/a/$album/p/$photo" : "/p/$photo"}
+                  params={props.album ? {album: props.album.id, photo: id} : {photo: id}}
+                  viewTransition={false}
+                  replace
+                >
+                  {index === 0 ? <ArrowLeft /> : <ArrowRight />}
+                </Link>
+              </Button>
+            ) : null,
+          )}
       </div>
     </div>
   )
