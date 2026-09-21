@@ -51,15 +51,14 @@ function Photo(props: {photo: api.Photo; album?: api.Album}) {
           setPhotoSelected(galleryKey, props.photo.id, !selected.value)
         }}
         to={props.album ? `/a/$album/p/$photo` : `/p/$photo`}
+        viewTransition
         params={
           props.album ? {album: props.album.id, photo: props.photo.id} : {photo: props.photo.id}
         }
       >
         <div
           className="relative aspect-square overflow-hidden rounded-md"
-          style={{
-            viewTransitionName: `gallery-photo-${props.photo.id}`,
-          }}
+          style={{viewTransitionName: `gallery-photo-${props.photo.id}`}}
         >
           <img
             src={props.photo.thumbhash}
