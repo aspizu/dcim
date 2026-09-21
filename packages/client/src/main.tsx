@@ -24,7 +24,7 @@ declare module "@tanstack/react-router" {
 export const queryClient = new QueryClient()
 const router = createRouter({
   routeTree,
-  defaultViewTransition: false,
+  defaultViewTransition: true,
   scrollRestoration: true,
 })
 

@@ -201,6 +201,7 @@ export function PhotoStrip(props: PhotoProps) {
                   ? {album: props.album.id, photo: props.photo.prev}
                   : {photo: props.photo.prev}
               }
+              viewTransition={false}
               replace
             >
               <ArrowLeft />
@@ -221,6 +222,7 @@ export function PhotoStrip(props: PhotoProps) {
                   ? {album: props.album.id, photo: props.photo.next}
                   : {photo: props.photo.next}
               }
+              viewTransition={false}
               replace
             >
               <ArrowRight />
