@@ -10,22 +10,24 @@ const HeaderRoot = forwardRef<
 >(({className, children, collapsed = false, ...props}, ref) => {
   const reducedMotion = useReducedMotion()
   return (
-    <motion.div
-      ref={ref}
-      initial={false}
-      animate={{y: collapsed ? "-100%" : "0%"}}
-      transition={{duration: reducedMotion ? 0 : 0.2, ease: "easeInOut"}}
-      inert={collapsed}
-      aria-hidden={collapsed || undefined}
-      className={cn(
-        "sticky top-0 isolate z-10 grid grid-cols-[1fr_minmax(0,auto)_1fr] p-2",
-        className,
-      )}
-      {...props}
-    >
-      <ProgressiveBlur />
-      {children}
-    </motion.div>
+    <div className="h-12 shrink-0">
+      <motion.div
+        ref={ref}
+        initial={false}
+        animate={{y: collapsed ? "-100%" : "0%"}}
+        transition={{duration: reducedMotion ? 0 : 0.2, ease: "easeInOut"}}
+        inert={collapsed}
+        aria-hidden={collapsed || undefined}
+        className={cn(
+          "fixed inset-x-0 top-0 isolate z-10 grid h-12 grid-cols-[1fr_minmax(0,auto)_1fr] p-2",
+          className,
+        )}
+        {...props}
+      >
+        <ProgressiveBlur />
+        {children}
+      </motion.div>
+    </div>
   )
 })
 HeaderRoot.displayName = "Header"
