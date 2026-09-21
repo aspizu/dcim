@@ -1,8 +1,7 @@
 import {constants} from "@dcim/common"
-import {Link} from "@tanstack/react-router"
 import {useWindowSize} from "@uidotdev/usehooks"
 import _ from "lodash"
-import {ArrowLeft, ArrowRight, Check} from "lucide-react"
+import {Check} from "lucide-react"
 import {useCallback, useEffect, useRef, useState} from "react"
 
 import {ImgFaded} from "#components/img-faded"
@@ -162,10 +161,7 @@ export function Photo(props: {
           height: `${h}px`,
         }}
       >
-        <div
-          className="relative h-full w-full"
-          style={{viewTransitionName: `photo-${props.photo.id}`}}
-        >
+        <div className="relative h-full w-full">
           <img
             src={props.photo.thumbhash}
             alt=""
@@ -201,56 +197,6 @@ export function Photo(props: {
           )}
         </div>
       </div>
-      {!props.preview && props.photo.prev && (
-        <Button
-          className="absolute top-[50%] left-4 translate-y-[-50%]"
-          variant="secondary"
-          size="icon-lg"
-          asChild
-        >
-          {props.album ? (
-            <Link
-              to="/a/$album/p/$photo"
-              params={{
-                album: props.album.id,
-                photo: props.photo.prev,
-              }}
-              replace
-            >
-              <ArrowLeft />
-            </Link>
-          ) : (
-            <Link to="/p/$photo" params={{photo: props.photo.prev}} replace>
-              <ArrowLeft />
-            </Link>
-          )}
-        </Button>
-      )}
-      {!props.preview && props.photo.next && (
-        <Button
-          className="absolute top-[50%] right-4 translate-y-[-50%]"
-          variant="secondary"
-          size="icon-lg"
-          asChild
-        >
-          {props.album ? (
-            <Link
-              to="/a/$album/p/$photo"
-              params={{
-                album: props.album.id,
-                photo: props.photo.next,
-              }}
-              replace
-            >
-              <ArrowRight />
-            </Link>
-          ) : (
-            <Link to="/p/$photo" params={{photo: props.photo.next}} replace>
-              <ArrowRight />
-            </Link>
-          )}
-        </Button>
-      )}
     </div>
   )
 }
