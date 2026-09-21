@@ -107,7 +107,7 @@ function RouteComponent() {
         </Header.After>
       </Header>
       <AlbumTitle album={album.data} />
-      <div className="p-2 pt-0">
+      <div className="px-0.5 pb-0.5 sm:px-2 sm:pb-2">
         <PhotoGrid photos={allPhotos} album={album.data} />
       </div>
       <ActionBar galleryKey={id} photos={allPhotos} />
