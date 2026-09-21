@@ -19,7 +19,7 @@ function Photo(props: {photo: api.Photo; album?: api.Album}) {
   }
   useEffect(() => _cancelHold, [])
   return (
-    <div data-selected={selected.value} className="group/photo relative rounded-md">
+    <div data-selected={selected.value} className="group/photo relative sm:rounded-md">
       <Link
         className="select-none [-webkit-touch-callout:none]"
         onTouchStart={(event) => {
@@ -57,7 +57,7 @@ function Photo(props: {photo: api.Photo; album?: api.Album}) {
         }
       >
         <div
-          className="relative aspect-square overflow-hidden rounded-md"
+          className="relative aspect-square overflow-hidden sm:rounded-md"
           style={{viewTransitionName: `gallery-photo-${props.photo.id}`}}
         >
           <img
@@ -91,7 +91,7 @@ export function PhotoGrid(props: {photos: api.Photo[]; album?: api.Album}) {
       {groups.map(([key, photos]) => (
         <div key={key} className="group flex flex-col">
           <h2 className="mb-2 text-sm font-medium not-group-first:mt-4">{key}</h2>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-0.5 sm:gap-2">
             {photos?.map((photo) => (
               <Photo
                 key={`${props.album?.id ?? "/"}:${photo.id}`}

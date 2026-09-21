@@ -45,7 +45,7 @@ function RouteComponent() {
           <IndexHeaderMenu />
         </Header.After>
       </Header>
-      <div className="p-2">
+      <div className="px-0.5 pt-2 pb-0.5 sm:px-2 sm:pb-2">
         <PhotoGrid photos={allPhotos} />
       </div>
       <ActionBar galleryKey={"/"} photos={allPhotos} />
