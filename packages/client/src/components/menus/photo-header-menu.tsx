@@ -35,25 +35,6 @@ export function PhotoHeaderMenu(props: {
       toast.error("Copy failed")
     }
   }
-  async function _download() {
-    try {
-      const response = await fetch(props.photo.image_url)
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`)
-      }
-      const blob = await response.blob()
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement("a")
-      link.href = url
-      link.download = props.photo.file_name
-      document.body.append(link)
-      link.click()
-      link.remove()
-      URL.revokeObjectURL(url)
-    } catch {
-      toast.error("Download failed")
-    }
-  }
   return (
     <>
       <DropdownMenu>
@@ -88,13 +69,11 @@ export function PhotoHeaderMenu(props: {
               <Code />
               Copy HTML
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                void _download()
-              }}
-            >
-              <Download />
-              Download
+            <DropdownMenuItem asChild>
+              <a href={props.photo.image_url} download>
+                <Download />
+                Download
+              </a>
             </DropdownMenuItem>
             {isAuthenticated && !constants.isVideoExtension(props.photo.file_name) && (
               <DropdownMenuItem onClick={props.onEditCaption}>
