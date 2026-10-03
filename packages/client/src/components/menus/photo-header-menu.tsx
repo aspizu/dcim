@@ -1,5 +1,4 @@
 import {constants} from "@dcim/common"
-import _ from "lodash"
 import {Code, Copy, Download, Ellipsis, LinkIcon, Pencil, Trash, X} from "lucide-react"
 import {useState} from "react"
 import {toast} from "sonner"
@@ -15,6 +14,7 @@ import {
 } from "#components/ui/dropdown-menu"
 import type {Album, Photo} from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
+import {photoHtml, photoMarkdown} from "#utils/photo-markup"
 
 import {DeletePhotoDialog, RemovePhotoFromAlbumDialog} from "../dialogs"
 import {UserMenuItems} from "./user-menu-items"
@@ -22,32 +22,17 @@ import {UserMenuItems} from "./user-menu-items"
 export function PhotoHeaderMenu(props: {
   photo: Photo
   album?: Album
-  setCaptionEditable: (value: boolean) => void
+  onEditCaption: () => void
 }) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
-  const [isRemoveOpen, setIsRemoveOpen] = useState(false)
-  async function _copyAsMarkdown() {
-    const alt = props.photo.file_name.replace(/[\\`*_[\]<>!&]/g, "\\$&").replace(/\s+/g, " ")
-    const url = props.photo.image_url.replace(/[<>\s\\]/g, encodeURIComponent)
-    const prefix = constants.isVideoExtension(props.photo.file_name) ? "" : "!"
+  const [isRemoveFromAlbumOpen, setRemoveFromAlbumOpen] = useState(false)
+  const isAuthenticated = $authState.value === AuthState.AUTHENTICATED
+  async function _copyText(text: string, message: string) {
     try {
-      await navigator.clipboard.writeText(`${prefix}[${alt}](<${url}>)`)
-      toast("Copied Markdown to clipboard")
+      await navigator.clipboard.writeText(text)
+      toast(message)
     } catch {
-      return
-    }
-  }
-  async function _copyAsHtml() {
-    const src = _.escape(props.photo.image_url)
-    const alt = _.escape(props.photo.file_name)
-    const html = constants.isVideoExtension(props.photo.file_name)
-      ? `<video src="${src}" poster="${_.escape(props.photo.thumbnail_url)}" aria-label="${alt}" width="${props.photo.width}" height="${props.photo.height}" controls autoplay muted playsinline></video>`
-      : `<img src="${src}" alt="${alt}" width="${props.photo.width}" height="${props.photo.height}" loading="lazy">`
-    try {
-      await navigator.clipboard.writeText(html)
-      toast("Copied HTML to clipboard")
-    } catch {
-      return
+      toast.error("Copy failed")
     }
   }
   return (
@@ -62,18 +47,25 @@ export function PhotoHeaderMenu(props: {
           <DropdownMenuGroup>
             <DropdownMenuItem
               onClick={() => {
-                void navigator.clipboard.writeText(props.photo.image_url)
-                toast("Copied link to clipboard")
+                void _copyText(props.photo.image_url, "Copied link to clipboard")
               }}
             >
               <LinkIcon />
               Copy link
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => void _copyAsMarkdown()}>
+            <DropdownMenuItem
+              onClick={() => {
+                void _copyText(photoMarkdown(props.photo), "Copied Markdown to clipboard")
+              }}
+            >
               <Copy />
               Copy Markdown
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => void _copyAsHtml()}>
+            <DropdownMenuItem
+              onClick={() => {
+                void _copyText(photoHtml(props.photo), "Copied HTML to clipboard")
+              }}
+            >
               <Code />
               Copy HTML
             </DropdownMenuItem>
@@ -83,28 +75,23 @@ export function PhotoHeaderMenu(props: {
                 Download
               </a>
             </DropdownMenuItem>
-            {$authState.value === AuthState.AUTHENTICATED &&
-              !constants.isVideoExtension(props.photo.file_name) && (
-                <DropdownMenuItem
-                  onClick={() => {
-                    props.setCaptionEditable(true)
-                  }}
-                >
-                  <Pencil />
-                  Edit Caption
-                </DropdownMenuItem>
-              )}
-            {$authState.value === AuthState.AUTHENTICATED && props.album && (
+            {isAuthenticated && !constants.isVideoExtension(props.photo.file_name) && (
+              <DropdownMenuItem onClick={props.onEditCaption}>
+                <Pencil />
+                Edit Caption
+              </DropdownMenuItem>
+            )}
+            {isAuthenticated && props.album && (
               <DropdownMenuItem
                 onClick={() => {
-                  setIsRemoveOpen(true)
+                  setRemoveFromAlbumOpen(true)
                 }}
               >
                 <X />
                 Remove
               </DropdownMenuItem>
             )}
-            {$authState.value === AuthState.AUTHENTICATED && (
+            {isAuthenticated && (
               <DropdownMenuItem
                 onClick={() => {
                   setIsDeleteOpen(true)
@@ -129,8 +116,8 @@ export function PhotoHeaderMenu(props: {
         <RemovePhotoFromAlbumDialog
           photo={props.photo}
           album={props.album}
-          open={isRemoveOpen}
-          onOpenChange={setIsRemoveOpen}
+          open={isRemoveFromAlbumOpen}
+          onOpenChange={setRemoveFromAlbumOpen}
         />
       )}
     </>

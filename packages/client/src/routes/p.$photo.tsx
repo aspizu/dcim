@@ -18,7 +18,7 @@ function RouteComponent() {
         <Header.Before />
         <Header.Title>{photo.data.file_name}</Header.Title>
         <Header.After>
-          <PhotoHeaderMenu photo={photo.data} setCaptionEditable={setCaptionEditable} />
+          <PhotoHeaderMenu photo={photo.data} onEditCaption={() => setCaptionEditable(true)} />
         </Header.After>
       </Header>
       <PhotoStrip

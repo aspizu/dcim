@@ -27,7 +27,7 @@ function RouteComponent() {
           <PhotoHeaderMenu
             album={album.data}
             photo={photo.data}
-            setCaptionEditable={setCaptionEditable}
+            onEditCaption={() => setCaptionEditable(true)}
           />
         </Header.After>
       </Header>
