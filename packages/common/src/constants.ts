@@ -50,31 +50,12 @@ function _fileExtension(path: string): string {
   return name === path && name ? `.${name.toLowerCase()}` : ""
 }
 
-/** Infers a supported image MIME type from an extension, filename, or POSIX/Windows path. */
-export function getImageMimeType(path: string): keyof typeof IMAGE_MIME_TYPES | undefined {
-  const extension = _fileExtension(path)
-  return Object.keys(IMAGE_MIME_TYPES)
-    .filter(isImageMimeType)
-    .find((type) => IMAGE_MIME_TYPES[type].some((value) => value === extension))
-}
-
 /** Infers a supported image or video MIME type from an extension, filename, or POSIX/Windows path. */
 export function getMimeType(path: string): keyof typeof MIME_TYPES | undefined {
   const extension = _fileExtension(path)
   return Object.keys(MIME_TYPES)
     .filter(isMimeType)
     .find((type) => MIME_TYPES[type].some((value) => value === extension))
-}
-
-/**
- * Checks an image extension, filename, or POSIX/Windows path against the supported map.
- * Extensions may include the leading dot. Matching is case-insensitive.
- */
-export function isImageExtension(path: string): boolean {
-  const extension = _fileExtension(path)
-  return Object.values(IMAGE_MIME_TYPES).some((extensions: readonly string[]) =>
-    extensions.includes(extension),
-  )
 }
 
 /**

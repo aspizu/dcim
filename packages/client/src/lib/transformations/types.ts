@@ -5,10 +5,6 @@ export interface Dimensions {
   height: number
 }
 
-export interface ResizeOptions {
-  fit?: FitMode
-}
-
 export interface PipelineOptions {
   resize?: {width?: number | null; height?: number | null; fit?: FitMode; letterbox?: boolean}
   convert?: {format?: string; quality?: number}

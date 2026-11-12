@@ -124,19 +124,13 @@ export function useQueryAlbums() {
 export function queryAlbumOptions(id: string) {
   return queryOptions({
     queryKey: ["album", id],
-    queryFn: async ({client}) => {
-      const res = await api.getAlbum({id})
-      client.setQueryData(["album", id], res)
-      return res
-    },
+    queryFn: () => api.getAlbum({id}),
   })
 }
 
 export function useQueryAlbum(id: string) {
   return useSuspenseQuery(queryAlbumOptions(id))
 }
-
-export type QueryData<T extends (...args: any[]) => {data: unknown}> = ReturnType<T>["data"]
 
 export const queryStorageOptions = queryOptions({
   queryKey: ["storage"],

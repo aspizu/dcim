@@ -1,6 +1,7 @@
 import {constants} from "@dcim/common"
 import {Ellipsis, ImageOff} from "lucide-react"
 import prettyBytes from "pretty-bytes"
+import {useCallback} from "react"
 
 import {useObjectURL} from "#hooks/object-url"
 import {useAsync} from "#hooks/promises"
@@ -54,19 +55,14 @@ export function UploadDialogItem(
     onRemove: (id: string) => void
   },
 ) {
-  const params = useAsync(async () => {
-    const file = props.handle
-    return {
-      original_size: file.size,
-    }
-  }, [props.handle])
-  const thumbnail = useAsync(async () => {
+  const createPreview = useCallback(async () => {
     if (constants.isVideoMimeType(props.handle.type)) {
       const {blob} = await generateVideoThumbnail(props.handle, 128)
       return {buffer: await blob.arrayBuffer(), type: blob.type}
     }
     return await createThumbnail(props.handle, 128)
   }, [props.handle])
+  const thumbnail = useAsync(createPreview)
   const thumbnailURL = useObjectURL(
     thumbnail.value?.buffer ?? null,
     thumbnail.value?.type ?? "",
@@ -94,24 +90,17 @@ export function UploadDialogItem(
           {thumbnail.error && <ImageOff aria-hidden="true" className="h-6 w-6" />}
         </div>
       )}
-
       <div className="flex min-w-0 grow flex-col gap-2">
         <div className="flex items-center gap-2">
           <span className="min-w-0 truncate font-medium">{props.handle.name}</span>
-
           <div className="grow" />
-
-          {params.value && (
-            <span className="shrink-0 font-medium text-muted-foreground">
-              {prettyBytes(params.value.original_size)}
-            </span>
-          )}
-
+          <span className="shrink-0 font-medium text-muted-foreground">
+            {prettyBytes(props.handle.size)}
+          </span>
           {props.progress === null && (
             <UploadItemDropDown id={props.id} onRemove={props.onRemove} />
           )}
         </div>
-
         {props.progress !== null && (
           <Progress
             value={props.progress.percent}
