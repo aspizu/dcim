@@ -5,7 +5,7 @@ runs:
   using: composite
   steps:
     - name: Set up pnpm and Node
-      uses: pnpm/setup@v2.1.0
+      uses: pnpm/setup@v3.1.2
       with:
         runtime: node@24
         cache: true
