@@ -51,8 +51,9 @@ $theme.subscribe((theme) => {
 })
 
 function App() {
+  const authState = $authState.value
   useEffect(() => {
-    if ($authState.value !== AuthState.LOADING) return
+    if (authState !== AuthState.LOADING) return
     startLoading("whoami")
     api
       .whoami()
@@ -72,9 +73,8 @@ function App() {
           })
         }
       })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [$authState.value])
-  if ($authState.value === AuthState.LOADING) {
+  }, [authState])
+  if (authState === AuthState.LOADING) {
     return null
   }
   return (

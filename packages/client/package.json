@@ -31,9 +31,7 @@
     "date-fns": "^4.4.0",
     "exifr": "^7.1.3",
     "framer-motion": "^13.2.0",
-    "immer": "^11.1.18",
     "input-otp": "^1.5.0",
-    "jotai": "^3.0.0",
     "lodash": "^4.18.1",
     "lucide-react": "^1.45.0",
     "neverthrow": "^8.2.0",
@@ -42,7 +40,6 @@
     "radix-ui": "^1.6.7",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "shadcn": "^4.21.0",
     "show-open-file-picker": "^0.4.0",
     "sonner": "^2.0.8",
     "tailwind-merge": "^3.6.0",
@@ -51,7 +48,6 @@
     "uuid": "^14.0.2"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
     "@preact/signals-react-transform": "^0.8.2",
     "@rolldown/plugin-babel": "^0.2.4",
     "@tanstack/router-plugin": "^1.168.37",
@@ -59,19 +55,11 @@
     "@types/node": "^26.5.1",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "@typescript/native": "npm:typescript@^7.0.2",
     "@vitejs/plugin-react": "^6.1.1",
-    "babel-plugin-react-compiler": "^1.0.0",
-    "eslint": "^10.10.0",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.6",
-    "globals": "^17.12.0",
     "oxlint": "^1.82.0",
     "oxlint-plugin-aspizuism": "1.0.3",
     "oxlint-tsgolint": "^7.0.2001",
-    "portless": "^0.15.6",
-    "typescript": "npm:@typescript/typescript6@^6.0.2",
-    "typescript-eslint": "^8.70.0",
-    "vite": "^8.3.0"
+    "typescript": "^7.0.2",
+    "vite": "^8.3.3"
   }
 }

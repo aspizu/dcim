@@ -8,10 +8,12 @@ export function useAsync<T>(fn: () => Promise<T>) {
     loading: false,
   })
   const request = useSignal(0)
+
   const execute = useCallback(async () => {
     const id = request.peek() + 1
     request.value = id
     state.value = {...state.value, error: null, loading: true}
+
     try {
       const value = await fn()
       if (id !== request.peek()) return
@@ -25,11 +27,13 @@ export function useAsync<T>(fn: () => Promise<T>) {
       }
     }
   }, [fn, request, state])
+
   useEffect(() => {
     void execute()
     return () => {
       request.value++
     }
   }, [execute, request])
+
   return {...state.value, retry: execute}
 }
