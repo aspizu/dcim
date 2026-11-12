@@ -1,42 +1,35 @@
-import {useCallback, useEffect, useState} from "react"
+import {useSignal} from "@preact/signals-react"
+import {useCallback, useEffect} from "react"
 
-export function useAsync<T>(fn: () => Promise<T>, deps: unknown[] = []) {
-  const [value, setValue] = useState<T | null>(null)
-  const [error, setError] = useState<Error | null>(null)
-  const [loading, setLoading] = useState<boolean>(false)
-
+export function useAsync<T>(fn: () => Promise<T>) {
+  const state = useSignal<{value: T | null; error: Error | null; loading: boolean}>({
+    value: null,
+    error: null,
+    loading: false,
+  })
+  const request = useSignal(0)
   const execute = useCallback(async () => {
-    let isCurrent = true
-    setLoading(true)
-    setError(null)
-
+    const id = request.peek() + 1
+    request.value = id
+    state.value = {...state.value, error: null, loading: true}
     try {
-      const result = await fn()
-      if (isCurrent) {
-        setValue(result)
-      }
+      const value = await fn()
+      if (id !== request.peek()) return
+      state.value = {value, error: null, loading: false}
     } catch (err) {
-      if (isCurrent) {
-        setError(err instanceof Error ? err : new Error(String(err)))
-      }
-    } finally {
-      if (isCurrent) {
-        setLoading(false)
+      if (id !== request.peek()) return
+      state.value = {
+        ...state.value,
+        error: err instanceof Error ? err : new Error(String(err)),
+        loading: false,
       }
     }
-
-    return () => {
-      isCurrent = false
-    }
-    // eslint-disable-next-line react-hooks/use-memo, react-hooks/exhaustive-deps
-  }, deps)
-
+  }, [fn, request, state])
   useEffect(() => {
-    const cleanup = execute()
+    void execute()
     return () => {
-      void cleanup.then((cancel) => cancel())
+      request.value++
     }
-  }, [execute])
-
-  return {value, error, loading, retry: execute}
+  }, [execute, request])
+  return {...state.value, retry: execute}
 }
