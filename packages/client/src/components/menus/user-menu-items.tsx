@@ -33,7 +33,10 @@ export function UserMenuItems() {
   ) : (
     <DropdownMenuGroup>
       <DropdownMenuItem asChild>
-        <Link to="/login" search={{redirect: location.pathname}}>
+        <Link
+          to="/login"
+          search={location.pathname === "/" ? {} : {redirect: location.pathname.slice(1)}}
+        >
           <LogIn />
           Login
         </Link>

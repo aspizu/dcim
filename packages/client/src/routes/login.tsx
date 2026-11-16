@@ -57,7 +57,7 @@ function RouteComponent() {
     setIsLoading(true)
     try {
       await api.login({totp})
-      void pullConfig()
+      await pullConfig()
       $authState.value = AuthState.AUTHENTICATED
     } catch {
       $authState.value = AuthState.UNAUTHENTICATED

@@ -1,16 +1,14 @@
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
 import {createRouter, RouterProvider} from "@tanstack/react-router"
-import {StrictMode, useEffect} from "react"
+import {StrictMode} from "react"
 import {createRoot} from "react-dom/client"
 
 import {LoadingBar, startLoading, stopLoading} from "#components/loadingbar.tsx"
 import {Toaster} from "#components/ui/sonner"
-import * as api from "#services/api"
 
 import "#styles/global.css"
 
-import {$authState, AuthState} from "#stores/auth"
-import {pullConfig} from "#stores/settings"
+import {$authState, AuthState, initializeAuth} from "#stores/auth"
 import {$theme, Theme} from "#stores/themes"
 
 import {routeTree} from "./routeTree.gen"
@@ -50,31 +48,10 @@ $theme.subscribe((theme) => {
   }
 })
 
+void initializeAuth(router)
+
 function App() {
-  const authState = $authState.value
-  useEffect(() => {
-    if (authState !== AuthState.LOADING) return
-    startLoading("whoami")
-    api
-      .whoami()
-      .then(async () => {
-        void pullConfig()
-        $authState.value = AuthState.AUTHENTICATED
-        stopLoading("whoami")
-      })
-      .catch(() => {
-        $authState.value = AuthState.UNAUTHENTICATED
-        stopLoading("whoami")
-        if (["/", "/settings", "/albums"].includes(router.state.location.pathname)) {
-          void router.navigate({
-            to: "/login",
-            replace: true,
-            search: {redirect: router.state.location.pathname},
-          })
-        }
-      })
-  }, [authState])
-  if (authState === AuthState.LOADING) {
+  if ($authState.value === AuthState.LOADING) {
     return null
   }
   return (
