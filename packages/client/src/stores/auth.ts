@@ -17,7 +17,9 @@ export async function initializeAuth(router: RegisteredRouter) {
   startLoading("whoami")
   try {
     await api.whoami()
-    await pullConfig()
+    await pullConfig().catch((error) => {
+      console.error("Failed to load config", error)
+    })
     $authState.value = AuthState.AUTHENTICATED
   } catch {
     $authState.value = AuthState.UNAUTHENTICATED
