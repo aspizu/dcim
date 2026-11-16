@@ -12,7 +12,7 @@ export default defineConfig({
     }),
     react(),
     babel({
-      plugins: [["module:@preact/signals-react-transform"]],
+      plugins: [["module:@preact/signals-react-transform", {mode: "all"}]],
     }),
     tailwindcss(),
   ],

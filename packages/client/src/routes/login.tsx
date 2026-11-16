@@ -14,6 +14,7 @@ import {
 import {Spinner} from "#components/ui/spinner"
 import * as api from "#services/api"
 import {$authState, AuthState} from "#stores/auth"
+import {pullConfig} from "#stores/settings"
 
 function RouteComponent() {
   const [scope, animate] = useAnimate()
@@ -56,6 +57,7 @@ function RouteComponent() {
     setIsLoading(true)
     try {
       await api.login({totp})
+      void pullConfig()
       $authState.value = AuthState.AUTHENTICATED
     } catch {
       $authState.value = AuthState.UNAUTHENTICATED

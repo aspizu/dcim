@@ -1,7 +1,8 @@
 import {constants} from "@dcim/common"
-import _ from "lodash"
+import Mustache from "mustache"
 
 import type {Photo} from "#services/api"
+import {$htmlImageTemplate, $htmlVideoTemplate} from "#stores/settings"
 
 function _photoAlt(photo: Photo) {
   if (!photo.caption) {
@@ -25,9 +26,15 @@ export function photoMarkdown(photo: Photo) {
 }
 
 export function photoHtml(photo: Photo) {
-  const src = _.escape(photo.image_url)
-  const alt = _.escape(_photoAlt(photo))
-  return constants.isVideoExtension(photo.file_name)
-    ? `<video src="${src}" poster="${_.escape(photo.thumbnail_url)}" aria-label="${alt}" width="${photo.width}" height="${photo.height}" controls autoplay muted playsinline></video>`
-    : `<img src="${src}" alt="${alt}" width="${photo.width}" height="${photo.height}" loading="lazy" />`
+  const src = photo.image_url
+  const alt = _photoAlt(photo)
+  const poster = photo.thumbnail_url
+  const width = photo.width.toString()
+  const height = photo.height.toString()
+  return Mustache.render(
+    constants.isVideoExtension(photo.file_name)
+      ? $htmlVideoTemplate.peek()
+      : $htmlImageTemplate.peek(),
+    {src, alt, poster, width, height},
+  )
 }
