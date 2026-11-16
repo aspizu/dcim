@@ -1,7 +1,7 @@
 import {constants} from "@dcim/common"
 
-import {getConfig} from "#lib/config"
 import {generateVideoThumbnail} from "#lib/transformations/core/video"
+import {$backupQuality, $thumbnailQuality} from "#stores/settings"
 
 import {Client} from "./scheduler"
 import type {HandleRequestInput, Output} from "./transformations-worker"
@@ -11,8 +11,8 @@ const worker = new Worker()
 const client = new Client(worker)
 
 export async function transform(input: File) {
-  const thumbnailQuality = getConfig("thumbnailQuality") ?? "balanced"
-  const backupQuality = getConfig("backupQuality") ?? "original"
+  const thumbnailQuality = $thumbnailQuality.peek()
+  const backupQuality = $backupQuality.peek()
   const videoFrame = constants.isVideoMimeType(input.type)
     ? await generateVideoThumbnail(input)
     : undefined

@@ -5,12 +5,12 @@ import {createRoot} from "react-dom/client"
 
 import {LoadingBar, startLoading, stopLoading} from "#components/loadingbar.tsx"
 import {Toaster} from "#components/ui/sonner"
-import {pullConfig} from "#lib/config"
 import * as api from "#services/api"
 
 import "#styles/global.css"
 
 import {$authState, AuthState} from "#stores/auth"
+import {pullConfig} from "#stores/settings"
 import {$theme, Theme} from "#stores/themes"
 
 import {routeTree} from "./routeTree.gen"
@@ -58,7 +58,7 @@ function App() {
     api
       .whoami()
       .then(async () => {
-        await pullConfig()
+        void pullConfig()
         $authState.value = AuthState.AUTHENTICATED
         stopLoading("whoami")
       })

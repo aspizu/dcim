@@ -23,6 +23,6 @@ export default defineConfig({
     "aspizuism/func-style": "error",
     "aspizuism/no-comments": "error",
     "aspizuism/private-prefix": "error",
-    "max-lines": ["error", {max: 256}],
+    "max-lines": ["error", {max: 300, skipBlankLines: true, skipComments: true}],
   },
 })

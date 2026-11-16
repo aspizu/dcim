@@ -1,6 +1,5 @@
 import {constants} from "@dcim/common"
 import {useWindowSize} from "@uidotdev/usehooks"
-import _ from "lodash"
 import {Check} from "lucide-react"
 import {useCallback, useEffect, useRef, useState} from "react"
 
@@ -59,7 +58,8 @@ function PhotoCaption(props: {
       const parent = ref.current?.parentElement
       if (!parent) return
       const parentRect = parent.getBoundingClientRect()
-      setPosition(_.clamp(mouseY + (clientY - parentRect.top) / parentRect.height, 0.1, 0.9))
+      const position = mouseY + (clientY - parentRect.top) / parentRect.height
+      setPosition(Math.min(Math.max(0.1, position), 0.9))
     },
     [mouseY, props.editable],
   )
