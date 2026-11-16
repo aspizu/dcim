@@ -1,16 +1,19 @@
 import {signal, type Signal} from "@preact/signals-react"
 
 import * as api from "#services/api"
+import {SequentialScheduler} from "#utils/schedulers"
 
 export class Option {
   private _key: string
   private _signal: Signal<string>
   private _timeout: ReturnType<typeof setTimeout> | undefined
+  private _scheduler: SequentialScheduler
 
   constructor(key: string, initialValue: string = "") {
     this._key = key
     const config = JSON.parse(localStorage.getItem("config") ?? "{}")
     this._signal = signal(config[key] ?? initialValue)
+    this._scheduler = new SequentialScheduler()
   }
 
   peek() {
@@ -27,7 +30,10 @@ export class Option {
     localStorage.setItem("config", JSON.stringify({...config, [this._key]: this._signal.value}))
     clearTimeout(this._timeout)
     this._timeout = setTimeout(() => {
-      void api.setConfig(this._key, this._signal.peek())
+      this._scheduler.schedule(async () => {
+        await api.setConfig(this._key, this._signal.peek())
+        this._signal.value = newValue
+      })
     }, 600)
   }
 
