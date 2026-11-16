@@ -31,7 +31,7 @@ export class Option {
     clearTimeout(this._timeout)
     this._timeout = setTimeout(() => {
       this._scheduler.schedule(async () => {
-        await api.setConfig(this._key, this._signal.peek())
+        await api.setConfig(this._key, newValue)
         this._signal.value = newValue
       })
     }, 600)
