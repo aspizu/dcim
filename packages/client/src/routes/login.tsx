@@ -57,7 +57,9 @@ function RouteComponent() {
     setIsLoading(true)
     try {
       await api.login({totp})
-      void pullConfig()
+      await pullConfig().catch((error) => {
+        console.error("Failed to load config", error)
+      })
       $authState.value = AuthState.AUTHENTICATED
     } catch {
       $authState.value = AuthState.UNAUTHENTICATED
