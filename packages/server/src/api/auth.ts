@@ -9,6 +9,8 @@ import z from "zod"
 import {ensureLoggedIn} from "#utils/auth"
 import hono from "#utils/hono"
 
+const SESSION_MAX_AGE_SECONDS = 30 * 24 * 60 * 60
+
 export default hono()
   .post(
     "/auth/login",
@@ -24,13 +26,13 @@ export default hono()
       await setSignedCookie(
         c,
         "session",
-        new Date(Date.now() + 86400 * 1000).toISOString(),
+        new Date(Date.now() + SESSION_MAX_AGE_SECONDS * 1000).toISOString(),
         c.env.JWT_SECRET,
         {
           httpOnly: true,
           sameSite: "strict",
           path: "/",
-          maxAge: 86400,
+          maxAge: SESSION_MAX_AGE_SECONDS,
           secure: true,
         },
       )
